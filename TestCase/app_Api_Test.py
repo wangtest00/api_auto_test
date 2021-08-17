@@ -1,6 +1,6 @@
-from public.base import *
-from public.dataBase import *
-from public.var_mex import *
+from lanaplus_api_test.public.base import *
+from lanaplus_api_test.public.dataBase import *
+from lanaplus_api_test.public.var_mex import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
