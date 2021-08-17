@@ -12,5 +12,5 @@ def load_all_case():
     return discover
 
 if __name__=='__main__':
-    #bf(load_all_case()).report(filename='lanaplus_api_auto_test', description='lanaplus接口自动化测试')    #log_path='.'把report放到当前目录下
-    print(load_all_case())
+    bf(load_all_case()).report(filename='lanaplus_api_auto_test', description='lanaplus接口自动化测试')    #log_path='.'把report放到当前目录下
+    #print(load_all_case())

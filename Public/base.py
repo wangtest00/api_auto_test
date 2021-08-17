@@ -1,8 +1,8 @@
 import requests,json
-from Public.base import *
-from Public.dataBase import *
-from Public.var_mex import *
-from Public.heads import *
+from public.base import *
+from public.dataBase import *
+from public.var_mex import *
+from public.heads import *
 import random,string,datetime
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):

@@ -5,7 +5,7 @@ Created on 2018-11-26
 '''
 import time
 import pymysql
-from Public.var_mex import *
+from public.var_mex import *
 
 
 class DataBase():

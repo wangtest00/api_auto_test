@@ -1,6 +1,6 @@
-from Public.base import *
-from Public.dataBase import *
-from Public.var_mex import *
+from public.base import *
+from public.dataBase import *
+from public.var_mex import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
@@ -125,12 +125,11 @@ class App_Api_Test(unittest.TestCase):
         self.assertIsNotNone(t['data']['loanNo'])
     def test_bank_auth(self):
         '''/api/cust/auth/bank绑定银行卡接口-正案例'''
-        timev=str(time.time()*1000000)[:15]
         bank_acct_no=str(random.randint(1000,9999))
         test_data=for_bank_auth()
         custNo=test_data[0]
         head=test_data[1]
-        data={"bankCode":"10020021","clabe":timev+"123","custNo":custNo}
+        data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
         r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
         self.assertEqual(r.status_code,200)
         t=r.json()
@@ -141,14 +140,14 @@ class App_Api_Test(unittest.TestCase):
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
         print('我是tearDownClass，我位于多有用例运行的结束')
-
-if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(App_Api_Test)
-    runner = HTMLTestRunner(
-        title="lanaPlus接口测试-带截图，饼图，折线图，历史结果查看的测试报告",
-        description="",
-        stream=open("../Report/App_Api_Test_Report.html", "wb"),
-        verbosity=2,
-        retry=0,
-        save_last_try=True)
-    runner.run(suite)
+#
+# if __name__ == '__main__':
+#     suite = unittest.TestLoader().loadTestsFromTestCase(App_Api_Test)
+#     runner = HTMLTestRunner(
+#         title="lanaPlus接口测试-带截图，饼图，折线图，历史结果查看的测试报告",
+#         description="这是描述",
+#         stream=open("./App_Api_Test_Report.html", "wb"),
+#         verbosity=1000,
+#         retry=3,      #失败重试次数
+#         save_last_try=True)
+#     runner.run(suite)
