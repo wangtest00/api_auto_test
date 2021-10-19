@@ -5,7 +5,7 @@ import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
-class App_Api_Test(unittest.TestCase):
+class DaiQian_Api_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
