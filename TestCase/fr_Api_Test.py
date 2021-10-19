@@ -1,6 +1,6 @@
-from lanaplus_api_test.public.base import *
-from lanaplus_api_test.public.dataBase import *
-from lanaplus_api_test.public.var_mex import *
+from api_auto_test.public.base_fr import *
+from api_auto_test.public.dataBase import *
+from api_auto_test.public.var_fr import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
@@ -14,7 +14,7 @@ class App_Api_Test(unittest.TestCase):
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
     def test_login_code(self):    #函数名要以test开头，否则不会被执行
-        '''/api/cust/login注册登录接口-正案例'''      #用例描述，在函数下，用三个单引号里面写用例描述
+        '''【FeriaRapida】/api/cust/login注册登录接口-正案例'''      #用例描述，在函数下，用三个单引号里面写用例描述
         registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
         code=compute_code(registNo)
         data={"registNo":registNo,"code":code,"gaid":"Exception:null"}
@@ -25,7 +25,7 @@ class App_Api_Test(unittest.TestCase):
         self.assertIsNotNone(token)
         self.assertEqual(t['errorCode'],0)
     def test_login_pwd(self):
-        '''/api/cust/pwd/login使用密码登录接口-正案例'''
+        '''【FeriaRapida】/api/cust/pwd/login使用密码登录接口-正案例'''
         registNo=cx_old_registNo()
         data={"registNo":registNo,"password":"123456","gaid":"Exception:null"}
         r=requests.post(host_api+"/api/cust/pwd/login",data=json.dumps(data),headers=head_api,verify=False)
@@ -34,7 +34,7 @@ class App_Api_Test(unittest.TestCase):
         token=t['data']['token']
         self.assertIsNotNone(token)
     def test_update_pwd(self):
-        '''/api/cust/pwd/update更新用户密码接口-正案例'''
+        '''【FeriaRapida】/api/cust/pwd/update更新用户密码接口-正案例'''
         test_data=login_code()
         registNo=test_data[0]
         head=test_data[1]
@@ -43,7 +43,7 @@ class App_Api_Test(unittest.TestCase):
         s=r.json()
         self.assertEqual(s['errorCode'],0)
     def test_auth_cert(self):
-        '''/api/cust/auth/cert身份认证接口-正案例'''
+        '''【FeriaRapida】/api/cust/auth/cert身份认证接口-正案例'''
         st=random_four_zm()
         test_data=login_code()
         registNo=test_data[0]
@@ -59,7 +59,7 @@ class App_Api_Test(unittest.TestCase):
         cert_auth=DataBase(which_db).get_one(sql)
         self.assertEqual(cert_auth[0],1)
     def test_auth_review(self):
-        '''/api/cust/auth/review接口-正案例'''
+        '''【FeriaRapida】/api/cust/auth/review接口-正案例'''
         test_data=for_test_auth_other()
         custNo=test_data[1]
         registNo=test_data[0]
@@ -69,7 +69,7 @@ class App_Api_Test(unittest.TestCase):
         s1=r1.json()
         self.assertEqual(s1['errorCode'],0)
     def test_auth_work(self):
-        '''/api/cust/auth/work接口（客户工作情况）-正案例'''
+        '''【FeriaRapida】/api/cust/auth/work接口（客户工作情况）-正案例'''
         test_data=for_test_auth_other()
         custNo=test_data[1]
         head=test_data[2]
@@ -78,7 +78,7 @@ class App_Api_Test(unittest.TestCase):
         s2=r2.json()
         self.assertEqual(s2['errorCode'],0)
     def test_app_grab_data(self):
-        '''/api/common/grab/app_grab_data接口-正案例-app第三个页面接口（抓取用户手机短信，通讯录，设备信息，已安装app等信息）'''
+        '''【FeriaRapida】/api/common/grab/app_grab_data接口-正案例-app第三个页面接口（抓取用户手机短信，通讯录，设备信息，已安装app等信息）'''
         test_data=for_test_auth_other()
         custNo=test_data[1]
         registNo=test_data[0]
@@ -105,7 +105,7 @@ class App_Api_Test(unittest.TestCase):
             self.assertEqual(t0['errorCode'],0)
             time.sleep(1)
     def test_auth_contact(self):
-        '''/api/cust/auth/other/contact接口(填写联系人联系方式)app第四个页面-正案例'''
+        '''【FeriaRapida】/api/cust/auth/other/contact接口(填写联系人联系方式)app第四个页面-正案例'''
         test_data=for_test_auth_other()
         custNo=test_data[1]
         head=test_data[2]
@@ -114,7 +114,7 @@ class App_Api_Test(unittest.TestCase):
         t9=r9.json()
         self.assertEqual(t9['errorCode'],0)
     def test_apply_loan(self):
-        '''/api/loan/apply申请贷款接口-正案例'''
+        '''【FeriaRapida】/api/loan/apply申请贷款接口-正案例'''
         test_data=for_apply_loan()
         custNo=test_data[0]
         head=test_data[1]
@@ -124,7 +124,7 @@ class App_Api_Test(unittest.TestCase):
         t=r.json()
         self.assertIsNotNone(t['data']['loanNo'])
     def test_bank_auth(self):
-        '''/api/cust/auth/bank绑定银行卡接口-正案例'''
+        '''【FeriaRapida】/api/cust/auth/bank绑定银行卡接口-正案例'''
         bank_acct_no=str(random.randint(1000,9999))
         test_data=for_bank_auth()
         custNo=test_data[0]

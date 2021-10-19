@@ -1,8 +1,6 @@
 import requests,json
-from public.base import *
 from public.dataBase import *
-from public.var_mex import *
-from public.heads import *
+from public.var_fr import *
 import random,string,datetime
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
@@ -15,7 +13,7 @@ def compute_code(m):
     return x
 #查询客户号不为空的用户手机号，GAID='Exception:null'我的标记数据
 def cx_old_registNo():
-    sql="select REGIST_NO from cu_cust_reg_dtl where GAID='Exception:null' and CUST_NO is not null;"
+    sql="select REGIST_NO from cu_cust_reg_dtl where GAID='Exception:null' and CUST_NO is not null and app_no='"+appNo+"';"
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
@@ -34,7 +32,7 @@ def for_test_auth_other():
     token=t['data']['token']
     head=head_token(token)
     data0={"birthdate":"1999-5-18","civilStatus":"10050001","curp":st+"990518MM"+st+"V8","delegationOrMunicipality":"zxcvbbbccxxx","education":"10190005","fatherLastName":"WANG","gender":"10030001",
-          "motherLastName":"LIU","name":"SHUANG","outdoorNumber":"qweetyyu","phoneNo":registNo,"postalCode":"55555","state":"11130001","street":"444444","suburb":"asdfhhj","email":""}
+          "motherLastName":"TEST","name":"SHUANG","outdoorNumber":"qweetyyu","phoneNo":registNo,"postalCode":"55555","state":"11130001","street":"444444","suburb":"asdfhhj","email":""}
     r=requests.post(host_api+'/api/cust/auth/cert',data=json.dumps(data0),headers=head)
     s=r.json()
     custNo=s['data']['custNo']
@@ -138,3 +136,8 @@ def update_batch_log():
         sql3="update sys_batch_log set BUSI_DATE='"+yudate+"' where BUSI_DATE='"+BUSI_DATE[0]+"';"
         DataBase(which_db).executeUpdateSql(sql3)
     DataBase(which_db).closeDB()
+
+def head_token(token):
+    head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "0","host_api": "test-api.quantx.mx","x-app-name": "LanaPlus","content-type": "application/json",
+        "x-app-type": "10090001","x-app-version": "116","x-app-no": appNo,"x-auth-token":'Bearer '+token }
+    return head
