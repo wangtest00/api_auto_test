@@ -1,6 +1,7 @@
 import requests,json
 from public.dataBase import *
 from public.var_lp import *
+from public.check_api import *
 import random,string,datetime
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
@@ -17,11 +18,63 @@ def cx_old_registNo():
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
+#查询贷后状态为正常的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
+def cx_registNo():
+    sql='''select REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
+          left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO
+          where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL order by a.INST_TIME desc limit 1;'''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=str(registNo[0])
+    #print(registNo)
+    return registNo
+
+def cx_registNo_02():
+    sql='''#查询只借过一笔款且已结清的手机号
+select  c.REGIST_NO ,count(1) as loan_cnt from
+(select  a.cust_no from lo_loan_dtl a
+WHERE a.BEFORE_STAT = '10260005' AND a.AFTER_STAT = '10270005'
+GROUP BY a.cust_no
+HAVING count(1) =1
+)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO where c.APP_NO="'''+appNo+'''"
+group by  b.cust_no
+HAVING loan_cnt=1  order by c.INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=str(phone[0])
+    return phone
+
+def cx_registNo_02():
+    sql='''#查询未借过款的手机号
+'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=str(phone[0])
+    return phone
+
+#更新登录密码，包含了用验证码方式注册登录的步骤
+def update_pwd(registNo):
+    token=login_code(registNo)
+    headt=head_token(token)
+    data={"registNo":registNo,"newPwd":"123456"}
+    r=requests.post(host_api+"/api/cust/pwd/update",data=json.dumps(data),headers=headt,verify=False)
+    check_api(r)
+
+
 def random_four_zm():
     st=''
     for j in range(4):  #生成4个随机英文大写字母
         st+=random.choice(string.ascii_uppercase)
     return st
+#通过密码登录，返回token
+def login_pwd(registNo):
+    data={"registNo":registNo,"password":"123456","gaid":"Exception:null"}
+    r=requests.post(host_api+"/api/cust/pwd/login",data=json.dumps(data),headers=head_api,verify=False)
+    t=r.json()
+    token=t['data']['token']
+    return token
+def headtt(registNo):
+    token=login_pwd(registNo)
+    headtt=head_token(token)
+    return headtt
+
 def for_test_auth_other():
     st=random_four_zm()
     registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
@@ -41,18 +94,14 @@ def for_test_auth_other():
     list.append(custNo)
     list.append(head)
     return list
-def login_code():
-    registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
+def login_code(registNo):
     code=compute_code(registNo)
     data={"registNo":registNo,"code":code,"gaid":"Exception:null"}
     r=requests.post(host_api+"/api/cust/login",data=json.dumps(data),headers=head_api,verify=False)
     t=r.json()
     token=t['data']['token']
     head=head_token(token)
-    list=[]
-    list.append(registNo)
-    list.append(head)
-    return list
+    return head
 def for_apply_loan():
     test_data=for_test_auth_other()
     custNo=test_data[1]
