@@ -35,9 +35,8 @@ class DaiQian_Api_Test(unittest.TestCase):
         self.assertIsNotNone(token)
     def test_update_pwd(self):
         '''【lanaPlus】/api/cust/pwd/update更新用户密码接口-正案例'''
-        test_data=login_code()
-        registNo=test_data[0]
-        head=test_data[1]
+        registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
+        head=login_code(registNo)
         data2={"registNo":registNo,"newPwd":"123456"}
         r=requests.post(host_api+"/api/cust/pwd/update",data=json.dumps(data2),headers=head,verify=False)
         s=r.json()
@@ -45,9 +44,8 @@ class DaiQian_Api_Test(unittest.TestCase):
     def test_auth_cert(self):
         '''【lanaPlus】/api/cust/auth/cert身份认证接口-正案例'''
         st=random_four_zm()
-        test_data=login_code()
-        registNo=test_data[0]
-        head=test_data[1]
+        registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
+        head=login_code(registNo)
         data2={"birthdate":"1999-5-18","civilStatus":"10050001","curp":st+"990518MM"+st+"V8","delegationOrMunicipality":"zxcvbbbccxxx","education":"10190005","fatherLastName":"WANG","gender":"10030001",
               "motherLastName":"LIU","name":"SHUANG","outdoorNumber":"qweetyyu","phoneNo":registNo,"postalCode":"55555","state":"11130001","street":"444444","suburb":"asdfhhj","email":""}
         r=requests.post(host_api+'/api/cust/auth/cert',data=json.dumps(data2),headers=head)
