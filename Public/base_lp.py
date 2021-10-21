@@ -83,8 +83,8 @@ order by a.INST_TIME desc limit 1; '''
 
 def cx_registNo_08():
     sql='''#查询手机号，在撤销状态
-select c.REGIST_NO from apr_appr_flow_dtl a left join lo_loan_dtl b on a.loan_no=b.LOAN_NO left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO
-where a.APPR_TYPE='10290002' and a.APPR_STAT='10200009' and a.APPR_NO='201001' and c.REGIST_NO is not null
+select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO='201'
 order by a.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=str(phone[0])
