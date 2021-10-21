@@ -121,7 +121,7 @@ class DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(r.status_code,200)
         t=r.json()
         self.assertIsNotNone(t['data']['loanNo'])
-    def test_bank_auth(self):
+    def test_bank_auth_01(self):
         '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口-正案例'''
         bank_acct_no=str(random.randint(1000,9999))
         test_data=for_bank_auth()
@@ -129,11 +129,75 @@ class DaiQian_Api_Test(unittest.TestCase):
         head=test_data[1]
         data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
         r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
-        self.assertEqual(r.status_code,200)
         t=r.json()
         self.assertEqual(t['errorCode'],0)                                    #改为4位随机数
         sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"
         DataBase(which_db).executeUpdateSql(sql)  #防止被真实放款给该银行卡
+    def test_bank_auth_02(self):
+        '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(有在贷不能更换银行卡)-正案例'''
+        list=cx_registNo_04()
+        registNo=list[0]
+        custNo=list[1]
+        headt_api=login_code(registNo)
+        data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual(t['message'],'Su préstamo no ha sido liquidado y CLABE no se puede modificar temporalmente. Modifíquelo después de que se complete el pago.')
+    def test_bank_auth_03(self):
+        '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(银行卡黑名单能正常绑卡，但是会被拒)-正案例'''
+        test_data=for_bank_auth()
+        custNo=test_data[0]
+        head=test_data[1]
+        loanNo=test_data[2]
+        data={"bankCode":"10020008","clabe":"012050027670348650","custNo":custNo}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        beforeStat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10260006',beforeStat[0])  #验证贷前状态是否更新为【拒绝】
+    def test_bank_auth_04(self):
+        '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(客户未认证，不能绑卡)-正案例'''
+        registNo=cx_registNo_07()
+        headt_api=login_code(registNo)
+        data={"bankCode":"10020037","clabe":"138455214411441118","custNo":''}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual(t['message'],'custNoParámetro anormal ')
+    def test_loan_apply(self):
+        '''【lanaPlus】/api/loan/apply  申请贷款接口(复客进件)-正案例'''
+        custNo=get_yijieqing_custNo()
+        sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
+        registNo=DataBase(which_db).get_one(sql)
+        phone=registNo[0]
+        headt_api=login_code(phone)
+        data={"custNo":custNo}
+        r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data),headers=headt_api)#申请贷款
+        t=r.json()
+        #print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual('10260001',t['data']['beforeStat'])  #验证贷前状态是否更新为【审批中】
+        self.assertFalse(t['data']['firstApply'])
+        self.assertIsNone(t['data']['matchId'])
+        self.assertEqual(t['data']['recentLoanDetail']['loanStat'],'UNDER_RISK')
+        self.assertIsNone(t['data']['recentLoanDetail']['certStatus'])
+        self.assertIsNone(t['data']['recentLoanDetail']['paymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['repaymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['applyButtonDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['reapplyDate'])
+    def test_bank_codes(self):
+        '''【lanaPlus】/api/common/bank/codes?types=1002获取银行卡码值及前缀接口-正案例'''
+        registNo=cx_registNo_09()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/common/bank/codes?types=1002",headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t,{'data': [{'valName': 'ABC CAPITAL', 'valCode': '10020037', 'preNums': '138'}, {'valName': 'ACCENDO BANCO', 'valCode': '10020020', 'preNums': '102'}, {'valName': 'ACTINVER', 'valCode': '10020034', 'preNums': '133'}, {'valName': 'AFIRME', 'valCode': '10020018', 'preNums': '062'}, {'valName': 'AKALA', 'valCode': '10020067', 'preNums': '638'}, {'valName': 'AMERICAN EXPRES', 'valCode': '10020021', 'preNums': '103'}, {'valName': 'AUTOFIN', 'valCode': '10020030', 'preNums': '128'}, {'valName': 'AZTECA', 'valCode': '10020029', 'preNums': '127'}, {'valName': 'BAJIO', 'valCode': '10020011', 'preNums': '030'}, {'valName': 'BANAMEX', 'valCode': '10020007', 'preNums': '002'}, {'valName': 'BANCO FINTERRA', 'valCode': '10020047', 'preNums': '154'}, {'valName': 'BANCO S3', 'valCode': '10020052', 'preNums': '160'}, {'valName': 'BANCOMEXT', 'valCode': '10020001', 'preNums': '006'}, {'valName': 'BANCOPPEL', 'valCode': '10020036', 'preNums': '137'}, {'valName': 'BANCREA', 'valCode': '10020046', 'preNums': '152'}, {'valName': 'BANJERCITO', 'valCode': '10020003', 'preNums': '019'}, {'valName': 'BANK OF AMERICA', 'valCode': '10020022', 'preNums': '106'}, {'valName': 'BANKAOOL', 'valCode': '10020042', 'preNums': '147'}, {'valName': 'BANOBRAS', 'valCode': '10020002', 'preNums': '009'}, {'valName': 'BANORTE', 'valCode': '10020019', 'preNums': '072'}, {'valName': 'BANREGIO', 'valCode': '10020015', 'preNums': '058'}, {'valName': 'BANSEFI', 'valCode': '10020005', 'preNums': '166'}, {'valName': 'BANSI', 'valCode': '10020017', 'preNums': '060'}, {'valName': 'BARCLAYS', 'valCode': '10020031', 'preNums': '129'}, {'valName': 'BBASE', 'valCode': '10020041', 'preNums': '145'}, {'valName': 'BBVA BANCOMER', 'valCode': '10020008', 'preNums': '012'}, {'valName': 'BMONEX', 'valCode': '10020025', 'preNums': '112'}, {'valName': 'CAJA POP MEXICA', 'valCode': '10020075', 'preNums': '677'}, {'valName': 'CAJA TELEFONIST', 'valCode': '10020077', 'preNums': '683'}, {'valName': 'CB INTERCAM', 'valCode': '10020063', 'preNums': '630'}, {'valName': 'CI BOLSA', 'valCode': '10020064', 'preNums': '631'}, {'valName': 'CIBANCO', 'valCode': '10020040', 'preNums': '143'}, {'valName': 'COMPARTAMOS', 'valCode': '10020032', 'preNums': '130'}, {'valName': 'CONSUBANCO', 'valCode': '10020038', 'preNums': '140'}, {'valName': 'CREDICAPITAL', 'valCode': '10020071', 'preNums': '652'}, {'valName': 'CREDIT SUISSE', 'valCode': '10020028', 'preNums': '126'}, {'valName': 'CRISTOBAL COLON', 'valCode': '10020076', 'preNums': '680'}, {'valName': 'CoDi Valida', 'valCode': '10020083', 'preNums': '903'}, {'valName': 'DEUTSCHE', 'valCode': '10020027', 'preNums': '124'}, {'valName': 'DONDE', 'valCode': '10020045', 'preNums': '151'}, {'valName': 'ESTRUCTURADORES', 'valCode': '10020057', 'preNums': '606'}, {'valName': 'EVERCORE', 'valCode': '10020070', 'preNums': '648'}, {'valName': 'FINAMEX', 'valCode': '10020060', 'preNums': '616'}, {'valName': 'FINCOMUN', 'valCode': '10020065', 'preNums': '634'}, {'valName': 'FOMPED', 'valCode': '10020081', 'preNums': '689'}, {'valName': 'FONDO (FIRA)', 'valCode': '10020079', 'preNums': '685'}, {'valName': 'GBM', 'valCode': '10020054', 'preNums': '601'}, {'valName': 'HDI SEGUROS', 'valCode': '10020066', 'preNums': '636'}, {'valName': 'HIPOTECARIA FED', 'valCode': '10020006', 'preNums': '168'}, {'valName': 'HSBC', 'valCode': '10020010', 'preNums': '021'}, {'valName': 'ICBC', 'valCode': '10020048', 'preNums': '155'}, {'valName': 'INBURSA', 'valCode': '10020012', 'preNums': '036'}, {'valName': 'INDEVAL', 'valCode': '10020082', 'preNums': '902'}, {'valName': 'INMOBILIARIO', 'valCode': '10020044', 'preNums': '150'}, {'valName': 'INTERCAM BANCO', 'valCode': '10020035', 'preNums': '136'}, {'valName': 'INVERCAP', 'valCode': '10020080', 'preNums': '686'}, {'valName': 'INVEX', 'valCode': '10020016', 'preNums': '059'}, {'valName': 'JP MORGAN', 'valCode': '10020024', 'preNums': '110'}, {'valName': 'LIBERTAD', 'valCode': '10020074', 'preNums': '670'}, {'valName': 'MASARI', 'valCode': '10020055', 'preNums': '602'}, {'valName': 'MIFEL', 'valCode': '10020013', 'preNums': '042'}, {'valName': 'MIZUHO BANK', 'valCode': '10020051', 'preNums': '158'}, {'valName': 'MONEXCB', 'valCode': '10020053', 'preNums': '600'}, {'valName': 'MUFG', 'valCode': '10020023', 'preNums': '108'}, {'valName': 'MULTIVA BANCO', 'valCode': '10020033', 'preNums': '132'}, {'valName': 'MULTIVA CBOLSA', 'valCode': '10020059', 'preNums': '613'}, {'valName': 'NAFIN', 'valCode': '10020004', 'preNums': '135'}, {'valName': 'PAGATODO', 'valCode': '10020043', 'preNums': '148'}, {'valName': 'PROFUTURO', 'valCode': '10020062', 'preNums': '620'}, {'valName': 'SABADELL', 'valCode': '10020049', 'preNums': '156'}, {'valName': 'SANTANDER', 'valCode': '10020009', 'preNums': '014'}, {'valName': 'SANTANDER2', 'valCode': '10020084', 'preNums': '814'}, {'valName': 'SCOTIABANK', 'valCode': '10020014', 'preNums': '044'}, {'valName': 'SHINHAN', 'valCode': '10020050', 'preNums': '157'}, {'valName': 'STP', 'valCode': '10020069', 'preNums': '646'}, {'valName': 'TRANSFER', 'valCode': '10020078', 'preNums': '684'}, {'valName': 'UNAGRA', 'valCode': '10020072', 'preNums': '656'}, {'valName': 'VALMEX', 'valCode': '10020061', 'preNums': '617'}, {'valName': 'VALUE', 'valCode': '10020056', 'preNums': '605'}, {'valName': 'VE POR MAS', 'valCode': '10020026', 'preNums': '113'}, {'valName': 'VECTOR', 'valCode': '10020058', 'preNums': '608'}, {'valName': 'VOLKSWAGEN', 'valCode': '10020039', 'preNums': '141'}], 'errorCode': 0, 'message': 'ÉXITO'}
+)
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

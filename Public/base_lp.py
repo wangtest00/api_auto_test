@@ -18,9 +18,10 @@ def cx_old_registNo():
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
-#查询贷后状态为正常的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
+
 def cx_registNo():
-    sql='''select REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
+    sql='''#查询贷后状态为正常的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
+          select REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
           left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO
           where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL order by a.INST_TIME desc limit 1;'''
     registNo=DataBase(which_db).get_one(sql)
@@ -42,13 +43,90 @@ HAVING loan_cnt=1  order by c.INST_TIME desc limit 1;'''
     phone=str(phone[0])
     return phone
 
-def cx_registNo_02():
-    sql='''#查询未借过款的手机号
+def cx_registNo_03():
+    sql='''#查询手机号，不在人工或自动审批通过，拒绝状态，201，非空,非撤销状态
+select c.REGIST_NO from apr_appr_flow_dtl a left join lo_loan_dtl b on a.loan_no=b.LOAN_NO left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO
+where a.APPR_TYPE='10290002' and a.APPR_STAT not in('10200001','10200002','10200005','10200006','10200009') and a.APPR_NO='201001' and c.REGIST_NO is not null
+order by a.INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=str(phone[0])
+    return phone
+def cx_registNo_04():
+    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷未结清
+    select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
+    where a.BEFORE_STAT='10260005' and a.AFTER_STAT='10270002' or a.AFTER_STAT='10270003' and b.APP_NO='201' order by a.INST_TIME desc limit 1;
 '''
+    phone=DataBase(which_db).get_one(sql)
+    return phone
+
+def cx_registNo_05():
+    sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
+select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
+left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
+where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO='201' and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005'
+order by a.INST_TIME desc limit 1;  '''
+    phone=DataBase(which_db).get_one(sql)
+    return phone
+def cx_registNo_06(loanNo):
+    sql='''#查询OXXO还款申请记录
+select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where LOAN_NO="'''+loanNo+'''" and  ACT_TRAN_AMT is null and TRAN_CHAN_NAME !='STP支付渠道' order by INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    #print(phone)
+    return phone
+def cx_registNo_07():
+    sql='''#查询无客户号的手机号
+select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is null and a.APP_NO='201'
+order by a.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=str(phone[0])
     return phone
 
+def cx_registNo_08():
+    sql='''#查询手机号，在撤销状态
+select c.REGIST_NO from apr_appr_flow_dtl a left join lo_loan_dtl b on a.loan_no=b.LOAN_NO left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO
+where a.APPR_TYPE='10290002' and a.APPR_STAT='10200009' and a.APPR_NO='201001' and c.REGIST_NO is not null
+order by a.INST_TIME desc limit 1; '''
+    phone=DataBase(which_db).get_one(sql)
+    phone=str(phone[0])
+    return phone
+def cx_registNo_09():
+    sql='''#查询有客户号的手机号
+select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is not null and a.APP_NO='201'
+order by a.INST_TIME desc limit 1; '''
+    phone=DataBase(which_db).get_one(sql)
+    phone=str(phone[0])
+    return phone
+def get_yijieqing_custNo():
+    sql='''select  b.cust_no,count(1) as loan_cnt from
+(select  a.cust_no from
+lo_loan_dtl a
+WHERE
+	a.BEFORE_STAT = '10260005'
+AND a.AFTER_STAT = '10270005'
+GROUP BY a.cust_no
+HAVING count(1) =1
+)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no
+group by  b.cust_no
+HAVING loan_cnt=1;'''
+    custNo=DataBase(which_db).get_one(sql)
+    return custNo[0]
+def cx_beforeStat_afterStat(loanNo):
+    sql='''select BEFORE_STAT,AFTER_STAT from lo_loan_dtl where LOAN_NO="'''+loanNo+'''";'''
+    stat=DataBase(which_db).get_one(sql)
+    return stat
+def cx_under_withdraw():
+    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
+where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO='201' order by a.INST_TIME desc limit 1; '''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=registNo[0]
+    return registNo
+def cx_inst_num(loanNo):
+    sql='''select INST_NUM from lo_loan_plan_dtl where loan_no="'''+loanNo+'''" and REPAY_STAT!='10270005' order by INST_NUM asc;'''
+    inst_num=DataBase(which_db).get_all(sql)
+    list=[]
+    for i in range(len(inst_num)):
+        list.append(str(inst_num[i][0]))
+    return list
 #更新登录密码，包含了用验证码方式注册登录的步骤
 def update_pwd(registNo):
     token=login_code(registNo)
@@ -56,8 +134,6 @@ def update_pwd(registNo):
     data={"registNo":registNo,"newPwd":"123456"}
     r=requests.post(host_api+"/api/cust/pwd/update",data=json.dumps(data),headers=headt,verify=False)
     check_api(r)
-
-
 def random_four_zm():
     st=''
     for j in range(4):  #生成4个随机英文大写字母

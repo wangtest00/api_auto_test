@@ -132,6 +132,26 @@ class DaiHou_Api_Test(unittest.TestCase):
         self.assertTrue(t['data']['certStatus']['kycAuth'])
         self.assertFalse(t['data']['certStatus']['bankAuth'])
         self.assertFalse(t['data']['certStatus']['otherContactAuth'])
+    def test_loan_latest_06(self):
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(贷前撤销状态)正案例'''
+        registNo=cx_under_withdraw()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['loanStat'],'UNDER_WITHDRAW')
+        self.assertIsNotNone(t['data']['loanNo'])
+        self.assertIsNotNone(t['data']['custNo'])
+        self.assertIsNotNone(t['data']['bankAcctInfo'])
+        self.assertIsNotNone(t['data']['paymentDetail'])
+        self.assertIsNotNone(t['data']['paymentDetail']['repaymentPlanList'])
+        self.assertIsNone(t['data']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['repaymentDetail'])
+        self.assertIsNone(t['data']['reapplyDate'])
+        self.assertIsNone(t['data']['applyButtonDetail'])
+
+
     def test_fin_repay_stp(self):
         '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷-正案例'''
         registNo=cx_registNo_04()
@@ -201,8 +221,8 @@ class DaiHou_Api_Test(unittest.TestCase):
         r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
-        afterstat=cx_afterstat(loanNo)
-        self.assertEqual('10270005',afterstat)  #验证贷后状态是否更新为【已结清】
+        afterstat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
     def test_oxxo_repayment(self):
         '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷验证结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
@@ -310,8 +330,8 @@ class DaiHou_Api_Test(unittest.TestCase):
         r=requests.post(host_pay+"/api/trade/conekta/annon/event/webhook",data=json.dumps(data_for_oxxo),verify=False)
         print(r.json())
         self.assertEqual(r.status_code,200)
-        afterstat=cx_afterstat(loanNo)
-        self.assertEqual('10270005',afterstat)  #验证贷后状态是否更新为【已结清】
+        afterstat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
