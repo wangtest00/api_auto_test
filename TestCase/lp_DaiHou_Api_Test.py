@@ -1,7 +1,6 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
-import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
@@ -26,22 +25,22 @@ class DaiHou_Api_Test(unittest.TestCase):
             print(repaymentDetailList[i])
             self.assertEqual(repaymentDetailList[i]['loanAmt'],'500.00')
             self.assertEqual(repaymentDetailList[i]['originalLoanAmt'],'500.00')
-            self.assertEqual(repaymentDetailList[i]['repaymentAmt'],'600.00')
+            #self.assertEqual(repaymentDetailList[i]['repaymentAmt'],'600.00')
             self.assertEqual(repaymentDetailList[i]['alreadyRepaymentAmt'],None)
             self.assertEqual(repaymentDetailList[i]['originalRepaymentAmt'],'600.00')
             self.assertEqual(repaymentDetailList[i]['totalAfterFee'],'100.00')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeValue'],'100.00')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['originalFeeValue'],'100.00')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['realRepayAmt'],'0.00')
-            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
+            #self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['order'],'2')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeType'],None)
-            self.assertEqual(repaymentDetailList[i]['overdueAmt'],None)
+            #self.assertEqual(repaymentDetailList[i]['overdueAmt'],None)
             self.assertEqual(repaymentDetailList[i]['originalOverdueAmt'],None)
             self.assertEqual(repaymentDetailList[i]['stat'],'NORMAL')
             self.assertEqual(repaymentDetailList[i]['deductionDetail']['otherReduceAmt'],None)
-            self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAmt'],None)
-            self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAmt'],None)
+            #self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAmt'],None)
+            #self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAmt'],None)
             if i==0:
                 self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAble'],True)   #积分减免状态（首期可减免）
                 self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAble'],True) #优惠券减免状态（首期可减免）
@@ -112,28 +111,69 @@ class DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],False)
     def test_loan_latest_05(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(贷前撤销状态)正案例'''
-        registNo=cx_registNo_08()
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        list=cx_registNo_08()
+        registNo=list[1]
+        before_stat=list[0]
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
         t=r.json()
         print(t)
+        if before_stat=='10260007':
+            stat='CANCEL'
+            #self.assertTrue(t['data']['certStatus']['certAuth'])
+            self.assertIsNone(t['data']['reapplyDate'])
+            self.assertTrue(t['data']['certStatus']['kycAuth'])
+            self.assertFalse(t['data']['certStatus']['bankAuth'])
+            self.assertFalse(t['data']['certStatus']['otherContactAuth'])
+        elif before_stat=='10260006':
+            stat='REFUSE'
+            self.assertIsNotNone(t['data']['reapplyDate'])
+        else:
+            print("非撤销或拒绝状态")
+            stat='0'
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(t['data']['loanStat'],'CANCEL')
+        self.assertEqual(stat,t['data']['loanStat'])
         self.assertIsNotNone(t['data']['loanNo'])
         self.assertIsNotNone(t['data']['custNo'])
         self.assertIsNone(t['data']['bankAcctInfo'])
         self.assertIsNone(t['data']['paymentDetail'])
         self.assertIsNone(t['data']['trailPaymentDetail'])
         self.assertIsNone(t['data']['repaymentDetail'])
-        self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
-        self.assertTrue(t['data']['certStatus']['certAuth'])
-        self.assertTrue(t['data']['certStatus']['kycAuth'])
-        self.assertFalse(t['data']['certStatus']['bankAuth'])
-        self.assertFalse(t['data']['certStatus']['otherContactAuth'])
     def test_loan_latest_06(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(贷前撤销状态)正案例'''
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿拒绝查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        list=cx_registNo_09()
+        registNo=list[1]
+        before_stat=list[0]
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        if before_stat=='10260007':
+            stat='CANCEL'
+            self.assertTrue(t['data']['certStatus']['certAuth'])
+            self.assertIsNone(t['data']['reapplyDate'])
+            self.assertTrue(t['data']['certStatus']['kycAuth'])
+            self.assertFalse(t['data']['certStatus']['bankAuth'])
+            self.assertFalse(t['data']['certStatus']['otherContactAuth'])
+        elif before_stat=='10260006':
+            stat='REFUSE'
+            self.assertIsNotNone(t['data']['reapplyDate'])
+        else:
+            print("非撤销或拒绝状态")
+            stat='0'
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(stat,t['data']['loanStat'])
+        self.assertIsNotNone(t['data']['loanNo'])
+        self.assertIsNotNone(t['data']['custNo'])
+        self.assertIsNone(t['data']['bankAcctInfo'])
+        self.assertIsNone(t['data']['paymentDetail'])
+        self.assertIsNone(t['data']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['repaymentDetail'])
+        self.assertIsNone(t['data']['applyButtonDetail'])
+    def test_loan_latest_07(self):
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-(提现中状态)正案例'''
         registNo=cx_under_withdraw()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
@@ -150,8 +190,6 @@ class DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['repaymentDetail'])
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
-
-
     def test_fin_repay_stp(self):
         '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷-正案例'''
         registNo=cx_registNo_04()
@@ -196,7 +234,7 @@ class DaiHou_Api_Test(unittest.TestCase):
     def test_stp_repayment(self):
         '''【lanaPlus】/api/trade/stp_repayment/annon/event/webhook-还款接口-STP模拟银行回调-有在贷（逾期）验证结清-正案例'''
         registNo=cx_registNo_05()
-        #print(registNo)
+        print(registNo)
         phone=registNo[0]
         cuentaBeneficiario=registNo[1]
         headt_api=login_code(phone)
@@ -226,7 +264,7 @@ class DaiHou_Api_Test(unittest.TestCase):
     def test_oxxo_repayment(self):
         '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷验证结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
-        #print(registNo)
+        print(registNo)
         phone=registNo[0]
         custNo=registNo[1]
         loanNo=registNo[2]
@@ -239,7 +277,7 @@ class DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],0)
         r=requests.get(host_api+"/api/loan/latest/"+phone,headers=headt_api,verify=False)
         t=r.json()
-        print('获取最近一笔贷款接口返回值=',t)
+        print('获取最近一笔贷款接口响应值=',t)
         repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
         amount=0
         for i in range(len(repaymentDetailList)):
@@ -326,24 +364,75 @@ class DaiHou_Api_Test(unittest.TestCase):
                 }
             ]
         }
-        print(data_for_oxxo)
+        #print(data_for_oxxo)
         r=requests.post(host_pay+"/api/trade/conekta/annon/event/webhook",data=json.dumps(data_for_oxxo),verify=False)
         print(r.json())
         self.assertEqual(r.status_code,200)
         afterstat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
+    def test_get_deduction_details(self):
+        '''【lanaPlus】/api/cust/repayment/deduction-查询lanacoin列表接口-正案例'''
+        list=cx_registNo_11()
+        print(list)
+        registNo=list[0]
+        headt_api=login_code(registNo)
+        coin_value=str(list[1])
+        print(coin_value[:1])
+        r=requests.get(host_api+"/api/cust/coin/deduction/details/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(str(len(t['data']['details'])),coin_value[:1])
+    def test_repayment_deduction_coin(self):
+        '''【lanaPlus】/api/cust/repayment/deduction-减免接口-lanacoin减免成功-正案例'''
+        registNo=cx_registNo_12()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        loanNo=t['data']['loanNo']
+        self.assertEqual(t['errorCode'],0)
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        for i in range(len(repaymentDetailList)):
+            #print(repaymentDetailList[i]['deductionDetail'])
+            if repaymentDetailList[i]['deductionDetail']['coinDeductionAble'] is True:
+                #print(repaymentDetailList[i])
+                repayDate=repaymentDetailList[i]['repayDate']
+            else:
+                pass
+        r=requests.get(host_api+"/api/cust/coin/deduction/details/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        x=t['data']['details'][0]
+        #print(x)
+        data={"coinDeductionDetail":x,"couponDeductionDetail":None,"deductionType":"COIN","loanNo":loanNo,"repayDate":repayDate}
+        r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
+        s=r.json()
+        self.assertEqual(s['errorCode'],0)
+    def test_repayment_deduction_coupon(self):
+        '''【lanaPlus】/api/cust/repayment/deduction-减免接口-coupon减免成功-正案例'''
+        registNo=cx_registNo_13()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        loanNo=t['data']['loanNo']
+        self.assertEqual(t['errorCode'],0)
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        for i in range(len(repaymentDetailList)):
+            #print(repaymentDetailList[i]['deductionDetail'])
+            if repaymentDetailList[i]['deductionDetail']['couponDeductionAble'] is True:
+                #print(repaymentDetailList[i])
+                repayDate=repaymentDetailList[i]['repayDate']
+            else:
+                pass
+        r=requests.get(host_api+"/api/cust/coupon/type/details/"+registNo+"?stat=USABLE",headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        data={"coinDeductionDetail":None,"couponDeductionDetail":{"couponChannelNo":"test-满3减3","couponNo":"减3块"},"deductionType":"COUPON","loanNo":loanNo,"repayDate":repayDate}
+        r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
+        s=r.json()
+        self.assertEqual(s['errorCode'],0)
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
         print('我是tearDownClass，我位于多有用例运行的结束')
-#
-# if __name__ == '__main__':
-#     suite = unittest.TestLoader().loadTestsFromTestCase(App_Api_Test)
-#     runner = HTMLTestRunner(
-#         title="lanaPlus接口测试-带截图，饼图，折线图，历史结果查看的测试报告",
-#         description="这是描述",
-#         stream=open("./App_Api_Test_Report.html", "wb"),
-#         verbosity=1000,
-#         retry=3,      #失败重试次数
-#         save_last_try=True)
-#     runner.run(suite)
