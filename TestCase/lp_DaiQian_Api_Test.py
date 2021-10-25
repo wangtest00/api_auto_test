@@ -1,7 +1,7 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
-import random
+import random,io
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
@@ -234,7 +234,75 @@ class DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertEqual(str(t),"{'data': {'1019': [{'valName': 'Licenciatura', 'valCode': '10190005', 'typeCode': '1019'}, {'valName': 'No Escolaridad', 'valCode': '10190001', 'typeCode': '1019'}, {'valName': 'Posgrado / Maestria', 'valCode': '10190006', 'typeCode': '1019'}, {'valName': 'Preparatoria/ Bachillerato', 'valCode': '10190004', 'typeCode': '1019'}, {'valName': 'Primaria', 'valCode': '10190002', 'typeCode': '1019'}, {'valName': 'Secundaria', 'valCode': '10190003', 'typeCode': '1019'}], '1113': [{'valName': 'Aguascalientes', 'valCode': '11130001', 'typeCode': '1113'}, {'valName': 'Baja California', 'valCode': '11130002', 'typeCode': '1113'}, {'valName': 'Baja California Sur', 'valCode': '11130003', 'typeCode': '1113'}, {'valName': 'Campeche', 'valCode': '11130004', 'typeCode': '1113'}, {'valName': 'Chiapas', 'valCode': '11130005', 'typeCode': '1113'}, {'valName': 'Chihuahua', 'valCode': '11130007', 'typeCode': '1113'}, {'valName': 'Ciudad de México', 'valCode': '11130006', 'typeCode': '1113'}, {'valName': 'Coahuila', 'valCode': '11130008', 'typeCode': '1113'}, {'valName': 'Colima', 'valCode': '11130009', 'typeCode': '1113'}, {'valName': 'Durango', 'valCode': '11130010', 'typeCode': '1113'}, {'valName': 'Guanajuato', 'valCode': '11130011', 'typeCode': '1113'}, {'valName': 'Guerrero', 'valCode': '11130012', 'typeCode': '1113'}, {'valName': 'Hidalgo', 'valCode': '11130013', 'typeCode': '1113'}, {'valName': 'Jalisco', 'valCode': '11130014', 'typeCode': '1113'}, {'valName': 'Michoacán', 'valCode': '11130016', 'typeCode': '1113'}, {'valName': 'Morelos', 'valCode': '11130017', 'typeCode': '1113'}, {'valName': 'México', 'valCode': '11130015', 'typeCode': '1113'}, {'valName': 'Nayarit', 'valCode': '11130018', 'typeCode': '1113'}, {'valName': 'Nuevo León', 'valCode': '11130019', 'typeCode': '1113'}, {'valName': 'Oaxaca', 'valCode': '11130020', 'typeCode': '1113'}, {'valName': 'Puebla', 'valCode': '11130021', 'typeCode': '1113'}, {'valName': 'Querétaro', 'valCode': '11130022', 'typeCode': '1113'}, {'valName': 'Quintana Roo', 'valCode': '11130023', 'typeCode': '1113'}, {'valName': 'San Luis Potosí', 'valCode': '11130024', 'typeCode': '1113'}, {'valName': 'Sinaloa', 'valCode': '11130025', 'typeCode': '1113'}, {'valName': 'Sonora', 'valCode': '11130026', 'typeCode': '1113'}, {'valName': 'Tabasco', 'valCode': '11130027', 'typeCode': '1113'}, {'valName': 'Tamaulipas', 'valCode': '11130028', 'typeCode': '1113'}, {'valName': 'Tlaxcala', 'valCode': '11130029', 'typeCode': '1113'}, {'valName': 'Veracruz', 'valCode': '11130030', 'typeCode': '1113'}, {'valName': 'Yucatán', 'valCode': '11130031', 'typeCode': '1113'}, {'valName': 'Zacatecas', 'valCode': '11130032', 'typeCode': '1113'}], '1005': [{'valName': 'Casado', 'valCode': '10050001', 'typeCode': '1005'}, {'valName': 'Divorced', 'valCode': '10050004', 'typeCode': '1005'}, {'valName': 'Soltero', 'valCode': '10050002', 'typeCode': '1005'}, {'valName': 'Unión libre', 'valCode': '10050005', 'typeCode': '1005'}, {'valName': 'Viudo', 'valCode': '10050003', 'typeCode': '1005'}]}, 'errorCode': 0, 'message': 'ÉXITO'}")
-
+    def test_get_cust_coin_amount(self):
+        '''【lanaPlus】/api/cust/coin/amount/个人中心获取用户lanacoin积分总数接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+'/api/cust/coin/amount/2222225555',headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data'],5311)
+    def test_get_promote_total_bonus(self):
+        '''【lanaPlus】/api/cust/coin/amount/分销-获取用户可提现总金额接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/promote/total/bonus/'+registNo,data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data'],'6014.00')
+    def test_get_cust_promote_detail(self):
+        '''【lanaPlus】/api/cust/promote/detail/分销-获取用户可提现详情接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/promote/detail/'+registNo,data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(str(t['data']),"{'firstLevFanNum': 1017, 'firstLevFanWithdrawNum': 4, 'firstLevWithdrawBonus': '4200.00', 'secondLevFanNum': 15, 'secondLevFanWithdrawNum': 12, 'secondLevWithdrawBonus': '1310.00', 'thirdLevFanNum': 4, 'thirdLevFanWithdrawNum': 3, 'thirdLevWithdrawBonus': '504.00', 'totalFanNum': 1036, 'totalBonus': '6014.00', 'withdrawDetail': {'custName': 'AUTO ZIXUAN PRO TEST', 'custAcctBank': 'ABC CAPITAL', 'custAcctBankCode': '10020037', 'clabe': '46206', 'alreadyWithdrawAmt': '6000.00', 'availableAmt': '14.00', 'availableWithdraw': True, 'disableWithdrawDesc': None}}")
+    def test_get_cust_promote_withdraw_his(self):
+        '''【lanaPlus】/api/cust/promote/withdraw/history/分销-获取用户提现历史详情接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/promote/withdraw/history/'+registNo,data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(str(t['data']),"[{'withdrawTime': '1634793586000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1632381569000', 'withdrawAmt': '1000', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630924125000', 'withdrawAmt': '200', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630909596000', 'withdrawAmt': '200', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630647131000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630646098000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630577499000', 'withdrawAmt': '200', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630563133000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630500417000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630499054000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630494153000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630489446000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630489440000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630489432000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630488375000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630488297000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630466695000', 'withdrawAmt': '100', 'withdrawStat': 'WITHDRAW'}, {'withdrawTime': '1630407942000', 'withdrawAmt': '100', 'withdrawStat': 'WITHDRAW'}, {'withdrawTime': '1630407086000', 'withdrawAmt': '400', 'withdrawStat': 'WITHDRAW'}, {'withdrawTime': '1630406055000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630406053000', 'withdrawAmt': '100', 'withdrawStat': 'WITHDRAW'}, {'withdrawTime': '1630406050000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630405976000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630405959000', 'withdrawAmt': '1500', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630403793000', 'withdrawAmt': '500', 'withdrawStat': 'WITHDRAW'}, {'withdrawTime': '1630400816000', 'withdrawAmt': '100', 'withdrawStat': 'UNDER_WITHDRAW'}, {'withdrawTime': '1630400809000', 'withdrawAmt': '100', 'withdrawStat': 'WITHDRAW'}]")
+    def test_get_cust_invitation_code(self):
+        '''【lanaPlus】/api/cust/invitation/code/分销-获取用户邀请码接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/invitation/code/'+registNo,data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+    def test_feedback_record(self):
+        '''【lanaPlus】/api/cust/feedback/record-提交feedback记录接口-正案例'''
+        registNo='2222225555'
+        headt_api_f=login_code_f(registNo)
+        custNo='C2012108318120925314188222464'
+        files={'custNo':(None,custNo),'phoneNo':(None,registNo),'feedbackDesc':(None,'test123456789'),'feedbackType':(None,'11110007'),'feedbackPage':(None,'NEW'),
+               'feedbackOption':(None,'Carga prolongada de la página de pago'),'imgs':('key.png',open(r'D:\pic\app.jpg', 'rb'),'text/plain')}
+        r=requests.post(host_api+"/api/cust/feedback/record",files=files,headers=headt_api_f)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+    def test_get_cust_promote_switch(self):
+        '''【lanaPlus】/api/cust/promote/switch/分销-获取三级分销开关状态接口-正案例'''
+        registNo='2222225555'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/promote/switch/'+registNo,data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertTrue(t['data'])
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
