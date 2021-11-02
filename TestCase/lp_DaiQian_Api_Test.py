@@ -303,6 +303,16 @@ class DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertTrue(t['data'])
+    def test_cust_promote_withdraw(self):
+        '''【lanaPlus】/api/cust/promote/withdraw/分销-提现接口（金额超出不能提现）-反案例'''
+        registNo='8667722222'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo,"smallestWithdrawAmt":"100","withdrawAmt":'5000000'}
+        r=requests.post(host_api+'/api/cust/promote/withdraw',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertTrue(t['message'],'Monto de transacción no válido')
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
