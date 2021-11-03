@@ -1,4 +1,4 @@
-import unittest,os,datetime
+import unittest,os,datetime,io,sys
 from BeautifulReport import BeautifulReport as bf  #导入BeautifulReport模块，这个模块也是生成报告的模块，但是比HTMLTestRunner模板好看
 from HTMLTestRunner_Chart import HTMLTestRunner
 
