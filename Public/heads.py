@@ -1,4 +1,6 @@
 from api_auto_test.public.var_fr import *
+import sys,io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 def head_token(token):
     head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "0","host_api": "test-api.quantx.mx","x-app-name": "LanaPlus","content-type": "application/json",
