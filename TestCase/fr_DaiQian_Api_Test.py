@@ -1,9 +1,12 @@
 from api_auto_test.public.base_fr import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_fr import *
-import random
+import random,sys,io
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
+
+#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
+
 
 class DaiQian_Api_Test(unittest.TestCase):
     @classmethod
