@@ -5,7 +5,6 @@ from HTMLTestRunner_Chart import HTMLTestRunner
 current_path=os.getcwd()  #获取当前路径
 case_path=os.path.join(current_path,"TestCase")
 report_path=os.path.join(current_path,"Report")
-#riqi=str(datetime.datetime.now().strftime('%Y_%m_%d'))
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
