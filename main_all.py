@@ -5,7 +5,7 @@ from HTMLTestRunner_Chart import HTMLTestRunner
 current_path=os.getcwd()  #获取当前路径
 case_path=os.path.join(current_path,"TestCase")
 report_path=os.path.join(current_path,"Report")
-riqi=str(datetime.datetime.now().strftime('%Y_%m_%d'))
+#riqi=str(datetime.datetime.now().strftime('%Y_%m_%d'))
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
@@ -14,5 +14,5 @@ def load_all_case():
     return discover
 
 if __name__=='__main__':
-    bf(load_all_case()).report(filename='App_Api_Auto_Test_Report'+riqi, description='app接口自动化测试')    #log_path='.'把report放到当前目录下
+    bf(load_all_case()).report(filename='App_Api_Auto_Test_Report', description='app接口自动化测试')    #log_path='.'把report放到当前目录下
     #print(load_all_case())

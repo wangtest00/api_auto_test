@@ -7,7 +7,6 @@ from HTMLTestRunner_Chart import HTMLTestRunner
 
 #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
-
 class DaiQian_Api_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的

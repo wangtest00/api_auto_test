@@ -1,9 +1,9 @@
-import requests,json,sys,io
+import requests,json
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
 from api_auto_test.public.check_api import *
 import random,string,datetime
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
+
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
     m=m[-4:]

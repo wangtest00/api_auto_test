@@ -3,6 +3,7 @@ from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
 import unittest,requests,json,sys,io
 from HTMLTestRunner_Chart import HTMLTestRunner
+
 #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 class DaiHou_Api_Test(unittest.TestCase):
