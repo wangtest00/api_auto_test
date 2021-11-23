@@ -5,9 +5,9 @@ import random,sys,io
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
-#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
-class DaiQian_Api_Test(unittest.TestCase):
+class FR_DaiQian_Api_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
@@ -32,6 +32,7 @@ class DaiQian_Api_Test(unittest.TestCase):
         data={"registNo":registNo,"password":"123456","gaid":"Exception:null"}
         r=requests.post(host_api+"/api/cust/pwd/login",data=json.dumps(data),headers=head_api,verify=False)
         t=r.json()
+        print(t)
         self.assertEqual(t['errorCode'],0)
         token=t['data']['token']
         self.assertIsNotNone(token)

@@ -4,9 +4,9 @@ from api_auto_test.public.var_lp import *
 import unittest,requests,json,sys,io
 from HTMLTestRunner_Chart import HTMLTestRunner
 
-#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
-class DaiHou_Api_Test(unittest.TestCase):
+class LP_DaiHou_Api_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
@@ -379,12 +379,12 @@ class DaiHou_Api_Test(unittest.TestCase):
         registNo=list[0]
         headt_api=login_code(registNo)
         coin_value=str(list[1])
-        print(coin_value[:1])
+        print(coin_value[:2])
         r=requests.get(host_api+"/api/cust/coin/deduction/details/"+registNo,headers=headt_api,verify=False)
         t=r.json()
         print(t)
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(str(len(t['data']['details'])),coin_value[:1])
+        self.assertEqual(str(len(t['data']['details'])),coin_value[:2])
     def test_repayment_deduction_coin(self):
         '''【lanaPlus】/api/cust/repayment/deduction-减免接口-lanacoin减免成功-正案例'''
         registNo=cx_registNo_12()
@@ -404,11 +404,13 @@ class DaiHou_Api_Test(unittest.TestCase):
                 pass
         r=requests.get(host_api+"/api/cust/coin/deduction/details/"+registNo,headers=headt_api,verify=False)
         t=r.json()
+        print(t)
         x=t['data']['details'][0]
-        #print(x)
+        print(x)
         data={"coinDeductionDetail":x,"couponDeductionDetail":None,"deductionType":"COIN","loanNo":loanNo,"repayDate":repayDate}
         r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
         s=r.json()
+        print(s)
         self.assertEqual(s['errorCode'],0)
     def test_repayment_deduction_coupon(self):
         '''【lanaPlus】/api/cust/repayment/deduction-减免接口-coupon减免成功-正案例'''
@@ -433,6 +435,7 @@ class DaiHou_Api_Test(unittest.TestCase):
         data={"coinDeductionDetail":None,"couponDeductionDetail":{"couponChannelNo":"test-满3减3","couponNo":"减3块"},"deductionType":"COUPON","loanNo":loanNo,"repayDate":repayDate}
         r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
         s=r.json()
+        print(s)
         self.assertEqual(s['errorCode'],0)
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的

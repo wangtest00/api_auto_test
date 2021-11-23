@@ -1,12 +1,13 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
-import random
+import random,sys,io
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
-class DaiQian_Api_Test(unittest.TestCase):
+class LP_DaiQian_Api_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
@@ -129,7 +130,7 @@ class DaiQian_Api_Test(unittest.TestCase):
         r9=requests.post(host_api+'/api/cust/auth/other/contact',data=json.dumps(data9),headers=head)#最后一步，填写2个联系人的联系方式
         t9=r9.json()
         self.assertEqual(t9['errorCode'],0)
-    def test_apply_loan(self):
+    def test_loan_apply_new(self):
         '''【lanaPlus】/api/loan/apply申请贷款接口-正案例'''
         test_data=for_apply_loan()
         custNo=test_data[0]
@@ -185,9 +186,10 @@ class DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],30001)
         self.assertEqual(t['message'],'custNoParámetro anormal ')
-    def test_loan_apply(self):
-        '''【lanaPlus】/api/loan/apply  申请贷款接口(复客进件)-正案例'''
+    def test_loan_apply_reloan(self):
+        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件)-正案例'''
         custNo=get_yijieqing_custNo()
+        print(custNo)
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
         registNo=DataBase(which_db).get_one(sql)
         phone=registNo[0]
@@ -225,7 +227,7 @@ class DaiQian_Api_Test(unittest.TestCase):
         t=r.json()
         print(t)
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(str(t['data']),"[{'valName': 'Acosado', 'valCode': '11110001', 'options': ['Me acosaron por mensajes de WhatsApp.', 'Me acosaron por mensajes de WhatsApp.', 'Me acosaron por mensajes de texto.', 'Me acosaron por mensajes de texto.', 'Me acosaron por una llamada telefónica.', 'Me acosaron por una llamada telefónica.']}, {'valName': 'Aprobación es demasiado largo', 'valCode': '11110002', 'options': ['El tiempo de aprobación es demasiado largo.', 'El tiempo de aprobación es demasiado largo.']}, {'valName': 'CLABE', 'valCode': '11110003', 'options': ['No sé cuál es mi cuenta CLABE.', 'No sé cuál es mi cuenta CLABE.', 'Quiero cambiar mi cuenta CLABE.', 'Quiero cambiar mi cuenta CLABE.']}, {'valName': 'CURP', 'valCode': '11110004', 'options': ['La CURP marca error.', 'La CURP marca error.', 'Necesito ayuda para completar la CURP.', 'Necesito ayuda para completar la CURP.']}, {'valName': 'Depósito', 'valCode': '11110005', 'options': ['Apareció un error de limitación en la parte superior de la página.', 'Apareció un error de limitación en la parte superior de la página.', 'He pagado pero el estatus no se ha actualizado.', 'He pagado pero el estatus no se ha actualizado.', 'La cuenta que ha pagado marca error.', 'La cuenta que ha pagado marca error.', 'No recibí el depósito.', 'No recibí el depósito.', 'Pagos múltiples.', 'Pagos múltiples.']}, {'valName': 'El tiempo de carga es demasiado largo', 'valCode': '11110007', 'options': ['Carga lenta en la página de inicio.', 'Carga lenta en la página de inicio.', 'Carga prolongada de la página de pago', 'Carga prolongada de la página de pago']}, {'valName': 'Error de red', 'valCode': '11110006', 'options': ['Apareció un error de [01] en la parte superior de la página.', 'Apareció un error de [01] en la parte superior de la página.', 'Apareció un error de [02] en la parte superior de la página.', 'Apareció un error de [02] en la parte superior de la página.', 'Apareció un error de [03] en la parte superior de la página.', 'Apareció un error de [03] en la parte superior de la página.', 'Apareció un error de [04] en la parte superior de la página.', 'Apareció un error de [04] en la parte superior de la página.']}, {'valName': 'Foto', 'valCode': '11110008', 'options': ['Informar un error después de cargar la foto.', 'Informar un error después de cargar la foto.', 'La cámara funciona mal y deseo cargar fotos.', 'La cámara funciona mal y deseo cargar fotos.', 'No se pudo cargar la foto.', 'No se pudo cargar la foto.']}, {'valName': 'INE', 'valCode': '11110009', 'options': ['Informe del error después de cargar el INE.', 'Informe del error después de cargar el INE.', 'No se pudo cargar el INE.', 'No se pudo cargar el INE.', 'Reemplace la credencial INE.', 'Reemplace la credencial INE.', 'Sin credencial de INE / perdida', 'Sin credencial de INE / perdida', 'Sin credencial física INE, quiero subir fotos.', 'Sin credencial física INE, quiero subir fotos.']}, {'valName': 'LanaCoin', 'valCode': '11110010', 'options': ['Quiero saber cómo usar mi LanaCoin.']}, {'valName': 'Monto del préstamo', 'valCode': '11110011', 'options': ['Quiero elegir el monto del préstamo que más me convenga por mí mismo.', 'Quiero elegir el monto del préstamo que más me convenga por mí mismo.', 'Quiero un monto de préstamo mayor.', 'Quiero un monto de préstamo mayor.', 'Quiero una cantidad de préstamo menor.', 'Quiero una cantidad de préstamo menor.']}, {'valName': 'Otros', 'valCode': '11110012', 'options': ['Otros.', 'Otros.']}, {'valName': 'Sorteo', 'valCode': '11110013', 'options': ['Gané el sorteo, pero no obtuve el premio.', 'Gané el sorteo, pero no obtuve el premio.']}, {'valName': 'Teléfono', 'valCode': '11110014', 'options': ['Cambiar el número de teléfono móvil.', 'Cambiar el número de teléfono móvil.', 'Error al registrar el número de teléfono móvil.', 'Error al registrar el número de teléfono móvil.', 'Número de teléfono incompatible.', 'Número de teléfono incompatible.']}]")
+        self.assertEqual(str(t['data']),"[{'valName': 'Acosado', 'valCode': '11110001', 'options': ['Me acosaron por mensajes de WhatsApp.', 'Me acosaron por mensajes de texto.', 'Me acosaron por una llamada telefónica.']}, {'valName': 'Aprobación es demasiado largo', 'valCode': '11110002', 'options': ['El tiempo de aprobación es demasiado largo.']}, {'valName': 'CLABE', 'valCode': '11110003', 'options': ['No sé cuál es mi cuenta CLABE.', 'Quiero cambiar mi cuenta CLABE.']}, {'valName': 'CURP', 'valCode': '11110004', 'options': ['La CURP marca error.', 'Necesito ayuda para completar la CURP.']}, {'valName': 'Depósito', 'valCode': '11110005', 'options': ['Apareció un error de limitación en la parte superior de la página.', 'He pagado pero el estatus no se ha actualizado.', 'La cuenta que ha pagado marca error.', 'No recibí el depósito.', 'Pagos múltiples.']}, {'valName': 'El tiempo de carga es demasiado largo', 'valCode': '11110007', 'options': ['Carga lenta en la página de inicio.', 'Carga prolongada de la página de pago']}, {'valName': 'Error de red', 'valCode': '11110006', 'options': ['Apareció un error de [01] en la parte superior de la página.', 'Apareció un error de [02] en la parte superior de la página.', 'Apareció un error de [03] en la parte superior de la página.', 'Apareció un error de [04] en la parte superior de la página.']}, {'valName': 'Foto', 'valCode': '11110008', 'options': ['Informar un error después de cargar la foto.', 'La cámara funciona mal y deseo cargar fotos.', 'No se pudo cargar la foto.']}, {'valName': 'INE', 'valCode': '11110009', 'options': ['Informe del error después de cargar el INE.', 'No se pudo cargar el INE.', 'Reemplace la credencial INE.', 'Sin credencial de INE / perdida', 'Sin credencial física INE, quiero subir fotos.']}, {'valName': 'LanaCoin', 'valCode': '11110010', 'options': ['Quiero saber cómo usar mi LanaCoin.']}, {'valName': 'Monto del préstamo', 'valCode': '11110011', 'options': ['Quiero elegir el monto del préstamo que más me convenga por mí mismo.', 'Quiero un monto de préstamo mayor.', 'Quiero una cantidad de préstamo menor.']}, {'valName': 'Otros', 'valCode': '11110012', 'options': ['Otros.']}, {'valName': 'Sorteo', 'valCode': '11110013', 'options': ['Gané el sorteo, pero no obtuve el premio.']}, {'valName': 'Teléfono', 'valCode': '11110014', 'options': ['Cambiar el número de teléfono móvil.', 'Error al registrar el número de teléfono móvil.', 'Número de teléfono incompatible.']}]")
     def test_get_states(self):
         '''【lanaPlus】/api/common/codes?types=1019%2C1005%2C1113获取州列表接口-正案例'''
         registNo=cx_registNo_07()

@@ -126,9 +126,10 @@ def cx_registNo_13():
     where a.AFTER_STAT='10270002' and b.APP_NO="201" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
-    print(phone)
+    #print(phone)
     return phone
 cx_registNo_13()
+#查询只借过一笔款且已结清的客户号
 def get_yijieqing_custNo():
     sql='''select  b.cust_no,count(1) as loan_cnt from
 (select  a.cust_no from
