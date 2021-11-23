@@ -5,7 +5,7 @@ import random,sys,io
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
+#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 class FR_DaiQian_Api_Test(unittest.TestCase):
     @classmethod
