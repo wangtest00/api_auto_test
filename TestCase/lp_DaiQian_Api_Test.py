@@ -1,11 +1,9 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
-import random,sys,io
+import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
-
-#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 class LP_DaiQian_Api_Test(unittest.TestCase):
     @classmethod
