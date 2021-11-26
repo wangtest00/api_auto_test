@@ -13,5 +13,5 @@ def load_all_case():
     return discover
 
 if __name__=='__main__':
-    bf(load_all_case()).report(filename='App_Api_Auto_Test_Report', description='app接口自动化测试')    #log_path='.'把report放到当前目录下
+    bf(load_all_case()).report(filename='LP_FR_Api_Auto_Test_Report', description='LP_FR接口自动化测试')    #log_path='.'把report放到当前目录下
     #print(load_all_case())
