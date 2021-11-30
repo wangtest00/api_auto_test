@@ -187,7 +187,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
     def test_loan_apply_reloan(self):
         '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件)-正案例'''
         custNo=get_yijieqing_custNo()
-        print(custNo)
+        #print(custNo)
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
         registNo=DataBase(which_db).get_one(sql)
         phone=registNo[0]
@@ -195,7 +195,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         data={"custNo":custNo}
         r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data),headers=headt_api)#申请贷款
         t=r.json()
-        #print(t)
+        print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertEqual('10260001',t['data']['beforeStat'])  #验证贷前状态是否更新为【审批中】
         self.assertFalse(t['data']['firstApply'])

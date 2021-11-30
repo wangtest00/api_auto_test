@@ -139,7 +139,7 @@ WHERE
 AND a.AFTER_STAT = '10270005'
 GROUP BY a.cust_no
 HAVING count(1) =1
-)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no
+)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no inner join cu_cust_reg_dtl c on b.cust_no=c.cust_no where c.APP_NO='201'
 group by  b.cust_no
 HAVING loan_cnt=1;'''
     custNo=DataBase(which_db).get_one(sql)

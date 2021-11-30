@@ -372,7 +372,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
             ]
         }
         #print(data_for_oxxo)
-        r=requests.post(host_pay+"/api/trade/conekta/annon/event/webhook",data=json.dumps(data_for_oxxo),verify=False)
+        r=requests.post(host_pay+"/api/trade/conekta/annon/event/webhook",data=json.dumps(data_for_oxxo),headers=head_pay,verify=False)
         print(r.json())
         self.assertEqual(r.status_code,200)
         afterstat=cx_beforeStat_afterStat(loanNo)
