@@ -38,9 +38,8 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertIsNotNone(token)
     def test_update_pwd(self):
         '''【FeriaRapida】/api/cust/pwd/update更新用户密码接口-正案例'''
-        test_data=login_code()
-        registNo=test_data[0]
-        head=test_data[1]
+        registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
+        head=login_code(registNo)
         data2={"registNo":registNo,"newPwd":"123456"}
         r=requests.post(host_api+"/api/cust/pwd/update",data=json.dumps(data2),headers=head,verify=False)
         s=r.json()
@@ -48,9 +47,8 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
     def test_auth_cert(self):
         '''【FeriaRapida】/api/cust/auth/cert身份认证接口-正案例'''
         st=random_four_zm()
-        test_data=login_code()
-        registNo=test_data[0]
-        head=test_data[1]
+        registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
+        head=login_code(registNo)
         data2={"birthdate":"1999-5-18","civilStatus":"10050001","curp":st+"990518MM"+st+"V8","delegationOrMunicipality":"zxcvbbbccxxx","education":"10190005","fatherLastName":"WANG","gender":"10030001",
               "motherLastName":"LIU","name":"SHUANG","outdoorNumber":"qweetyyu","phoneNo":registNo,"postalCode":"55555","state":"11130001","street":"444444","suburb":"asdfhhj","email":""}
         r=requests.post(host_api+'/api/cust/auth/cert',data=json.dumps(data2),headers=head)
@@ -126,9 +124,9 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(r.status_code,200)
         t=r.json()
         self.assertIsNotNone(t['data']['loanNo'])
-    def test_bank_auth(self):
+    def test_bank_auth_01(self):
         '''【FeriaRapida】/api/cust/auth/bank绑定银行卡接口-正案例'''
-        bank_acct_no=str(random.randint(1000,9999))
+        bank_acct_no=str(random.randint(10000,99999))
         test_data=for_bank_auth()
         custNo=test_data[0]
         head=test_data[1]
@@ -139,6 +137,94 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],0)                                    #改为4位随机数
         sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"
         DataBase(which_db).executeUpdateSql(sql)  #防止被真实放款给该银行卡
+    def test_bank_auth_02(self):
+        '''【FeriaRapida】/api/cust/auth/bank绑定银行卡接口(有在贷不能更换银行卡)-正案例'''
+        list=cx_registNo_04()
+        registNo=list[0]
+        custNo=list[1]
+        headt_api=login_code(registNo)
+        data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual(t['message'],'Su préstamo no ha sido liquidado y CLABE no se puede modificar temporalmente. Modifíquelo después de que se complete el pago.')
+    def test_bank_auth_03(self):
+        '''【FeriaRapida】/api/cust/auth/bank绑定银行卡接口(银行卡黑名单能正常绑卡，但是会被拒)-正案例'''
+        test_data=for_bank_auth()
+        custNo=test_data[0]
+        head=test_data[1]
+        loanNo=test_data[2]
+        data={"bankCode":"10020008","clabe":"012050027670348650","custNo":custNo}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        beforeStat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10260006',beforeStat[0])  #验证贷前状态是否更新为【拒绝】
+
+    def test_bank_auth_04(self):
+        '''【FeriaRapida】/api/cust/auth/bank绑定银行卡接口(客户未认证，不能绑卡)-正案例'''
+        registNo=cx_registNo_07()
+        headt_api=login_code(registNo)
+        data={"bankCode":"10020037","clabe":"138455214411441118","custNo":''}
+        r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual(t['message'],'custNoParámetro anormal ')
+    def test_loan_apply_reloan(self):
+        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件)-正案例'''
+        custNo=get_yijieqing_custNo()
+        sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
+        registNo=DataBase(which_db).get_one(sql)
+        phone=registNo[0]
+        headt_api=login_code(phone)
+        data={"custNo":custNo}
+        r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data),headers=headt_api)#申请贷款
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual('10260001',t['data']['beforeStat'])  #验证贷前状态是否更新为【审批中】
+        self.assertFalse(t['data']['firstApply'])
+        self.assertIsNone(t['data']['matchId'])
+        self.assertEqual(t['data']['recentLoanDetail']['loanStat'],'UNDER_RISK')
+        self.assertIsNone(t['data']['recentLoanDetail']['certStatus'])
+        self.assertIsNone(t['data']['recentLoanDetail']['paymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['repaymentDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['applyButtonDetail'])
+        self.assertIsNone(t['data']['recentLoanDetail']['reapplyDate'])
+    def test_bank_codes(self):
+        '''【FeriaRapida】/api/common/bank/codes?types=1002获取银行卡码值及前缀接口-正案例'''
+        registNo=cx_registNo_10()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/common/bank/codes?types=1002",headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t,{'data': [{'valName': 'ABC CAPITAL', 'valCode': '10020037', 'preNums': '138'}, {'valName': 'ACCENDO BANCO', 'valCode': '10020020', 'preNums': '102'}, {'valName': 'ACTINVER', 'valCode': '10020034', 'preNums': '133'}, {'valName': 'AFIRME', 'valCode': '10020018', 'preNums': '062'}, {'valName': 'AKALA', 'valCode': '10020067', 'preNums': '638'}, {'valName': 'AMERICAN EXPRES', 'valCode': '10020021', 'preNums': '103'}, {'valName': 'AUTOFIN', 'valCode': '10020030', 'preNums': '128'}, {'valName': 'AZTECA', 'valCode': '10020029', 'preNums': '127'}, {'valName': 'BAJIO', 'valCode': '10020011', 'preNums': '030'}, {'valName': 'BANAMEX', 'valCode': '10020007', 'preNums': '002'}, {'valName': 'BANCO FINTERRA', 'valCode': '10020047', 'preNums': '154'}, {'valName': 'BANCO S3', 'valCode': '10020052', 'preNums': '160'}, {'valName': 'BANCOMEXT', 'valCode': '10020001', 'preNums': '006'}, {'valName': 'BANCOPPEL', 'valCode': '10020036', 'preNums': '137'}, {'valName': 'BANCREA', 'valCode': '10020046', 'preNums': '152'}, {'valName': 'BANJERCITO', 'valCode': '10020003', 'preNums': '019'}, {'valName': 'BANK OF AMERICA', 'valCode': '10020022', 'preNums': '106'}, {'valName': 'BANKAOOL', 'valCode': '10020042', 'preNums': '147'}, {'valName': 'BANOBRAS', 'valCode': '10020002', 'preNums': '009'}, {'valName': 'BANORTE', 'valCode': '10020019', 'preNums': '072'}, {'valName': 'BANREGIO', 'valCode': '10020015', 'preNums': '058'}, {'valName': 'BANSEFI', 'valCode': '10020005', 'preNums': '166'}, {'valName': 'BANSI', 'valCode': '10020017', 'preNums': '060'}, {'valName': 'BARCLAYS', 'valCode': '10020031', 'preNums': '129'}, {'valName': 'BBASE', 'valCode': '10020041', 'preNums': '145'}, {'valName': 'BBVA BANCOMER', 'valCode': '10020008', 'preNums': '012'}, {'valName': 'BMONEX', 'valCode': '10020025', 'preNums': '112'}, {'valName': 'CAJA POP MEXICA', 'valCode': '10020075', 'preNums': '677'}, {'valName': 'CAJA TELEFONIST', 'valCode': '10020077', 'preNums': '683'}, {'valName': 'CB INTERCAM', 'valCode': '10020063', 'preNums': '630'}, {'valName': 'CI BOLSA', 'valCode': '10020064', 'preNums': '631'}, {'valName': 'CIBANCO', 'valCode': '10020040', 'preNums': '143'}, {'valName': 'COMPARTAMOS', 'valCode': '10020032', 'preNums': '130'}, {'valName': 'CONSUBANCO', 'valCode': '10020038', 'preNums': '140'}, {'valName': 'CREDICAPITAL', 'valCode': '10020071', 'preNums': '652'}, {'valName': 'CREDIT SUISSE', 'valCode': '10020028', 'preNums': '126'}, {'valName': 'CRISTOBAL COLON', 'valCode': '10020076', 'preNums': '680'}, {'valName': 'CoDi Valida', 'valCode': '10020083', 'preNums': '903'}, {'valName': 'DEUTSCHE', 'valCode': '10020027', 'preNums': '124'}, {'valName': 'DONDE', 'valCode': '10020045', 'preNums': '151'}, {'valName': 'ESTRUCTURADORES', 'valCode': '10020057', 'preNums': '606'}, {'valName': 'EVERCORE', 'valCode': '10020070', 'preNums': '648'}, {'valName': 'FINAMEX', 'valCode': '10020060', 'preNums': '616'}, {'valName': 'FINCOMUN', 'valCode': '10020065', 'preNums': '634'}, {'valName': 'FOMPED', 'valCode': '10020081', 'preNums': '689'}, {'valName': 'FONDO (FIRA)', 'valCode': '10020079', 'preNums': '685'}, {'valName': 'GBM', 'valCode': '10020054', 'preNums': '601'}, {'valName': 'HDI SEGUROS', 'valCode': '10020066', 'preNums': '636'}, {'valName': 'HIPOTECARIA FED', 'valCode': '10020006', 'preNums': '168'}, {'valName': 'HSBC', 'valCode': '10020010', 'preNums': '021'}, {'valName': 'ICBC', 'valCode': '10020048', 'preNums': '155'}, {'valName': 'INBURSA', 'valCode': '10020012', 'preNums': '036'}, {'valName': 'INDEVAL', 'valCode': '10020082', 'preNums': '902'}, {'valName': 'INMOBILIARIO', 'valCode': '10020044', 'preNums': '150'}, {'valName': 'INTERCAM BANCO', 'valCode': '10020035', 'preNums': '136'}, {'valName': 'INVERCAP', 'valCode': '10020080', 'preNums': '686'}, {'valName': 'INVEX', 'valCode': '10020016', 'preNums': '059'}, {'valName': 'JP MORGAN', 'valCode': '10020024', 'preNums': '110'}, {'valName': 'LIBERTAD', 'valCode': '10020074', 'preNums': '670'}, {'valName': 'MASARI', 'valCode': '10020055', 'preNums': '602'}, {'valName': 'MIFEL', 'valCode': '10020013', 'preNums': '042'}, {'valName': 'MIZUHO BANK', 'valCode': '10020051', 'preNums': '158'}, {'valName': 'MONEXCB', 'valCode': '10020053', 'preNums': '600'}, {'valName': 'MUFG', 'valCode': '10020023', 'preNums': '108'}, {'valName': 'MULTIVA BANCO', 'valCode': '10020033', 'preNums': '132'}, {'valName': 'MULTIVA CBOLSA', 'valCode': '10020059', 'preNums': '613'}, {'valName': 'NAFIN', 'valCode': '10020004', 'preNums': '135'}, {'valName': 'PAGATODO', 'valCode': '10020043', 'preNums': '148'}, {'valName': 'PROFUTURO', 'valCode': '10020062', 'preNums': '620'}, {'valName': 'SABADELL', 'valCode': '10020049', 'preNums': '156'}, {'valName': 'SANTANDER', 'valCode': '10020009', 'preNums': '014'}, {'valName': 'SANTANDER2', 'valCode': '10020084', 'preNums': '814'}, {'valName': 'SCOTIABANK', 'valCode': '10020014', 'preNums': '044'}, {'valName': 'SHINHAN', 'valCode': '10020050', 'preNums': '157'}, {'valName': 'STP', 'valCode': '10020069', 'preNums': '646'}, {'valName': 'TRANSFER', 'valCode': '10020078', 'preNums': '684'}, {'valName': 'UNAGRA', 'valCode': '10020072', 'preNums': '656'}, {'valName': 'VALMEX', 'valCode': '10020061', 'preNums': '617'}, {'valName': 'VALUE', 'valCode': '10020056', 'preNums': '605'}, {'valName': 'VE POR MAS', 'valCode': '10020026', 'preNums': '113'}, {'valName': 'VECTOR', 'valCode': '10020058', 'preNums': '608'}, {'valName': 'VOLKSWAGEN', 'valCode': '10020039', 'preNums': '141'}], 'errorCode': 0, 'message': 'ÉXITO'}
+)
+    def test_feedback_codes(self):
+        '''【FeriaRapida】/api/common/feedback/codes?types=1111获取feedback码值接口-正案例'''
+        registNo=cx_registNo_10()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/common/feedback/codes?types=1111",headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0) #注意FR无lanacoin和优惠券
+        self.assertEqual(str(t['data']),"[{'valName': 'Acosado', 'valCode': '11110001', 'options': ['Me acosaron por mensajes de WhatsApp.', 'Me acosaron por mensajes de texto.', 'Me acosaron por una llamada telefónica.']}, {'valName': 'Aprobación es demasiado largo', 'valCode': '11110002', 'options': ['El tiempo de aprobación es demasiado largo.']}, {'valName': 'CLABE', 'valCode': '11110003', 'options': ['No sé cuál es mi cuenta CLABE.', 'Quiero cambiar mi cuenta CLABE.']}, {'valName': 'CURP', 'valCode': '11110004', 'options': ['La CURP marca error.', 'Necesito ayuda para completar la CURP.']}, {'valName': 'Depósito', 'valCode': '11110005', 'options': ['Apareció un error de limitación en la parte superior de la página.', 'He pagado pero el estatus no se ha actualizado.', 'La cuenta que ha pagado marca error.', 'No recibí el depósito.', 'Pagos múltiples.']}, {'valName': 'El tiempo de carga es demasiado largo', 'valCode': '11110007', 'options': ['Carga lenta en la página de inicio.', 'Carga prolongada de la página de pago']}, {'valName': 'Error de red', 'valCode': '11110006', 'options': ['Apareció un error de [01] en la parte superior de la página.', 'Apareció un error de [02] en la parte superior de la página.', 'Apareció un error de [03] en la parte superior de la página.', 'Apareció un error de [04] en la parte superior de la página.']}, {'valName': 'Foto', 'valCode': '11110008', 'options': ['Informar un error después de cargar la foto.', 'La cámara funciona mal y deseo cargar fotos.', 'No se pudo cargar la foto.']}, {'valName': 'INE', 'valCode': '11110009', 'options': ['Informe del error después de cargar el INE.', 'No se pudo cargar el INE.', 'Reemplace la credencial INE.', 'Sin credencial de INE / perdida', 'Sin credencial física INE, quiero subir fotos.']}, {'valName': 'Monto del préstamo', 'valCode': '11110011', 'options': ['Quiero elegir el monto del préstamo que más me convenga por mí mismo.', 'Quiero un monto de préstamo mayor.', 'Quiero una cantidad de préstamo menor.']}, {'valName': 'Otros', 'valCode': '11110012', 'options': ['Otros.']}, {'valName': 'Sorteo', 'valCode': '11110013', 'options': ['Gané el sorteo, pero no obtuve el premio.']}, {'valName': 'Teléfono', 'valCode': '11110014', 'options': ['Cambiar el número de teléfono móvil.', 'Error al registrar el número de teléfono móvil.', 'Número de teléfono incompatible.']}]")
+
+    def test_get_states(self):
+        '''【FeriaRapida】/api/common/codes?types=1019%2C1005%2C1113获取州列表接口-正案例'''
+        registNo=cx_registNo_07()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+'/api/common/codes?types=1019%2C1005%2C1113',headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(str(t['data']['1019']),"[{'valName': 'Licenciatura', 'valCode': '10190005', 'typeCode': '1019'}, {'valName': 'No Escolaridad', 'valCode': '10190001', 'typeCode': '1019'}, {'valName': 'Posgrado / Maestria', 'valCode': '10190006', 'typeCode': '1019'}, {'valName': 'Preparatoria/ Bachillerato', 'valCode': '10190004', 'typeCode': '1019'}, {'valName': 'Primaria', 'valCode': '10190002', 'typeCode': '1019'}, {'valName': 'Secundaria', 'valCode': '10190003', 'typeCode': '1019'}]")
+        self.assertEqual(str(t['data']['1113']),"[{'valName': 'Aguascalientes', 'valCode': '11130001', 'typeCode': '1113'}, {'valName': 'Baja California', 'valCode': '11130002', 'typeCode': '1113'}, {'valName': 'Baja California Sur', 'valCode': '11130003', 'typeCode': '1113'}, {'valName': 'Campeche', 'valCode': '11130004', 'typeCode': '1113'}, {'valName': 'Chiapas', 'valCode': '11130005', 'typeCode': '1113'}, {'valName': 'Chihuahua', 'valCode': '11130007', 'typeCode': '1113'}, {'valName': 'Ciudad de México', 'valCode': '11130006', 'typeCode': '1113'}, {'valName': 'Coahuila', 'valCode': '11130008', 'typeCode': '1113'}, {'valName': 'Colima', 'valCode': '11130009', 'typeCode': '1113'}, {'valName': 'Durango', 'valCode': '11130010', 'typeCode': '1113'}, {'valName': 'Guanajuato', 'valCode': '11130011', 'typeCode': '1113'}, {'valName': 'Guerrero', 'valCode': '11130012', 'typeCode': '1113'}, {'valName': 'Hidalgo', 'valCode': '11130013', 'typeCode': '1113'}, {'valName': 'Jalisco', 'valCode': '11130014', 'typeCode': '1113'}, {'valName': 'Michoacán', 'valCode': '11130016', 'typeCode': '1113'}, {'valName': 'Morelos', 'valCode': '11130017', 'typeCode': '1113'}, {'valName': 'México', 'valCode': '11130015', 'typeCode': '1113'}, {'valName': 'Nayarit', 'valCode': '11130018', 'typeCode': '1113'}, {'valName': 'Nuevo León', 'valCode': '11130019', 'typeCode': '1113'}, {'valName': 'Oaxaca', 'valCode': '11130020', 'typeCode': '1113'}, {'valName': 'Puebla', 'valCode': '11130021', 'typeCode': '1113'}, {'valName': 'Querétaro', 'valCode': '11130022', 'typeCode': '1113'}, {'valName': 'Quintana Roo', 'valCode': '11130023', 'typeCode': '1113'}, {'valName': 'San Luis Potosí', 'valCode': '11130024', 'typeCode': '1113'}, {'valName': 'Sinaloa', 'valCode': '11130025', 'typeCode': '1113'}, {'valName': 'Sonora', 'valCode': '11130026', 'typeCode': '1113'}, {'valName': 'Tabasco', 'valCode': '11130027', 'typeCode': '1113'}, {'valName': 'Tamaulipas', 'valCode': '11130028', 'typeCode': '1113'}, {'valName': 'Tlaxcala', 'valCode': '11130029', 'typeCode': '1113'}, {'valName': 'Veracruz', 'valCode': '11130030', 'typeCode': '1113'}, {'valName': 'Yucatán', 'valCode': '11130031', 'typeCode': '1113'}, {'valName': 'Zacatecas', 'valCode': '11130032', 'typeCode': '1113'}]")
+        self.assertEqual(str(t['data']['1005']),"[{'valName': 'Casado', 'valCode': '10050001', 'typeCode': '1005'}, {'valName': 'Divorced', 'valCode': '10050004', 'typeCode': '1005'}, {'valName': 'Soltero', 'valCode': '10050002', 'typeCode': '1005'}, {'valName': 'Unión libre', 'valCode': '10050005', 'typeCode': '1005'}, {'valName': 'Viudo', 'valCode': '10050003', 'typeCode': '1005'}]")
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
