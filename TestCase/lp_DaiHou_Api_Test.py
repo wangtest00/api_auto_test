@@ -192,8 +192,9 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
     def test_fin_repay_stp(self):
-        '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷-正案例'''
+        '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷(贷后正常)-正案例'''
         registNo=cx_registNo_04()
+        print(registNo)
         phone=registNo[0]
         custNo=registNo[1]
         loanNo=registNo[2]
@@ -202,6 +203,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         data={"advance":"10000000","custNo":custNo,"defer":False,"loanNo":loanNo,"paymentMethod":"STP","repayInstNumList":list,"tranAppType":"Android"}
         r=requests.post(host_api+"/api/trade/fin/repay",data=json.dumps(data),headers=headt_api,verify=False)
         t=r.json()
+        print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertEqual(t['data']['code'],10000)
         self.assertEqual(t['data']['msg'],'apply success')

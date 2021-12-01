@@ -55,7 +55,7 @@ order by a.INST_TIME desc limit 1;'''
 def cx_registNo_04():
     sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷未结清
     select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
-where a.BEFORE_STAT='10260005' and b.APP_NO='201' and c.app_no='201' and a.AFTER_STAT='10270002' or a.AFTER_STAT='10270003'  order by a.INST_TIME desc limit 1;
+    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270002'  order by a.INST_TIME desc limit 1;
 '''
     phone=DataBase(which_db).get_one(sql)
     return phone
@@ -64,7 +64,7 @@ def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
 select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
 left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
-where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO='201' and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005'
+where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005'
 order by a.INST_TIME desc limit 1;  '''
     phone=DataBase(which_db).get_one(sql)
     return phone
@@ -76,7 +76,7 @@ select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where
     return phone
 def cx_registNo_07():
     sql='''#查询无客户号的手机号
-select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is null and a.APP_NO='201'
+select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is null and a.APP_NO="'''+appNo+'''"
 order by a.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=str(phone[0])
@@ -85,7 +85,7 @@ order by a.INST_TIME desc limit 1; '''
 def cx_registNo_08():
     sql='''#查询手机号，同一个手机号可能有贷款在拒绝，撤销等多种状态
 select c.BEFORE_STAT,d.REGIST_NO from lo_loan_dtl c left join cu_cust_reg_dtl d on c.cust_no=d.cust_no where c.cust_no=(select b.CUST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO='201'
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''"
 order by a.INST_TIME desc limit 1) order by c.inst_time desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=list(phone)   #元祖转列表
@@ -93,14 +93,14 @@ order by a.INST_TIME desc limit 1) order by c.inst_time desc limit 1; '''
 def cx_registNo_09():
     sql='''#查询手机号，同一个手机号可能有贷款在拒绝，撤销等多种状态
 select c.BEFORE_STAT,d.REGIST_NO from lo_loan_dtl c left join cu_cust_reg_dtl d on c.cust_no=d.cust_no where c.cust_no=(select b.CUST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where  a.BEFORE_STAT='10260006' and a.AFTER_STAT is null and b.APP_NO='201'
+where  a.BEFORE_STAT='10260006' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''"
 order by a.INST_TIME desc limit 1) order by c.inst_time desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=list(phone)   #元祖转列表
     return phone
 def cx_registNo_10():
     sql='''#查询有客户号的手机号
-select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is not null and a.APP_NO='201'
+select a.REGIST_NO from cu_cust_reg_dtl a where a.GAID='Exception:null' and a.CUST_NO is not null and a.APP_NO="'''+appNo+'''"
 order by a.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=str(phone[0])
@@ -115,7 +115,7 @@ def cx_registNo_12():
     sql='''#查询手机号：在贷，有lanacoin，且无减免记录，无实收
     select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
     left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.LOAN_NO=e.loan_no left join cu_cust_coin_dtl f on d.REGIST_NO=f.PHONE_NO
-    where a.AFTER_STAT='10270002' and b.APP_NO="201" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.OBTAIN_VALUE>1000 and f.stat='11360001' order by a.INST_TIME desc limit 1;'''
+    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.OBTAIN_VALUE>1000 and f.stat='11360001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     return phone
@@ -123,7 +123,7 @@ def cx_registNo_13():
     sql='''#查询手机号：在贷，有coupon，且无减免记录，无实收
     select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
     left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.LOAN_NO=e.loan_no left join cu_coupon_dtl f on d.REGIST_NO=f.PHONE_NO
-    where a.AFTER_STAT='10270002' and b.APP_NO="201" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
+    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     #print(phone)
@@ -139,7 +139,7 @@ WHERE
 AND a.AFTER_STAT = '10270005'
 GROUP BY a.cust_no
 HAVING count(1) =1
-)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no inner join cu_cust_reg_dtl c on b.cust_no=c.cust_no where c.APP_NO='201'
+)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no inner join cu_cust_reg_dtl c on b.cust_no=c.cust_no where c.APP_NO="'''+appNo+'''"
 group by  b.cust_no
 HAVING loan_cnt=1;'''
     custNo=DataBase(which_db).get_one(sql)
@@ -150,7 +150,7 @@ def cx_beforeStat_afterStat(loanNo):
     return stat
 def cx_under_withdraw():
     sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO='201' order by a.INST_TIME desc limit 1; '''
+where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" order by a.INST_TIME desc limit 1; '''
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
@@ -232,20 +232,20 @@ def for_apply_loan():
     data3={"certType":"CONTACT","custNo":custNo}
     r3=requests.post(host_api+'/api/cust/auth/review',data=json.dumps(data3),headers=head)
     #设备信息
-    data4={"appNo":"201","phoneNo":registNo,"dataType":"11090003","pageGet":"10000001","recordTime":"1621332187810","grabData":{"ipAddress":"2409:8162:a46:5405:1:0:107f:acec%20","ipResolveCit":"2409:8162:a46:5405:1:0:107f:acec%20",
+    data4={"appNo":appNo,"phoneNo":registNo,"dataType":"11090003","pageGet":"10000001","recordTime":"1621332187810","grabData":{"ipAddress":"2409:8162:a46:5405:1:0:107f:acec%20","ipResolveCit":"2409:8162:a46:5405:1:0:107f:acec%20",
     "ipResolveCom":"2409:8162:a46:5405:1:0:107f:acec%20","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"抓取设备数据","recordTime":"1621332187810","userId":custNo,"mobileBrand":"HUAWEI","mobileModel":"LIO-AL00","systemVersion":"10","otherInfo":"274b98eb5c8aed06"},"custNo":custNo}
     #联系人
-    data5={"appNo":"201","phoneNo":registNo,"dataType":"11090002","pageGet":"10000001","recordTime":"1621332187811","grabData":{"data":
+    data5={"appNo":appNo,"phoneNo":registNo,"dataType":"11090002","pageGet":"10000001","recordTime":"1621332187811","grabData":{"data":
     [{"contactName":"test","contactNo":"888 845 5666","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc",
       "mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"联系人列表抓取","recordTime":"1621332187811","userId":custNo},{"contactName":"test2","contactNo":"888 335 5777",
     "deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"联系人列表抓取",
     "recordTime":"1621332187811","userId":custNo}]},"custNo":custNo}
     #短信内容
-    data6={"appNo":"201","phoneNo":registNo,"dataType":"11090005","pageGet":"10000001","recordTime":"1621332187836","grabData":{"data":[{"body":"【中国农业银行】您尾号8579账户05月18日17:02完成支付宝交易人民币-5000.00，余额9999999999.19。","address":"95599","date":"2021-05-18 17:02:48.863","dateSent":"2021-05-18 17:02:46.000","sender":"95599","kind":"SmsMessageKind.Received"}]},"custNo":custNo}
+    data6={"appNo":appNo,"phoneNo":registNo,"dataType":"11090005","pageGet":"10000001","recordTime":"1621332187836","grabData":{"data":[{"body":"【中国农业银行】您尾号8579账户05月18日17:02完成支付宝交易人民币-5000.00，余额9999999999.19。","address":"95599","date":"2021-05-18 17:02:48.863","dateSent":"2021-05-18 17:02:46.000","sender":"95599","kind":"SmsMessageKind.Received"}]},"custNo":custNo}
     #设备信息
-    data7={"appNo":"201","phoneNo":registNo,"dataType":"11090004","pageGet":"10000001","recordTime":"1621332187838","grabData":{"latitude":"30.550366","longitude":"104.062236","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"11000003","recordTime":"1621332187838","userId":custNo},"custNo":custNo}
+    data7={"appNo":appNo,"phoneNo":registNo,"dataType":"11090004","pageGet":"10000001","recordTime":"1621332187838","grabData":{"latitude":"30.550366","longitude":"104.062236","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"11000003","recordTime":"1621332187838","userId":custNo},"custNo":custNo}
     #已安装应用
-    data8={"appNo":"201","phoneNo":registNo,"dataType":"11090001","pageGet":"10000001","recordTime":"1621332187731","grabData":{"data":[{"appName":"安全教育平台","appPackage":"com.jzzs.ParentsHelper","appVersionNo":"1.7.0","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","installTime":1599480832637,"lastUpdateTime":1618934047038,"mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"App列表抓取","recordTime":"1621332187731","userId":custNo}]},"custNo":custNo}
+    data8={"appNo":appNo,"phoneNo":registNo,"dataType":"11090001","pageGet":"10000001","recordTime":"1621332187731","grabData":{"data":[{"appName":"安全教育平台","appPackage":"com.jzzs.ParentsHelper","appVersionNo":"1.7.0","deviceId":"a2eff92b-86cb-4614-a66c-84ae322f3adcA2:B4:74:63:FB:40LIO-AL00","imei":"a2eff92b-86cb-4614-a66c-84ae322f3adc","installTime":1599480832637,"lastUpdateTime":1618934047038,"mac":"A2:B4:74:63:FB:40","phoneNo":registNo,"recordBehavior":"App列表抓取","recordTime":"1621332187731","userId":custNo}]},"custNo":custNo}
     data0=[data4,data5,data6,data7,data8]
     for data0 in data0:
         r0=requests.post(host_api+'/api/common/grab/app_grab_data',data=json.dumps(data0),headers=head)  #抓取用户手机短信，通讯录，已安装app等信息
