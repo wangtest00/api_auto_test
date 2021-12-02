@@ -225,6 +225,32 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(str(t['data']['1019']),"[{'valName': 'Licenciatura', 'valCode': '10190005', 'typeCode': '1019'}, {'valName': 'No Escolaridad', 'valCode': '10190001', 'typeCode': '1019'}, {'valName': 'Posgrado / Maestria', 'valCode': '10190006', 'typeCode': '1019'}, {'valName': 'Preparatoria/ Bachillerato', 'valCode': '10190004', 'typeCode': '1019'}, {'valName': 'Primaria', 'valCode': '10190002', 'typeCode': '1019'}, {'valName': 'Secundaria', 'valCode': '10190003', 'typeCode': '1019'}]")
         self.assertEqual(str(t['data']['1113']),"[{'valName': 'Aguascalientes', 'valCode': '11130001', 'typeCode': '1113'}, {'valName': 'Baja California', 'valCode': '11130002', 'typeCode': '1113'}, {'valName': 'Baja California Sur', 'valCode': '11130003', 'typeCode': '1113'}, {'valName': 'Campeche', 'valCode': '11130004', 'typeCode': '1113'}, {'valName': 'Chiapas', 'valCode': '11130005', 'typeCode': '1113'}, {'valName': 'Chihuahua', 'valCode': '11130007', 'typeCode': '1113'}, {'valName': 'Ciudad de México', 'valCode': '11130006', 'typeCode': '1113'}, {'valName': 'Coahuila', 'valCode': '11130008', 'typeCode': '1113'}, {'valName': 'Colima', 'valCode': '11130009', 'typeCode': '1113'}, {'valName': 'Durango', 'valCode': '11130010', 'typeCode': '1113'}, {'valName': 'Guanajuato', 'valCode': '11130011', 'typeCode': '1113'}, {'valName': 'Guerrero', 'valCode': '11130012', 'typeCode': '1113'}, {'valName': 'Hidalgo', 'valCode': '11130013', 'typeCode': '1113'}, {'valName': 'Jalisco', 'valCode': '11130014', 'typeCode': '1113'}, {'valName': 'Michoacán', 'valCode': '11130016', 'typeCode': '1113'}, {'valName': 'Morelos', 'valCode': '11130017', 'typeCode': '1113'}, {'valName': 'México', 'valCode': '11130015', 'typeCode': '1113'}, {'valName': 'Nayarit', 'valCode': '11130018', 'typeCode': '1113'}, {'valName': 'Nuevo León', 'valCode': '11130019', 'typeCode': '1113'}, {'valName': 'Oaxaca', 'valCode': '11130020', 'typeCode': '1113'}, {'valName': 'Puebla', 'valCode': '11130021', 'typeCode': '1113'}, {'valName': 'Querétaro', 'valCode': '11130022', 'typeCode': '1113'}, {'valName': 'Quintana Roo', 'valCode': '11130023', 'typeCode': '1113'}, {'valName': 'San Luis Potosí', 'valCode': '11130024', 'typeCode': '1113'}, {'valName': 'Sinaloa', 'valCode': '11130025', 'typeCode': '1113'}, {'valName': 'Sonora', 'valCode': '11130026', 'typeCode': '1113'}, {'valName': 'Tabasco', 'valCode': '11130027', 'typeCode': '1113'}, {'valName': 'Tamaulipas', 'valCode': '11130028', 'typeCode': '1113'}, {'valName': 'Tlaxcala', 'valCode': '11130029', 'typeCode': '1113'}, {'valName': 'Veracruz', 'valCode': '11130030', 'typeCode': '1113'}, {'valName': 'Yucatán', 'valCode': '11130031', 'typeCode': '1113'}, {'valName': 'Zacatecas', 'valCode': '11130032', 'typeCode': '1113'}]")
         self.assertEqual(str(t['data']['1005']),"[{'valName': 'Casado', 'valCode': '10050001', 'typeCode': '1005'}, {'valName': 'Divorced', 'valCode': '10050004', 'typeCode': '1005'}, {'valName': 'Soltero', 'valCode': '10050002', 'typeCode': '1005'}, {'valName': 'Unión libre', 'valCode': '10050005', 'typeCode': '1005'}, {'valName': 'Viudo', 'valCode': '10050003', 'typeCode': '1005'}]")
+    def test_personal_email_01(self):
+        '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-正案例（用户只要没填写过邮箱都会填写成功邮箱）'''
+        registNo=cx_registNo_11()
+        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
+        head=login_code(registNo[0])
+        r1=requests.get(host_api+"/api/cust/personal/email/"+registNo[0],headers=head)
+        t1=r1.json()
+        self.assertEqual(t1['errorCode'],0)
+        self.assertFalse(t1['data']['checkFill'])
+        r2=requests.post(host_api+"/api/cust/personal/email",data=json.dumps(data),headers=head)
+        t2=r2.json()
+        self.assertEqual(t2['errorCode'],0)
+    def test_personal_email_02(self):
+        '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-反案例（用户已填写过邮箱提交报错）'''
+        registNo=cx_registNo_12()
+        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
+        head=login_code(registNo[0])
+        r1=requests.get(host_api+"/api/cust/personal/email/"+registNo[0],headers=head)
+        t1=r1.json()
+        self.assertEqual(t1['errorCode'],0)
+        self.assertTrue(t1['data']['checkFill'])
+        r2=requests.post(host_api+"/api/cust/personal/email",data=json.dumps(data),headers=head)
+        t2=r2.json()
+        self.assertEqual(t2['errorCode'],30001)
+        self.assertEqual(t2['message'],'Solicitar excepción de parámetro')
+
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
