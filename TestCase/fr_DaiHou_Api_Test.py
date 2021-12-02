@@ -14,7 +14,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
     def test_loan_latest_01(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷后正常状态且未还过款）正案例'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷中正常状态且未还过款）正案例'''
         registNo=cx_registNo()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)

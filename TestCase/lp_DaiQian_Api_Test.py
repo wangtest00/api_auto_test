@@ -317,6 +317,24 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],30001)
         self.assertTrue(t['message'],'Monto de transacción no válido')
+    def test_coin_lottery_win_01(self):
+        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖（积分充足，正常抽奖）-正案例'''
+        registNo=cx_registNo_14()
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/coin/lottery/win',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+    def test_coin_lottery_win_02(self):
+        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖（积分不足，不能抽奖）-正案例'''
+        registNo=cx_registNo_15()
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo}
+        r=requests.post(host_api+'/api/cust/coin/lottery/win',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],40021)
+        self.assertEqual(t['message'],'Tales operaciones no están permitidas')
+
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
