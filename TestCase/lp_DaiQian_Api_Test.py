@@ -29,9 +29,8 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertTrue(t['data']['hasPwd'])
-
     def test_login_code(self):    #函数名要以test开头，否则不会被执行
-        '''【lanaPlus】/api/cust/login注册登录接口-正案例'''      #用例描述，在函数下，用三个单引号里面写用例描述
+        '''【lanaPlus】/api/cust/login注册登录接口-正案例'''    #用例描述，在函数下，用三个单引号里面写用例描述
         registNo=str(random.randint(8000000000,9999999999)) #10位随机数作为手机号
         code=compute_code(registNo)
         data={"registNo":registNo,"code":code,"gaid":"Exception:null"}
@@ -175,7 +174,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         beforeStat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10260006',beforeStat[0])  #验证贷前状态是否更新为【拒绝】
     def test_bank_auth_04(self):
-        '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(客户未认证，不能绑卡)-正案例'''
+        '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(未认证，不能绑卡)-正案例'''
         registNo=cx_registNo_07()
         headt_api=login_code(registNo)
         data={"bankCode":"10020037","clabe":"138455214411441118","custNo":''}
@@ -185,7 +184,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],30001)
         self.assertEqual(t['message'],'custNoParámetro anormal ')
     def test_loan_apply_reloan(self):
-        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件)-正案例'''
+        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件一键复贷)-正案例'''
         custNo=get_yijieqing_custNo()
         #print(custNo)
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
@@ -226,7 +225,6 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertEqual(str(t['data']),"[{'valName': 'Acosado', 'valCode': '11110001', 'options': ['Me acosaron por mensajes de WhatsApp.', 'Me acosaron por mensajes de texto.', 'Me acosaron por una llamada telefónica.']}, {'valName': 'Aprobación es demasiado largo', 'valCode': '11110002', 'options': ['El tiempo de aprobación es demasiado largo.']}, {'valName': 'CLABE', 'valCode': '11110003', 'options': ['No sé cuál es mi cuenta CLABE.', 'Quiero cambiar mi cuenta CLABE.']}, {'valName': 'CURP', 'valCode': '11110004', 'options': ['La CURP marca error.', 'Necesito ayuda para completar la CURP.']}, {'valName': 'Depósito', 'valCode': '11110005', 'options': ['Apareció un error de limitación en la parte superior de la página.', 'He pagado pero el estatus no se ha actualizado.', 'La cuenta que ha pagado marca error.', 'No recibí el depósito.', 'Pagos múltiples.']}, {'valName': 'El tiempo de carga es demasiado largo', 'valCode': '11110007', 'options': ['Carga lenta en la página de inicio.', 'Carga prolongada de la página de pago']}, {'valName': 'Error de red', 'valCode': '11110006', 'options': ['Apareció un error de [01] en la parte superior de la página.', 'Apareció un error de [02] en la parte superior de la página.', 'Apareció un error de [03] en la parte superior de la página.', 'Apareció un error de [04] en la parte superior de la página.']}, {'valName': 'Foto', 'valCode': '11110008', 'options': ['Informar un error después de cargar la foto.', 'La cámara funciona mal y deseo cargar fotos.', 'No se pudo cargar la foto.']}, {'valName': 'INE', 'valCode': '11110009', 'options': ['Informe del error después de cargar el INE.', 'No se pudo cargar el INE.', 'Reemplace la credencial INE.', 'Sin credencial de INE / perdida', 'Sin credencial física INE, quiero subir fotos.']}, {'valName': 'LanaCoin', 'valCode': '11110010', 'options': ['Quiero saber cómo usar mi LanaCoin.']}, {'valName': 'Monto del préstamo', 'valCode': '11110011', 'options': ['Quiero elegir el monto del préstamo que más me convenga por mí mismo.', 'Quiero un monto de préstamo mayor.', 'Quiero una cantidad de préstamo menor.']}, {'valName': 'Otros', 'valCode': '11110012', 'options': ['Otros.']}, {'valName': 'Sorteo', 'valCode': '11110013', 'options': ['Gané el sorteo, pero no obtuve el premio.']}, {'valName': 'Teléfono', 'valCode': '11110014', 'options': ['Cambiar el número de teléfono móvil.', 'Error al registrar el número de teléfono móvil.', 'Número de teléfono incompatible.']}]")
-
     def test_get_states(self):
         '''【lanaPlus】/api/common/codes?types=1019%2C1005%2C1113获取州列表接口-正案例'''
         registNo=cx_registNo_07()
@@ -318,7 +316,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],30001)
         self.assertTrue(t['message'],'Monto de transacción no válido')
     def test_coin_lottery_win_01(self):
-        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖（积分充足，正常抽奖）-正案例'''
+        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖接口（积分充足，正常抽奖：接口未限制已进件已绑卡用户才能抽奖，前端限制）-正案例'''
         registNo=cx_registNo_14()
         headt_api=login_code(registNo)
         data={"phoneNo":registNo}
@@ -326,7 +324,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         t=r.json()
         self.assertEqual(t['errorCode'],0)
     def test_coin_lottery_win_02(self):
-        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖（积分不足，不能抽奖）-正案例'''
+        '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖接口（积分不足，不能抽奖）-反案例'''
         registNo=cx_registNo_15()
         headt_api=login_code(registNo)
         data={"phoneNo":registNo}
@@ -334,7 +332,21 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         t=r.json()
         self.assertEqual(t['errorCode'],40021)
         self.assertEqual(t['message'],'Tales operaciones no están permitidas')
-
+    def test_coin_lottery_total_winning_record(self):
+        '''【lanaPlus】/api/cust/coin/lottery/total/winning/record/registNo积分抽奖，抽奖记录接口-正案例'''
+        registNo=cx_registNo_15()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+'/api/cust/coin/lottery/total/winning/record/'+registNo,headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+    def test_func_switch_stat(self):
+        '''【lanaPlus】/api/cust/func/switch/stat/11100008-积分抽奖开关值查询接口-正案例'''
+        registNo=cx_registNo()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/cust/func/switch/stat/11100008",headers=headt_api)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

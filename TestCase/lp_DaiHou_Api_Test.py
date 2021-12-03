@@ -13,6 +13,48 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         print('setup_test')
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
+    def test_loan_latest_00(self):
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷后逾期状态且未还过款）正案例'''
+        registNo=cx_registNo_00()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['repaymentDetail']['realPaymentAmt'],'1500.00')
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        for i in range(len(repaymentDetailList)):
+            print(repaymentDetailList[i])
+            print(i)
+            self.assertEqual(repaymentDetailList[i]['loanAmt'],'500.00')
+            self.assertEqual(repaymentDetailList[i]['originalLoanAmt'],'500.00')
+            #self.assertEqual(repaymentDetailList[i]['repaymentAmt'],'600.00')
+            self.assertEqual(repaymentDetailList[i]['alreadyRepaymentAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['totalAfterFee'],'100.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeValue'],'100.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['originalFeeValue'],'100.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['realRepayAmt'],'0.00')
+            #self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['order'],'2')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeType'],None)
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['otherReduceAmt'],None)
+            if i==0:
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAble'],True)   #积分减免状态（首期可减免）
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAble'],True) #优惠券减免状态（首期可减免）
+                self.assertEqual(repaymentDetailList[i]['originalRepaymentAmt'],'650.00')
+                self.assertEqual(repaymentDetailList[i]['originalOverdueAmt'],'50.00')                  #首期逾期有滞纳金
+                self.assertEqual(repaymentDetailList[i]['stat'],'OVERDUE')
+                self.assertEqual(repaymentDetailList[i]['overdueAmt'],'50.00')
+            else:
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAble'],False)   #积分减免状态（非首期不可减免）
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAble'],False) #优惠券减免状态（非首期不可减免）
+                self.assertEqual(repaymentDetailList[i]['originalRepaymentAmt'],'600.00')
+                self.assertEqual(repaymentDetailList[i]['originalOverdueAmt'],None)
+                self.assertEqual(repaymentDetailList[i]['stat'],'NORMAL')
+                self.assertEqual(repaymentDetailList[i]['overdueAmt'],None)
+                self.assertEqual(repaymentDetailList[i]['repaymentAmt'],'600.00')
+                self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAmt'],None)
+                self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAmt'],None)
     def test_loan_latest_01(self):
         '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷后正常状态且未还过款）正案例'''
         registNo=cx_registNo()
@@ -36,7 +78,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
             #self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['order'],'2')
             self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeType'],None)
-            #self.assertEqual(repaymentDetailList[i]['overdueAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['overdueAmt'],None)
             self.assertEqual(repaymentDetailList[i]['originalOverdueAmt'],None)
             self.assertEqual(repaymentDetailList[i]['stat'],'NORMAL')
             self.assertEqual(repaymentDetailList[i]['deductionDetail']['otherReduceAmt'],None)
@@ -90,7 +132,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['certStatus'])
         self.assertIsNone(t['data']['applyButtonDetail'])
     def test_loan_latest_04(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(无CUST_NO)正案例'''
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(未认证)正案例'''
         registNo=cx_registNo_07()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
@@ -112,7 +154,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],False)
     def test_loan_latest_05(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例-重点'''
         list=cx_registNo_08()
         registNo=list[1]
         before_stat=list[0]
@@ -143,7 +185,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['repaymentDetail'])
         self.assertIsNone(t['data']['applyButtonDetail'])
     def test_loan_latest_06(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿拒绝查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿拒绝查询，贷前有撤销，拒绝状态)正案例-重点'''
         list=cx_registNo_09()
         registNo=list[1]
         before_stat=list[0]
@@ -192,7 +234,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
     def test_fin_repay_stp(self):
-        '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷(贷后正常)-正案例'''
+        '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷(正常)-正案例'''
         registNo=cx_registNo_04()
         print(registNo)
         phone=registNo[0]
@@ -265,7 +307,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         afterstat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
     def test_oxxo_repayment(self):
-        '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷验证结清(先申请还款后模拟还款回调)-正案例'''
+        '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷（正常）,结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
         print(registNo)
         phone=registNo[0]
@@ -379,13 +421,11 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         print(list)
         registNo=list[0]
         headt_api=login_code(registNo)
-        coin_value=str(list[1])
-        print(coin_value[:2])
         r=requests.get(host_api+"/api/cust/coin/deduction/details/"+registNo,headers=headt_api,verify=False)
         t=r.json()
         print(t)
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(str(len(t['data']['details'])),coin_value[:2])
+        self.assertEqual(str(len(t['data']['details'])),t['data']['totalCoins'][:2])
     def test_repayment_deduction_coin(self):
         '''【lanaPlus】/api/cust/repayment/deduction-减免接口-lanacoin减免成功-正案例'''
         registNo=cx_registNo_12()
@@ -438,6 +478,16 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         s=r.json()
         print(s)
         self.assertEqual(s['errorCode'],0)
+    def test_repay_methods(self):
+        '''【lanaPlus】/api/trade/fin/repay/methods/loan_no-获取贷款支持的还款方式接口（stp+oxxo）-正案例'''
+        registNo=cx_registNo_04()
+        phone=registNo[0]
+        loanNo=registNo[2]
+        headt_api=login_code(phone)
+        r=requests.post(host_api+"/api/trade/fin/repay/methods/"+loanNo,headers=headt_api,verify=False)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data'],{"stp":{"paymentMethod":"STP","free":True,"recommended":True,"serviceCharge":"0","supportTime":"24/7"},"oxxo":{"paymentMethod":"CONEKTA","free":False,"recommended":False,"serviceCharge":"12.00","supportTime":"24/7"}})
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

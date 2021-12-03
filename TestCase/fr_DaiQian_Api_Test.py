@@ -173,7 +173,7 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],30001)
         self.assertEqual(t['message'],'custNoParámetro anormal ')
     def test_loan_apply_reloan(self):
-        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件)-正案例'''
+        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件一键复贷)-正案例'''
         custNo=get_yijieqing_custNo()
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
         registNo=DataBase(which_db).get_one(sql)
@@ -238,7 +238,7 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         t2=r2.json()
         self.assertEqual(t2['errorCode'],0)
     def test_personal_email_02(self):
-        '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-反案例（用户已填写过邮箱提交报错）'''
+        '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-反案例（用户已填写过邮箱-提交会报错）'''
         registNo=cx_registNo_12()
         data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
         head=login_code(registNo[0])
@@ -250,7 +250,6 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         t2=r2.json()
         self.assertEqual(t2['errorCode'],30001)
         self.assertEqual(t2['message'],'Solicitar excepción de parámetro')
-
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

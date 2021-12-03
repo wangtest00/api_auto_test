@@ -13,6 +13,39 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         print('setup_test')
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
+    def test_loan_latest_00(self):
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷中逾期状态且未还过款）正案例'''
+        registNo=cx_registNo_00()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['repaymentDetail']['realPaymentAmt'],'750.00')
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        for i in range(len(repaymentDetailList)):
+            print(repaymentDetailList[i])
+            self.assertEqual(repaymentDetailList[i]['loanAmt'],'1000.00')
+            self.assertEqual(repaymentDetailList[i]['originalLoanAmt'],'1000.00')
+            self.assertEqual(repaymentDetailList[i]['repaymentAmt'],'1140.00')
+            self.assertEqual(repaymentDetailList[i]['alreadyRepaymentAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['originalRepaymentAmt'],'1140.00')
+            self.assertEqual(repaymentDetailList[i]['totalAfterFee'],'140.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeValue'],'20.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['originalFeeValue'],'20.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['realRepayAmt'],'0.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['reduceAmt'],'0.00')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['order'],'77')
+            self.assertEqual(repaymentDetailList[i]['afterFeeList'][0]['feeType'],None)
+            self.assertEqual(repaymentDetailList[i]['overdueAmt'],'0.00')    #贷款申请过还款后，再去跑逾期，不会生成滞纳金（生产环境不会这样）
+            self.assertEqual(repaymentDetailList[i]['originalOverdueAmt'],'0.00')
+            self.assertEqual(repaymentDetailList[i]['stat'],'OVERDUE')
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['otherReduceAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAmt'],None)
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAble'],False)   #积分减免状态（非首期不可减免）
+            self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAble'],True) #优惠券减免状态（非首期不可减免）
     def test_loan_latest_01(self):
         '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷中正常状态且未还过款）正案例'''
         registNo=cx_registNo()
