@@ -233,6 +233,23 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['repaymentDetail'])
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
+    def test_loan_latest_08(self):
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-(当前通过状态)正案例'''
+        registNo=cx_tongguo()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['loanStat'],'TRAIL')
+        self.assertIsNotNone(t['data']['loanNo'])
+        self.assertIsNotNone(t['data']['custNo'])
+        #self.assertIsNone(t['data']['bankAcctInfo'])
+        self.assertIsNone(t['data']['paymentDetail'])
+        self.assertEqual(str(t['data']['trailPaymentDetail']),"[{'loanAmt': '1500.00', 'prodNo': '28070110', 'showLoanDay': False, 'instNum': '3', 'paymentAmt': '1500.00', 'repaymentAmt': '1800.00', 'loanDays': '21', 'feeList': [{'feeName': 'lixi', 'feeValue': '300', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '2', 'feeType': 'AFTER'}], 'repaymentPlanList': [{'repayDate': '1639116000000', 'repayAmt': '600.00'}, {'repayDate': '1639720800000', 'repayAmt': '600.00'}, {'repayDate': '1640325600000', 'repayAmt': '600.00'}]}]")
+        self.assertIsNone(t['data']['repaymentDetail'])
+        self.assertIsNone(t['data']['reapplyDate'])
+        self.assertIsNone(t['data']['applyButtonDetail'])
     def test_fin_repay_stp(self):
         '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷(正常)-正案例'''
         registNo=cx_registNo_04()

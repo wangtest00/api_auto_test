@@ -14,7 +14,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
     def test_loan_latest_00(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷中逾期状态且未还过款）正案例'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷后逾期状态且未还过款）正案例'''
         registNo=cx_registNo_00()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
@@ -47,7 +47,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
             self.assertEqual(repaymentDetailList[i]['deductionDetail']['coinDeductionAble'],False)   #积分减免状态（非首期不可减免）
             self.assertEqual(repaymentDetailList[i]['deductionDetail']['couponDeductionAble'],True) #优惠券减免状态（非首期不可减免）
     def test_loan_latest_01(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷中正常状态且未还过款）正案例'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-已有一笔贷款（贷后正常状态且未还过款）正案例'''
         registNo=cx_registNo()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
@@ -141,7 +141,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],False)
     def test_loan_latest_05(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例'''
         list=cx_registNo_08()
         registNo=list[1]
         before_stat=list[0]
@@ -180,7 +180,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
             self.assertIsNone(t['data']['repaymentDetail'])
             self.assertIsNone(t['data']['applyButtonDetail'])
     def test_loan_latest_06(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿拒绝查询，贷前有撤销，拒绝状态)正案例-重点-待补充发散！！！'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿拒绝查询，贷前有撤销，拒绝状态)正案例'''
         list=cx_registNo_09()
         registNo=list[1]
         before_stat=list[0]
@@ -213,7 +213,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['repaymentDetail'])
         self.assertIsNone(t['data']['applyButtonDetail'])
     def test_loan_latest_07(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-(提现中状态)正案例'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-(当前提现中状态)正案例'''
         registNo=cx_under_withdraw()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
@@ -227,6 +227,23 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNotNone(t['data']['paymentDetail'])
         self.assertIsNotNone(t['data']['paymentDetail']['repaymentPlanList'])
         self.assertIsNone(t['data']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['repaymentDetail'])
+        self.assertIsNone(t['data']['reapplyDate'])
+        self.assertIsNone(t['data']['applyButtonDetail'])
+    def test_loan_latest_08(self):
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-(当前通过状态)正案例'''
+        registNo=cx_tongguo()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['loanStat'],'TRAIL')
+        self.assertIsNotNone(t['data']['loanNo'])
+        self.assertIsNotNone(t['data']['custNo'])
+        #self.assertIsNone(t['data']['bankAcctInfo'])
+        self.assertIsNone(t['data']['paymentDetail'])
+        self.assertEqual(str(t['data']['trailPaymentDetail']),"[{'loanAmt': '1000.00', 'prodNo': '25002400', 'showLoanDay': True, 'instNum': '1', 'paymentAmt': '750.00', 'repaymentAmt': '1140.00', 'loanDays': '3', 'feeList': [{'feeName': 'fee', 'feeValue': '100', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '5', 'feeType': 'BEFORE'}, {'feeName': 'post fee', 'feeValue': '50', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '6', 'feeType': 'BEFORE'}, {'feeName': 'Credit Fee', 'feeValue': '100', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '2', 'feeType': 'BEFORE'}, {'feeName': 'Interest', 'feeValue': '120', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '5', 'feeType': 'AFTER'}, {'feeName': 'OXXO Fee', 'feeValue': '20', 'originalFeeValue': None, 'realRepayAmt': None, 'reduceAmt': None, 'order': '77', 'feeType': 'AFTER'}], 'repaymentPlanList': [{'repayDate': '1638770400000', 'repayAmt': '1140.00'}]}]")
         self.assertIsNone(t['data']['repaymentDetail'])
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
