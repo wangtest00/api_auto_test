@@ -19,7 +19,15 @@ def cx_old_registNo():
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
-
+def cx_registNo_00():
+    sql='''#查询贷后状态为逾期的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
+          select REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
+          left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO
+          where a.AFTER_STAT='10270003' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL order by a.INST_TIME desc limit 1;'''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=str(registNo[0])
+    #print(registNo)
+    return registNo
 def cx_registNo():
     sql='''#查询贷后状态为正常的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
           select REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
@@ -115,7 +123,7 @@ def cx_registNo_12():
     sql='''#查询手机号：在贷，有lanacoin，且无减免记录，无实收
     select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
     left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.LOAN_NO=e.loan_no left join cu_cust_coin_dtl f on d.REGIST_NO=f.PHONE_NO
-    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.OBTAIN_VALUE>1000 and f.stat='11360001' order by a.INST_TIME desc limit 1;'''
+    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO="'''+prodNo+'''" and c.TRAN_TIME is NULL and e.loan_no is null and f.OBTAIN_VALUE>1000 and f.stat='11360001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     return phone
@@ -123,12 +131,29 @@ def cx_registNo_13():
     sql='''#查询手机号：在贷，有coupon，且无减免记录，无实收
     select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
     left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.LOAN_NO=e.loan_no left join cu_coupon_dtl f on d.REGIST_NO=f.PHONE_NO
-    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
+    where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO="'''+prodNo+'''" and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
-    #print(phone)
     return phone
-cx_registNo_13()
+
+def cx_registNo_14():
+    sql='''#查询手机号：永久积分大于200,已绑卡
+select a.PHONE_NO from cu_cust_coin_dtl a left join cu_cust_reg_dtl b on  b.REGIST_NO=a.PHONE_NO left join cu_cust_auth_dtl  c on c.CUST_NO=b.CUST_NO
+left join cu_cust_bank_card_dtl d on c.CUST_NO=d.CUST_NO
+where c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE>200 and d.BANK_ACCT_NO is not null
+order by a.INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=phone[0]
+    return phone
+def cx_registNo_15():
+    sql='''#查询手机号：永久积分小于200，非永久积分=0,已绑卡
+select a.PHONE_NO from cu_cust_coin_dtl a left join cu_cust_reg_dtl b on  b.REGIST_NO=a.PHONE_NO left join cu_cust_auth_dtl  c on c.CUST_NO=b.CUST_NO
+left join cu_cust_bank_card_dtl d on c.CUST_NO=d.CUST_NO
+where c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE<200  and a.NON_PERMANENT_VALUE=0 and d.BANK_ACCT_NO is not null
+order by a.INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=phone[0]
+    return phone
 #查询只借过一笔款且已结清的客户号
 def get_yijieqing_custNo():
     sql='''select  b.cust_no,count(1) as loan_cnt from
@@ -153,6 +178,12 @@ def cx_under_withdraw():
 where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" order by a.INST_TIME desc limit 1; '''
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
+    return registNo
+def cx_tongguo():
+    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no
+where a.BEFORE_STAT='10260003' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no="'''+prodNo+'''" order by a.INST_TIME desc limit 1; '''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=str(registNo[0])
     return registNo
 def cx_inst_num(loanNo):
     sql='''select INST_NUM from lo_loan_plan_dtl where loan_no="'''+loanNo+'''" and REPAY_STAT!='10270005' order by INST_NUM asc;'''

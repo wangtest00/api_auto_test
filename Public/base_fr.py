@@ -18,6 +18,14 @@ def cx_old_registNo():
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo
+def cx_registNo_00():
+    sql='''#查询贷后状态为逾期的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
+          select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO
+          left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO where a.AFTER_STAT='10270003' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='25002400' order by a.INST_TIME desc limit 1;'''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=str(registNo[0])
+    #print(registNo)
+    return registNo
 def cx_registNo():
     sql='''#查询贷后状态为正常的贷款用户手机号，产品号写死，实收表数据为空（未还过款）
           select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO
@@ -102,6 +110,23 @@ order by a.INST_TIME desc limit 1; '''
     phone=str(phone[0])
     return phone
 
+def cx_registNo_11():
+    sql=''' #查询202，未填写过邮箱的用户手机号，客户号
+    select c.REGIST_NO,a.CUST_NO from cu_cust_cert_dtl a left join cu_cust_contact_dtl b on a.CUST_NO=b.CUST_NO  left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO where a.email  not like "%@%" and b.APP_NO="'''+appNo+'''" and b.CON_NUM  not like "%@%"
+ORDER BY a.inst_time desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    return phone
+def cx_registNo_12():
+    sql=''' #查询202，已填写过邮箱的用户手机号，客户号
+    select c.REGIST_NO,a.CUST_NO from cu_cust_cert_dtl a left join cu_cust_contact_dtl b on a.CUST_NO=b.CUST_NO  left join cu_cust_reg_dtl c on b.CUST_NO=c.CUST_NO where a.email  like "%@%" and b.APP_NO="'''+appNo+'''" or b.CON_NUM  not like "%@%" GROUP BY c.REGIST_NO,a.CUST_NO
+ORDER BY a.inst_time desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    return phone
+def cx_registNo_13():
+    sql='''select t.PHONE_NO from cu_cust_coin_dtl t where t.PERMANENT_VALUE>200 order by t.INST_TIME desc limit 1;'''
+    phone=DataBase(which_db).get_one(sql)
+    phone=phone[0]
+    return phone
 #查询只借过一笔款且已结清的客户号
 def get_yijieqing_custNo():
     sql='''select  b.cust_no,count(1) as loan_cnt from
@@ -120,6 +145,12 @@ HAVING loan_cnt=1;'''
 def cx_under_withdraw():
     sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no
 where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no='25002400' order by a.INST_TIME desc limit 1; '''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=str(registNo[0])
+    return registNo
+def cx_tongguo():
+    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no
+where a.BEFORE_STAT='10260003' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no="'''+prodNo+'''" order by a.INST_TIME desc limit 1; '''
     registNo=DataBase(which_db).get_one(sql)
     registNo=str(registNo[0])
     return registNo
