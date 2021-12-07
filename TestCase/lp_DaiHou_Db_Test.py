@@ -15,7 +15,7 @@ class LP_DaiHou_Db_Test(unittest.TestCase):
     def tearDown(self): #每个用例运行之后运行的
         print('teardown_test')
     def test_check_fk(self):
-        '''【lanaPlus】放款成功后，无还款和减免，相关10个表关键字段值数据核对-正案例'''
+        '''【lanaPlus】放款成功后，无还款和减免，相关10个表关键字段值核对-正案例'''
         loan_no=cx_loan_no()
         t1=cx_lo_loan_dtl(loan_no)
         self.assertEqual(t1,[('1500.00', '1500.00', '3', '10000001', '10260005', '10270002', 'None')])
