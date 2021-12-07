@@ -12,6 +12,7 @@ def compute_code(m):
     x4=str(int(m[3])+5)
     x=x4[-1:]+x3[-1:]+x2[-1:]+x1[-1:]
     return x
+
 #查询客户号不为空的用户手机号，GAID='Exception:null'我的标记数据
 def cx_old_registNo():
     sql="select REGIST_NO from cu_cust_pwd_dtl  where app_no='"+appNo+"' order by INST_TIME desc;"
