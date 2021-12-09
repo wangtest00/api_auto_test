@@ -340,13 +340,27 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         t=r.json()
         self.assertEqual(t['errorCode'],0)
     def test_func_switch_stat(self):
-        '''【lanaPlus】/api/cust/func/switch/stat/11100008-积分抽奖开关值查询接口-正案例'''
+        '''【lanaPlus】/api/cust/func/switch/stat/11100008-积分抽奖开关值查询接口(增加了已结清笔数和手机号的限制)-正案例'''
         registNo=cx_registNo()
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/cust/func/switch/stat/11100008",headers=headt_api)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
+        config=cx_lottery_config()
+        print(registNo,"手机尾号=",registNo[-1:])
+        print(config)
+        jieqing_time=cx_jieqing_time(registNo)
+        print('该用户已结清次数=',jieqing_time)
+        if config[0]==registNo[-1:] and config[1] is None and config[2] is None:  # 手机号尾号等于配置尾号，无结清次数限制
+            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
+        elif config[0]==''          and config[1] is None and config[2] is None:  # 不限制手机号尾号，无结清次数限制
+            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
+        elif config[0]==registNo[-1:] and jieqing_time>=config[1]:                # 手机号尾号等于配置尾号，已结清次数大于等于最小配置
+            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
+        elif config[0]!=registNo[-1:] and jieqing_time>=config[1]:                # 手机号尾号不等于配置尾号，已结清次数大于等于最小配置
+            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":False})
+        else:
+            self.assertEqual(t['data'],{'appNo':'201','funcType':'11100008','funcStat':False})
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

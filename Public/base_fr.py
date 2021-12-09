@@ -88,10 +88,22 @@ order by a.INST_TIME desc limit 1; '''
     return phone
 
 def cx_registNo_08():
-    sql='''#查询手机号，同一个手机号可能有贷款在拒绝，撤销等多种状态
-select c.BEFORE_STAT,d.REGIST_NO from lo_loan_dtl c left join cu_cust_reg_dtl d on c.cust_no=d.cust_no where c.cust_no=(select b.CUST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''"
-order by a.INST_TIME desc limit 1) order by c.inst_time desc limit 1; '''
+    sql='''#查询手机号，只有一笔贷款,状态非自动撤销，即人工撤销
+select x.BEFORE_STAT,y.REGIST_NO,count(1) as loan_cnt from lo_loan_dtl x left join cu_cust_reg_dtl y on x.CUST_NO=y.CUST_NO
+where x.CUST_NO in (select a.CUST_NO
+from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_auto_hand_record e on a.loan_no=e.BUSI_NO
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and e.INST_TIME is null
+order by a.INST_TIME desc) GROUP BY x.CUST_NO HAVING loan_cnt=1 ORDER BY x.INST_TIME desc limit 1; '''
+    phone=DataBase(which_db).get_one(sql)
+    phone=list(phone)   #元祖转列表
+    return phone
+def cx_registNo_081():
+    sql='''#查询手机号，只有一笔贷款,自动撤销状态
+select x.BEFORE_STAT,y.REGIST_NO,count(1) as loan_cnt from lo_loan_dtl x left join cu_cust_reg_dtl y on x.CUST_NO=y.CUST_NO
+where x.CUST_NO in (select a.CUST_NO
+from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_auto_hand_record e on a.loan_no=e.BUSI_NO
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and e.INST_TIME is not null
+order by a.INST_TIME desc) GROUP BY x.CUST_NO HAVING loan_cnt=1 ORDER BY x.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=list(phone)   #元祖转列表
     return phone
