@@ -14,7 +14,6 @@ def cx_lo_loan_dtl(loan_no):
     '''
     result=DataBase(which_db).get_one(sql)
     t=zhuan_huan(result)
-    #print(t)
     return t
 
 def cx_fin_tran_pay_dtl(loan_no):

@@ -141,7 +141,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],False)
     def test_loan_latest_05(self):
-        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例'''
+        '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿人工撤销查询，贷前有撤销，拒绝状态)正案例'''
         list=cx_registNo_08()
         registNo=list[1]
         before_stat=list[0]

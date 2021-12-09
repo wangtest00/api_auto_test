@@ -154,7 +154,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],False)
     def test_loan_latest_05(self):
-        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿撤销查询，贷前有撤销，拒绝状态)正案例-重点'''
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿人工撤销查询，贷前有撤销，拒绝状态)正案例-重点'''
         list=cx_registNo_08()
         registNo=list[1]
         before_stat=list[0]
@@ -258,6 +258,37 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['reapplyDate'])
         self.assertIsNone(t['data']['applyButtonDetail'])
         self.assertIsNone(t['data']['showWithSucessPage'])
+    def test_loan_latest_09(self):
+        '''【lanaPlus】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(先拿自动撤销查询，贷前有撤销，拒绝状态)正案例-重点'''
+        list=cx_registNo_081()
+        registNo=list[1]
+        before_stat=list[0]
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        if before_stat=='10260007':
+            stat='NEW'
+            #self.assertTrue(t['data']['certStatus']['certAuth'])
+            self.assertIsNone(t['data']['reapplyDate'])
+            self.assertTrue(t['data']['certStatus']['kycAuth'])
+            self.assertFalse(t['data']['certStatus']['bankAuth'])
+            self.assertFalse(t['data']['certStatus']['otherContactAuth'])
+            self.assertEqual(t['data']['applyButtonDetail'],{'buttonName': '234', 'desc': '234'})
+        elif before_stat=='10260006':
+            stat='REFUSE'
+            self.assertIsNotNone(t['data']['reapplyDate'])
+        else:
+            print("非撤销或拒绝状态")
+            stat='0'
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(stat,t['data']['loanStat'])
+        self.assertIsNotNone(t['data']['loanNo'])
+        self.assertIsNotNone(t['data']['custNo'])
+        self.assertIsNone(t['data']['bankAcctInfo'])
+        self.assertIsNone(t['data']['paymentDetail'])
+        self.assertIsNone(t['data']['trailPaymentDetail'])
+        self.assertIsNone(t['data']['repaymentDetail'])
     def test_fin_repay_stp(self):
         '''【lanaPlus】/api/trade/fin/repay-STP申请还款接口-有在贷(正常)-正案例'''
         registNo=cx_registNo_04()
@@ -450,7 +481,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         t=r.json()
         print(t)
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(str(len(t['data']['details'])),t['data']['totalCoins'][:2])
+        #self.assertEqual(str(len(t['data']['details'])),t['data']['totalCoins'][:2])
     def test_repayment_deduction_coin(self):
         '''【lanaPlus】/api/cust/repayment/deduction-减免接口-lanacoin减免成功-正案例'''
         registNo=cx_registNo_12()
