@@ -1,6 +1,7 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
+from api_auto_test.public.mex_mgt_lp import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
@@ -137,6 +138,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(r.status_code,200)
         t=r.json()
         self.assertIsNotNone(t['data']['loanNo'])
+
     def test_bank_auth_01(self):
         '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口-正案例'''
         bank_acct_no=str(random.randint(1000,9999))

@@ -13,6 +13,23 @@ def compute_code(m):
     x4=str(int(m[3])+5)
     x=x4[-1:]+x3[-1:]+x2[-1:]+x1[-1:]
     return x
+#5.借据贷前状态=“待匹配产品”，贷款与客户基本关系表' 需要手动插数risk_level AA和risk_score 20120701(印度)，25002400或26002401（墨西哥）（调度系统跑批识别出来，分配对应产品）
+def insert_risk(loan_no):
+    sql="update lo_loan_cust_rel set risk_level='AA',risk_score='"+prodNo+"' where LOAN_NO='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql)
+    DataBase(which_db).call_many_proc()
+def cx_lottery_config():
+    sql='''
+    select LAST_PHONE_NO,SETTLE_MIN,SETTLE_MAX,CONFIG_NO from app_coin_lottery_config where UPDT_TIME is null;
+    '''
+    config=DataBase(which_db).get_one(sql)
+    return config
+def cx_jieqing_time(regist_no):
+    sql='''
+    select count(AFTER_STAT) from lo_loan_dtl where CUST_NO= (select CUST_NO from cu_cust_reg_dtl where REGIST_NO="'''+regist_no+'''") and AFTER_STAT in ('10270005','10270004')'''
+    time=DataBase(which_db).get_one(sql)
+    time=time[0]
+    return time
 def cx_loan_no():
     #查询贷后正常，无还款、减免记录的贷款编号，指定产品号
     sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
@@ -100,10 +117,22 @@ order by a.INST_TIME desc limit 1; '''
     return phone
 
 def cx_registNo_08():
-    sql='''#查询手机号，同一个手机号可能有贷款在拒绝，撤销等多种状态
-select c.BEFORE_STAT,d.REGIST_NO from lo_loan_dtl c left join cu_cust_reg_dtl d on c.cust_no=d.cust_no where c.cust_no=(select b.CUST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''"
-order by a.INST_TIME desc limit 1) order by c.inst_time desc limit 1; '''
+    sql='''#查询手机号，只有一笔贷款,状态非自动撤销，即人工撤销
+select x.BEFORE_STAT,y.REGIST_NO,count(1) as loan_cnt from lo_loan_dtl x left join cu_cust_reg_dtl y on x.CUST_NO=y.CUST_NO
+where x.CUST_NO in (select a.CUST_NO
+from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_auto_hand_record e on a.loan_no=e.BUSI_NO
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and e.INST_TIME is null
+order by a.INST_TIME desc) GROUP BY x.CUST_NO HAVING loan_cnt=1 ORDER BY x.INST_TIME desc limit 1; '''
+    phone=DataBase(which_db).get_one(sql)
+    phone=list(phone)   #元祖转列表
+    return phone
+def cx_registNo_081():
+    sql='''#查询手机号，只有一笔贷款,自动撤销状态
+select x.BEFORE_STAT,y.REGIST_NO,count(1) as loan_cnt from lo_loan_dtl x left join cu_cust_reg_dtl y on x.CUST_NO=y.CUST_NO
+where x.CUST_NO in (select a.CUST_NO
+from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_auto_hand_record e on a.loan_no=e.BUSI_NO
+where  a.BEFORE_STAT='10260007' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and e.INST_TIME is not null
+order by a.INST_TIME desc) GROUP BY x.CUST_NO HAVING loan_cnt=1 ORDER BY x.INST_TIME desc limit 1; '''
     phone=DataBase(which_db).get_one(sql)
     phone=list(phone)   #元祖转列表
     return phone
@@ -189,8 +218,9 @@ where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+
     registNo=registNo[0]
     return registNo
 def cx_tongguo():
-    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no
-where a.BEFORE_STAT='10260003' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no="'''+prodNo+'''" order by a.INST_TIME desc limit 1; '''
+    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no left join lo_auto_hand_record d
+on a.loan_no=d.BUSI_NO
+where a.BEFORE_STAT='10260003' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no="'''+prodNo+'''" and d.INST_TIME is null order by a.INST_TIME desc limit 1; '''
     registNo=DataBase(which_db).get_one(sql)
     registNo=str(registNo[0])
     return registNo
