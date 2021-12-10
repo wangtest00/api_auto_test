@@ -1,7 +1,6 @@
 from api_auto_test.public.base_fr import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_fr import *
-from api_auto_test.public.mex_mgt_fr import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner

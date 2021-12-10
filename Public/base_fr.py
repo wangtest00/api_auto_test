@@ -12,7 +12,11 @@ def compute_code(m):
     x4=str(int(m[3])+5)
     x=x4[-1:]+x3[-1:]+x2[-1:]+x1[-1:]
     return x
-
+#5.借据贷前状态=“待匹配产品”，贷款与客户基本关系表' 需要手动插数risk_level AA和risk_score 20120701(印度)，25002400或26002401（墨西哥）（调度系统跑批识别出来，分配对应产品）
+def insert_risk(loan_no):
+    sql="update lo_loan_cust_rel set risk_level='AA',risk_score='"+prodNo+"' where LOAN_NO='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql)
+    DataBase(which_db).call_many_proc()
 #查询客户号不为空的用户手机号，GAID='Exception:null'我的标记数据
 def cx_old_registNo():
     sql="select REGIST_NO from cu_cust_pwd_dtl  where app_no='"+appNo+"' order by INST_TIME desc;"
