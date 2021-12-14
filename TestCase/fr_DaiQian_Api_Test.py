@@ -228,12 +228,12 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
     def test_personal_email_01(self):
         '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-正案例（用户只要没填写过邮箱都会填写成功邮箱）'''
         registNo=cx_registNo_11()
-        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
         head=login_code(registNo[0])
         r1=requests.get(host_api+"/api/cust/personal/email/"+registNo[0],headers=head)
         t1=r1.json()
         self.assertEqual(t1['errorCode'],0)
         self.assertFalse(t1['data']['checkFill'])
+        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
         r2=requests.post(host_api+"/api/cust/personal/email",data=json.dumps(data),headers=head)
         t2=r2.json()
         self.assertEqual(t2['errorCode'],0)

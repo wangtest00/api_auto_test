@@ -359,7 +359,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         elif config[0]==registNo[-1:] and jieqing_time>=config[1]:                # 手机号尾号等于配置尾号，已结清次数大于等于最小配置
             self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
         elif config[0]!=registNo[-1:] and jieqing_time>=config[1]:                # 手机号尾号不等于配置尾号，已结清次数大于等于最小配置
-            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":False})
+            self.assertEqual(t['data'],{"appNo":"201","funcType":"11100008","funcStat":True})
         else:
             self.assertEqual(t['data'],{'appNo':'201','funcType':'11100008','funcStat':False})
     @classmethod

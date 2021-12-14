@@ -87,13 +87,19 @@ order by a.INST_TIME desc limit 1;'''
     phone=str(phone[0])
     return phone
 def cx_registNo_04():
-    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷未结清
+    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷，正常未结清
     select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
     where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270002'  order by a.INST_TIME desc limit 1;
 '''
     phone=DataBase(which_db).get_one(sql)
     return phone
-
+def cx_registNo_042():
+    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷,逾期未结清
+    select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
+    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270003'  order by a.INST_TIME desc limit 1;
+'''
+    phone=DataBase(which_db).get_one(sql)
+    return phone
 def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
 select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
@@ -173,7 +179,6 @@ def cx_registNo_13():
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     return phone
-
 def cx_registNo_14():
     sql='''#查询手机号：永久积分大于200,已绑卡
 select a.PHONE_NO from cu_cust_coin_dtl a left join cu_cust_reg_dtl b on  b.REGIST_NO=a.PHONE_NO left join cu_cust_auth_dtl  c on c.CUST_NO=b.CUST_NO
