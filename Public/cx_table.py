@@ -104,6 +104,15 @@ def jisuan_repay_date(loan_no):
         repay_date=d[:4]+d[5:7]+d[8:10]
         m.append(repay_date)
     return m
+def jisuan_repay_date_fr(loan_no):
+    sql='''select date(WITHDRAW_SUCCESS_TIME),INST_NUM from lo_loan_dtl where loan_no="'''+loan_no+'''";'''
+    result=DataBase(which_db).get_one(sql)
+    m=[]
+    for i in range(result[1]):
+        d=str(result[0]+datetime.timedelta(days=+3*(i+1)))  #25002400:三天周期
+        repay_date=d[:4]+d[5:7]+d[8:10]
+        m.append(repay_date)
+    return m
 
 if __name__ == '__main__':
     #cx_lo_loan_plan_dtl("L2012112038155060734586454016")

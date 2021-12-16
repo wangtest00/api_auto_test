@@ -159,11 +159,29 @@ lo_loan_dtl a
 WHERE
 	a.BEFORE_STAT = '10260005'
 AND a.AFTER_STAT = '10270005'
+and date(a.INST_TIME)<date(now())
 GROUP BY a.cust_no
 HAVING count(1) =1
 )a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no inner join cu_cust_reg_dtl c on b.cust_no=c.cust_no where c.APP_NO="'''+appNo+'''"
 group by  b.cust_no
-HAVING loan_cnt=1;'''
+HAVING loan_cnt=1
+order by b.INST_TIME desc;'''
+    custNo=DataBase(which_db).get_one(sql)
+    return custNo[0]
+def get_yijieqing_custNo2():
+    sql='''select  b.cust_no,count(1) as loan_cnt from
+(select  a.cust_no from
+lo_loan_dtl a
+WHERE
+	a.BEFORE_STAT = '10260005'
+AND a.AFTER_STAT = '10270005'
+and date(a.INST_TIME)=date(now())
+GROUP BY a.cust_no
+HAVING count(1) =1
+)a INNER JOIN lo_loan_dtl b on a.cust_no=b.cust_no inner join cu_cust_reg_dtl c on b.cust_no=c.cust_no where c.APP_NO="'''+appNo+'''"
+group by  b.cust_no
+HAVING loan_cnt=1
+order by b.INST_TIME desc;'''
     custNo=DataBase(which_db).get_one(sql)
     return custNo[0]
 def cx_under_withdraw():
@@ -172,6 +190,24 @@ where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+
     registNo=DataBase(which_db).get_one(sql)
     registNo=str(registNo[0])
     return registNo
+def cx_loan_no():
+    #查询贷后正常，无还款、减免记录的贷款编号，指定产品号
+    sql='''SELECT a.loan_no FROM lo_loan_dtl a
+LEFT JOIN lo_loan_prod_rel b ON a.LOAN_NO = b.LOAN_NO
+LEFT JOIN fin_rd_dtl c ON a.LOAN_NO = c.LOAN_NO
+left join fin_fee_reduce_dtl d on a.loan_no=d.LOAN_NO
+WHERE  a.AFTER_STAT = '10270002'
+   and b.APP_NO = '202'
+   AND b.PROD_NO = '25002400'
+   AND c.TRANSTER_TYPE = '10440001'
+   and d.INST_time is null
+GROUP BY  a.LOAN_NO
+HAVING count(c.LOAN_NO) =1
+order by a.INST_TIME desc
+limit 1;'''
+    loan_no=DataBase(which_db).get_one(sql)
+    loan_no=loan_no[0]
+    return loan_no
 def cx_tongguo():
     sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no
 where a.BEFORE_STAT='10260003' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no="'''+prodNo+'''" order by a.INST_TIME desc limit 1; '''
