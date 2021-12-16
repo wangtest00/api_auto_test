@@ -173,7 +173,7 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],30001)
         self.assertEqual(t['message'],'custNoParámetro anormal ')
     def test_loan_apply_reloan(self):
-        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件一键复贷)-正案例'''
+        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件一键复贷：前一笔申请日期小于复贷申请日期)-正案例'''
         custNo=get_yijieqing_custNo()
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
         registNo=DataBase(which_db).get_one(sql)
@@ -194,6 +194,20 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['recentLoanDetail']['repaymentDetail'])
         self.assertIsNone(t['data']['recentLoanDetail']['applyButtonDetail'])
         self.assertIsNone(t['data']['recentLoanDetail']['reapplyDate'])
+    def test_loan_apply_reloan_02(self):
+        '''【FeriaRapida】/api/loan/apply申请贷款接口(复客进件一键复贷_前一笔申请日期=复贷申请日期,会报错拦截)-正案例'''
+        custNo=get_yijieqing_custNo2()
+        print(custNo)
+        sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
+        registNo=DataBase(which_db).get_one(sql)
+        phone=registNo[0]
+        headt_api=login_code(phone)
+        data={"custNo":custNo}
+        r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data),headers=headt_api)#申请贷款
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual('Ha aplicado demasiadas veces, por favor intente después.',t['message'])#你申请太多次了，请稍后再试。
     def test_bank_codes(self):
         '''【FeriaRapida】/api/common/bank/codes?types=1002获取银行卡码值及前缀接口-正案例'''
         registNo=cx_registNo_10()

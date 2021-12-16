@@ -1,6 +1,7 @@
 from api_auto_test.public.base_lp import *
 from api_auto_test.public.dataBase import *
 from api_auto_test.public.var_lp import *
+from api_auto_test.public.zhanqi import *
 import random
 import unittest,requests,json
 from HTMLTestRunner_Chart import HTMLTestRunner
@@ -148,7 +149,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
         t=r.json()
         self.assertEqual(t['errorCode'],0)                                    #改为4位随机数
-        sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"
+        sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"#修改成随机卡号，避免触发绑卡被拒:同一张银行卡不能被超过2个人绑定并放款成功
         DataBase(which_db).executeUpdateSql(sql)  #防止被真实放款给该银行卡
     def test_bank_auth_02(self):
         '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口(有在贷不能更换银行卡)-正案例'''
@@ -184,10 +185,10 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],30001)
         self.assertEqual(t['message'],'custNoParámetro anormal ')
-    def test_loan_apply_reloan(self):
-        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件一键复贷)-正案例'''
+    def test_loan_apply_reloan_01(self):
+        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件一键复贷_前一笔申请日期小于复贷申请日期)-正案例'''
         custNo=get_yijieqing_custNo()
-        #print(custNo)
+        print(custNo)
         sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
         registNo=DataBase(which_db).get_one(sql)
         phone=registNo[0]
@@ -207,6 +208,21 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         self.assertIsNone(t['data']['recentLoanDetail']['repaymentDetail'])
         self.assertIsNone(t['data']['recentLoanDetail']['applyButtonDetail'])
         self.assertIsNone(t['data']['recentLoanDetail']['reapplyDate'])
+    def test_loan_apply_reloan_02(self):
+        '''【lanaPlus】/api/loan/apply申请贷款接口(复客进件一键复贷_前一笔申请日期=复贷申请日期,会报错拦截)-正案例'''
+        custNo=get_yijieqing_custNo2()
+        print(custNo)
+        sql="select REGIST_NO from cu_cust_reg_dtl where CUST_NO='"+custNo+"';"
+        registNo=DataBase(which_db).get_one(sql)
+        phone=registNo[0]
+        headt_api=login_code(phone)
+        data={"custNo":custNo}
+        r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data),headers=headt_api)#申请贷款
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertEqual('Ha aplicado demasiadas veces, por favor intente después.',t['message'])  #你申请太多次了，请稍后再试。
+
     def test_bank_codes(self):
         '''【lanaPlus】/api/common/bank/codes?types=1002获取银行卡码值及前缀接口-正案例'''
         registNo=cx_registNo_10()
@@ -364,6 +380,87 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
             self.assertEqual(t['data'],{'appNo':'201','funcType':'11100008','funcStat':False})
         else:
             self.assertEqual(t['data'],{'appNo':'201','funcType':'11100008','funcStat':False})
+    def test_api_h5_login(self):
+        '''【lanaPlus】/api/h5/login  展期h5登录接口-正案例'''
+        custNo_loanNo=test_for_zhanqi()
+        loanNo=custNo_loanNo[0]
+        custNo=custNo_loanNo[1]
+        r1=requests.get(host_api+"/api/h5/anon/id/"+custNo,verify=False)
+        t1=r1.json()
+        print("t1=",t1)
+        self.assertEqual(t1['errorCode'],0)
+        self.assertIsNotNone(t1['data'])
+        data=t1['data']
+        data2={"customerId": data}
+        r2=requests.post(host_api+"/api/h5/login/"+data,data=json.dumps(data2),headers=head_api,verify=False)
+        t2=r2.json()
+        print("t2=",t2)
+        self.assertEqual(t2['errorCode'],0)
+        self.assertEqual(t2['data']['custNo'],custNo)
+        self.assertEqual(t2['data']['loanNo'],loanNo)
+        self.assertIsNotNone(t2['data']['token'])
+    def test_api_h5_repay_stp(self):
+        '''【lanaPlus】/api/h5/repay  展期h5登录,发起展期申请stp,stp还款接口-正案例'''
+        custNo_loanNo=test_for_zhanqi()
+        loanNo=custNo_loanNo[0]
+        custNo=custNo_loanNo[1]
+        r1=requests.get(host_api+"/api/h5/anon/id/"+custNo,verify=False)
+        t1=r1.json()
+        print("t1=",t1)
+        self.assertEqual(t1['errorCode'],0)
+        self.assertIsNotNone(t1['data'])
+        data=t1['data']
+        data2={"customerId": data}
+        r2=requests.post(host_api+"/api/h5/login/"+data,data=json.dumps(data2),headers=head_api,verify=False)
+        t2=r2.json()
+        print("t2=",t2)
+        self.assertEqual(t2['errorCode'],0)
+        self.assertEqual(t2['data']['custNo'],custNo)
+        self.assertEqual(t2['data']['loanNo'],loanNo)
+        token=t2['data']['token']
+        phone=t2['data']['phone']
+        headt=head_zhanqi(token)
+        #最近一笔贷款接口h5
+        r3=requests.get(host_api+"/api/h5/latest/"+phone,headers=headt,verify=False)
+        t3=r3.json()
+        print("t3=",t3)
+        currentRepayDate=t3['data']['loanInfoData']['loanDateInfo']['currentRepayDate']
+        rollOverAmt=t3['data']['rollOverDetails']['rollOverAmt']
+        data4={"advance": "10000000",
+              "custNo": custNo,
+              "defer": True,
+              "loanNo": loanNo,
+              "paymentMethod": "STP",
+              "repayDate": currentRepayDate,
+              "repayInstNum": 1,
+              "tranAppType": "Android",
+              "transAmt": rollOverAmt}
+        #发起展期申请
+        r4=requests.post(host_api+"/api/h5/repay",data=json.dumps(data4),headers=headt,verify=False)
+        t4=r4.json()
+        print("t4=",t4)
+        self.assertEqual(t4['errorCode'],0)
+        self.assertEqual(t4['data']['code'],10000)
+        self.assertEqual(t4['data']['msg'],'apply success')
+        self.assertIsNone(t4['data']['settle'])
+        self.assertEqual(t4['data']['paymentMethod'],'STP')
+        self.assertIsNone(t4['data']['conektaRepayment'])
+        self.assertEqual(t4['data']['stpRepayment']['nombre'],'QUANTX_TECH')
+        self.assertEqual(t4['data']['stpRepayment']['destinatario'],'STP')
+        clabeNo=t4['data']['stpRepayment']['clabeNo']
+        transAmt=str(t4['data']['stpRepayment']['transAmt'])
+        stp_repayment(clabeNo,transAmt)   #stp还款
+        sql='''select TRAN_STAT from pay_tran_dtl where LOAN_NO="'''+loanNo+'''" and TRAN_USE='10330005';'''#展期还款-10330005
+        tran_stat=DataBase(which_db).get_one(sql)
+        self.assertEqual(tran_stat[0],'10220002')
+        sql2='''select AFTER_STAT from lo_loan_dtl where LOAN_NO="'''+loanNo+'''";'''
+        after_stat=DataBase(which_db).get_one(sql2)
+        self.assertEqual(after_stat[0],'10270004')
+        newLoanNo=new_loanNo(loanNo)
+        sql3='''select BEFORE_STAT,AFTER_STAT from lo_loan_dtl where LOAN_NO="'''+newLoanNo+'''";'''
+        stat=DataBase(which_db).get_one(sql3)
+        self.assertEqual(stat[0],'10260005')
+        self.assertEqual(stat[1],'10270002')
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

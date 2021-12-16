@@ -5,7 +5,7 @@ Created on 2018-11-26
 '''
 import time
 import pymysql
-from api_auto_test.public.var_fr import *   #FR和lanaplus共用一个数据库
+from api_auto_test.public.var_lp import *   #FR和lanaplus共用一个数据库
 
 class DataBase():
     def __init__(self,witchdb):
