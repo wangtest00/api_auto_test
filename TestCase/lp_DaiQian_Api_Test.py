@@ -141,14 +141,14 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
 
     def test_bank_auth_01(self):
         '''【lanaPlus】/api/cust/auth/bank绑定银行卡接口-正案例'''
-        bank_acct_no=str(random.randint(1000,9999))
+        bank_acct_no=str(random.randint(1000000,9999999))
         test_data=for_bank_auth()
         custNo=test_data[0]
         head=test_data[1]
         data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
         r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=head)
         t=r.json()
-        self.assertEqual(t['errorCode'],0)                                    #改为4位随机数
+        self.assertEqual(t['errorCode'],0)                                    #改为7位随机数
         sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"#修改成随机卡号，避免触发绑卡被拒:同一张银行卡不能被超过2个人绑定并放款成功
         DataBase(which_db).executeUpdateSql(sql)  #防止被真实放款给该银行卡
     def test_bank_auth_02(self):
