@@ -406,9 +406,8 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
                        "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
             r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
             t=r.json()
+            print(t)
             self.assertEqual(t['errorCode'],0)
-            afterstat=cx_beforeStat_afterStat(loanNo)
-            self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
         else:
             print(registNo)
             phone=registNo[0]
@@ -426,15 +425,17 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
                 else:
                     sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
             monto=str(sum)
+            print("总应还金额=",monto)
             loan_No=t['data']['loanNo']
             data={"abono":{"id":"37755992","fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
                        "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
                        "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
             r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
             t=r.json()
+            print(t)
             self.assertEqual(t['errorCode'],0)
-            afterstat=cx_beforeStat_afterStat(loan_No)
-            self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
+        afterstat=cx_beforeStat_afterStat(loan_No)
+        self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
     def test_oxxo_repayment(self):
         '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷（正常）,结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
