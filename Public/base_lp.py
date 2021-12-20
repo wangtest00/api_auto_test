@@ -87,30 +87,32 @@ order by a.INST_TIME desc limit 1;'''
     phone=str(phone[0])
     return phone
 def cx_registNo_04():
-    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷，正常未结清
+    sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷,正常未结清
     select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
-    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270002'  order by a.INST_TIME desc limit 1;
+    left join cu_cust_bank_card_dtl d on a.CUST_NO=d.CUST_NO
+    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270002' and d.BANK_ACCT_NO is not null and d.USEABLE='10000001'  order by a.INST_TIME desc limit 1;
 '''
     phone=DataBase(which_db).get_one(sql)
     return phone
 def cx_registNo_042():
     sql='''#查询手机号c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM，有在贷,逾期未结清
     select c.REGIST_NO,c.CUST_NO,a.LOAN_NO,a.INST_NUM from lo_loan_dtl a  left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
-    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270003'  order by a.INST_TIME desc limit 1;
+    left join cu_cust_bank_card_dtl d on a.CUST_NO=d.CUST_NO
+    where b.APP_NO="'''+appNo+'''" and c.app_no="'''+appNo+'''" and a.AFTER_STAT='10270003' and d.BANK_ACCT_NO is not null and d.USEABLE='10000001' order by a.INST_TIME desc limit 1;
 '''
     phone=DataBase(which_db).get_one(sql)
     return phone
 def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
 select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
-left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO
-where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005'
+left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO left join cu_cust_bank_card_dtl f on a.CUST_NO=f.CUST_NO
+where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
 order by a.INST_TIME desc limit 1;  '''
     phone=DataBase(which_db).get_one(sql)
     return phone
 def cx_registNo_06(loanNo):
     sql='''#查询OXXO还款申请记录
-select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where LOAN_NO="'''+loanNo+'''" and  ACT_TRAN_AMT is null and TRAN_CHAN_NAME !='STP支付渠道' order by INST_TIME desc limit 1;'''
+select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where LOAN_NO="'''+loanNo+'''" and  ACT_TRAN_AMT is null and TRAN_CHAN_NAME ='Conekta支付渠道' and TRAN_CHAN_NO='LanaPlusProd' order by INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     #print(phone)
     return phone
@@ -183,7 +185,7 @@ def cx_registNo_14():
     sql='''#查询手机号：永久积分大于200,已绑卡
 select a.PHONE_NO from cu_cust_coin_dtl a left join cu_cust_reg_dtl b on  b.REGIST_NO=a.PHONE_NO left join cu_cust_auth_dtl  c on c.CUST_NO=b.CUST_NO
 left join cu_cust_bank_card_dtl d on c.CUST_NO=d.CUST_NO
-where c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE>200 and d.BANK_ACCT_NO is not null
+where a.STAT='11360001' and c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE>200 and d.BANK_ACCT_NO is not null
 order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
@@ -192,7 +194,7 @@ def cx_registNo_15():
     sql='''#查询手机号：永久积分小于200，非永久积分=0,已绑卡
 select a.PHONE_NO from cu_cust_coin_dtl a left join cu_cust_reg_dtl b on  b.REGIST_NO=a.PHONE_NO left join cu_cust_auth_dtl  c on c.CUST_NO=b.CUST_NO
 left join cu_cust_bank_card_dtl d on c.CUST_NO=d.CUST_NO
-where c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE<200  and a.NON_PERMANENT_VALUE=0 and d.BANK_ACCT_NO is not null
+where a.STAT='11360001' and c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='1' and c.OTHER_CONTACT_AUTH='1'  and b.APP_NO='201' and a.PERMANENT_VALUE<200  and a.NON_PERMANENT_VALUE=0 and d.BANK_ACCT_NO is not null
 order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
@@ -235,10 +237,10 @@ def cx_beforeStat_afterStat(loanNo):
     stat=DataBase(which_db).get_one(sql)
     return stat
 def cx_under_withdraw():
-    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO
-where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" order by a.INST_TIME desc limit 1; '''
+    sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no left join cu_cust_bank_card_dtl d on a.CUST_NO=d.CUST_NO
+where a.BEFORE_STAT='10260008' and a.AFTER_STAT is null and b.APP_NO="'''+appNo+'''" and c.prod_no='25002400' and d.BANK_ACCT_NO is not null and d.USEABLE='10000001' order by a.INST_TIME desc limit 1; '''
     registNo=DataBase(which_db).get_one(sql)
-    registNo=registNo[0]
+    registNo=str(registNo[0])
     return registNo
 def cx_tongguo():
     sql='''select b.REGIST_NO from lo_loan_dtl a left join cu_cust_reg_dtl b on a.CUST_NO=b.CUST_NO left join lo_loan_prod_rel c on a.loan_no=c.loan_no left join lo_auto_hand_record d
