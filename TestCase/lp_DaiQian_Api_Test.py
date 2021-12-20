@@ -401,7 +401,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         self.assertEqual(t2['data']['loanNo'],loanNo)
         self.assertIsNotNone(t2['data']['token'])
     def test_api_h5_repay_stp(self):
-        '''【lanaPlus】/api/h5/repay  展期h5登录,发起展期申请stp,stp还款接口-正案例'''
+        '''【lanaPlus】/api/h5/repay  展期h5登录,发起展期申请STP,STP还款接口-正案例'''
         custNo_loanNo=test_for_zhanqi()
         loanNo=custNo_loanNo[0]
         custNo=custNo_loanNo[1]
