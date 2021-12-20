@@ -347,6 +347,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         data={"phoneNo":registNo}
         r=requests.post(host_api+'/api/cust/coin/lottery/win',data=json.dumps(data),headers=headt_api)
         t=r.json()
+        print(t)
         self.assertEqual(t['errorCode'],40021)
         self.assertEqual(t['message'],'Tales operaciones no están permitidas')
     def test_coin_lottery_total_winning_record(self):
