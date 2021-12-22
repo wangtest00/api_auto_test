@@ -6,7 +6,7 @@ import unittest,requests,json,decimal
 from HTMLTestRunner_Chart import HTMLTestRunner
 
 
-class LP_DaiHou_Db_Test(unittest.TestCase):
+class FR_Db_Check_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')

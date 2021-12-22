@@ -1,4 +1,4 @@
-__all__=['host_api','host_action','host_mgt','head_api','host_pay','host_coll','head_mgt','head_pay','CONFIGS','prodNo','which_db','appNo','shenpiren']
+__all__=['host_api','host_action','host_mgt','head_api','host_pay','host_coll','head_coll','head_mgt','head_pay','head_msg','host_msg','CONFIGS','prodNo','which_db','appNo','shenpiren']
 
 appNo='201'    #当前产品号，测试201用多期，马甲包只支持单期
 shenpiren={'201':['wangs2@whalekun.com','https://test-mgt.lanaplus.mx','28070110','mex_pdl_loan'],'202':['wangs@whalekun.com','https://test-mgt.feriarapida.mx','25002400','mex_pdl_loan']}
@@ -9,6 +9,7 @@ host_api="https://test-api.quantx.mx"        #APP
 host_action="https://test-action.quantx.mx"  #埋点
 host_pay="https://test-pay.quantx.mx"        #支付
 host_coll="https://test-coll.quantx.mx"      #催收
+host_msg="https://test-msg.quantx.mx"        #消息
 head_api={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","x-auth-token": "Bearer" ,"accept-encoding": "gzip","content-length": "63","host":"test-api.quantx.mx","x-app-name": "LanaPlus","content-type": "application/json",
         "x-app-type": "10090001","x-app-version": "116","x-app-no": appNo }
 
@@ -27,3 +28,19 @@ CONFIGS = {
     'mex_pdl_loan': {'host':'192.168.0.60','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'mex_pdl_loan'},
     'manage_need_loan': {'host':'13.235.214.155','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'manage_need_loan'}
 }
+head_msg={"Content-Type": "application/json",
+"User-Agent": "PostmanRuntime/7.28.4",
+"Accept": "*/*",
+"Postman-Token": "bc11f9a5-e351-4f92-85cb-a590c0557047",
+"Host": "test-msg.quantx.mx",
+"Accept-Encoding": "gzip, deflate, br",
+"Connection": "keep-alive",
+"Content-Length": "286"}
+head_coll={"Content-Type": "application/json",
+"User-Agent": "PostmanRuntime/7.28.4",
+"Accept": "*/*",
+"Postman-Token": "2e87c93f-3a5f-4070-b579-e14787d344ab",
+"Host": "test-coll.quantx.mx",
+"Accept-Encoding": "gzip, deflate, br",
+"Connection": "keep-alive",
+"Content-Length": "210"}

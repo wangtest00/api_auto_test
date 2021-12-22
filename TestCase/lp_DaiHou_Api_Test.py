@@ -375,6 +375,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
     def test_stp_repayment(self):
         '''【lanaPlus】/api/trade/stp_repayment/annon/event/webhook-还款接口-STP模拟银行回调-有在贷（逾期）验证结清-正案例'''
         registNo=cx_registNo_05()
+        payment_id=str(random.randint(100000000,999999999))
         if registNo is None:
             registNo=cx_registNo_042()
             print(registNo)
@@ -401,7 +402,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
                     sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
             monto=str(sum)
             print("总应还金额=",monto)
-            data={"abono":{"id":"37755992","fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
+            data={"abono":{"id":payment_id,"fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
                        "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
                        "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
             r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
@@ -427,7 +428,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
             monto=str(sum)
             print("总应还金额=",monto)
             loan_No=t['data']['loanNo']
-            data={"abono":{"id":"37755992","fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
+            data={"abono":{"id":payment_id,"fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
                        "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
                        "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
             r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)

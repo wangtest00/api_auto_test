@@ -322,9 +322,9 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertTrue(t['data'])
-    def test_cust_promote_withdraw(self):
+    def test_cust_promote_withdraw_01(self):
         '''【lanaPlus】/api/cust/promote/withdraw/分销-提现接口（金额超出不能提现）-反案例'''
-        registNo='8667722222'
+        registNo='2222225555'
         headt_api=login_code(registNo)
         data={"phoneNo":registNo,"smallestWithdrawAmt":"100","withdrawAmt":'5000000'}
         r=requests.post(host_api+'/api/cust/promote/withdraw',data=json.dumps(data),headers=headt_api)
@@ -332,6 +332,16 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         print(t)
         self.assertEqual(t['errorCode'],30001)
         self.assertTrue(t['message'],'Monto de transacción no válido')
+    def test_cust_promote_withdraw_02(self):
+        '''【lanaPlus】/api/cust/promote/withdraw/分销-提现接口（未绑卡不能提现）-反案例'''
+        registNo='8667722222'
+        headt_api=login_code(registNo)
+        data={"phoneNo":registNo,"smallestWithdrawAmt":"100","withdrawAmt":'5000000'}
+        r=requests.post(host_api+'/api/cust/promote/withdraw',data=json.dumps(data),headers=headt_api)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],30001)
+        self.assertTrue(t['message'],'Certificación no completada')
     def test_coin_lottery_win_01(self):
         '''【lanaPlus】/api/cust/coin/lottery/win积分抽奖接口（积分充足，正常抽奖：接口未限制已进件已绑卡用户才能抽奖，前端限制）-正案例'''
         registNo=cx_registNo_14()

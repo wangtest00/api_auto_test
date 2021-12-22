@@ -338,15 +338,16 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
     def test_stp_repayment(self):
         '''【FeriaRapida】/api/trade/stp_repayment/annon/event/webhook-还款接口-STP模拟银行回调-有在贷（逾期）验证结清-正案例'''
         registNo=cx_registNo_05()
+        payment_id=str(random.randint(100000000,999999999))
         if registNo is None:
             registNo=cx_registNo_042()
             print(registNo)
             phone=registNo[0]
             custNo=registNo[1]
-            loanNo=registNo[2]
+            loan_No=registNo[2]
             headt_api=login_code(phone)
-            list=cx_inst_num(loanNo)
-            data={"advance":"10000000","custNo":custNo,"defer":False,"loanNo":loanNo,"paymentMethod":"STP","repayInstNumList":list,"tranAppType":"Android"}
+            list=cx_inst_num(loan_No)
+            data={"advance":"10000000","custNo":custNo,"defer":False,"loanNo":loan_No,"paymentMethod":"STP","repayInstNumList":list,"tranAppType":"Android"}
             r=requests.post(host_api+"/api/trade/fin/repay",data=json.dumps(data),headers=headt_api,verify=False)
             t=r.json()
             print(t)
@@ -363,14 +364,6 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
                 else:
                     sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
             monto=str(sum)
-            data={"abono":{"id":"37755992","fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
-                       "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
-                       "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
-            r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
-            t=r.json()
-            self.assertEqual(t['errorCode'],0)
-            afterstat=cx_beforeStat_afterStat(loanNo)
-            self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
         else:
             print(registNo)
             phone=registNo[0]
@@ -389,14 +382,14 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
                     sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
             monto=str(sum)
             loan_No=t['data']['loanNo']
-            data={"abono":{"id":"37755992","fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
-                       "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
-                       "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
-            r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
-            t=r.json()
-            self.assertEqual(t['errorCode'],0)
-            afterstat=cx_beforeStat_afterStat(loan_No)
-            self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
+        data={"abono":{"id":payment_id,"fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
+                   "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
+                   "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
+        r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+        afterstat=cx_beforeStat_afterStat(loan_No)
+        self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
     def test_oxxo_repayment(self):
         '''【FeriaRapida】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷(正常)验证结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
