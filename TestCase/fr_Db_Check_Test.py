@@ -39,33 +39,33 @@ class FR_Db_Check_Test(unittest.TestCase):
         self.assertEqual(t9,[(repay_date[0], '1001', '1000.00', '10370001', '10440002'), (repay_date[0], '1201', '120.00', '10370001', '10440002'), (repay_date[0], '2301', '20.00', '10370001', '10440002')])
         t10=cx_fin_rc_dtl(loan_no)
         self.assertEqual(t10,[('750.00', '10440002', '10390004')])
-    def test_check_withdraw_failed(self):
-        '''【FeriaRapida】无还款无对公和减免，放款失败后回滚数据（每次新造数据and相关11个表关键字段值核对）-正案例'''
-        loan_no=for_stp_payout_fail()
-        print(loan_no)
-        t1=cx_lo_loan_dtl(loan_no)       #借款基本信息表-状态变更为失败
-        self.assertEqual(t1,[('1000.00', 'None', '1', '10000001', '10260004', 'None', 'None')])
-        t2=cx_fin_tran_pay_dtl(loan_no)  #渠道放款明细表-状态变更为失败
-        self.assertEqual(t2,[('750.00', '10420003')])
-        t3=cx_pay_tran_dtl(loan_no)      #交易明细表-状态变更为失败
-        self.assertEqual(t3,[('10320003', '10330001', 'C', '750.00', '10220003')])
-        t4=cx_lo_loan_prod_rel(loan_no) #贷款与产品表
-        self.assertEqual(t4,('25002400', '25002400'))
-        t5=cx_dc_flow_dtl(loan_no)    #dc_flow表-置空
-        self.assertEqual(t5,[])
-        t6=cx_lo_loan_plan_dtl(loan_no)#还款计划表 置空
-        self.assertEqual(t6,())
-        t7=cx_fin_ac_dtl_for_huigun(loan_no)      #应付表-状态变更为未交易
-        self.assertIsNone(t7)
-        t8=cx_fin_ad_dtl(loan_no)      #应收表，10440001-内部账户  变更为未交易
-        self.assertEqual(t8,[])
-        t9=cx_fin_ad_detail_dtl(loan_no)#应收明细表 ，10440001-内部账户
-        self.assertEqual(t9,[])
-        t10=cx_fin_rc_dtl_for_huigun(loan_no)#实付表-置空
-        self.assertIsNone(t10)
-        t11=cx_pay_tran_log(loan_no)         #交易记录表
-        self.assertEqual(t11[0],'交易失败[cancelled]')
-        self.assertEqual(t11[1],'10220003')
+    # def test_check_withdraw_failed(self):
+    #     '''【FeriaRapida】无还款无对公和减免，放款失败后回滚数据（每次新造数据and相关11个表关键字段值核对）-正案例'''
+    #     loan_no=for_stp_payout_fail()
+    #     print(loan_no)
+    #     t1=cx_lo_loan_dtl(loan_no)       #借款基本信息表-状态变更为失败
+    #     self.assertEqual(t1,[('1000.00', 'None', '1', '10000001', '10260004', 'None', 'None')])
+    #     t2=cx_fin_tran_pay_dtl(loan_no)  #渠道放款明细表-状态变更为失败
+    #     self.assertEqual(t2,[('750.00', '10420003')])
+    #     t3=cx_pay_tran_dtl(loan_no)      #交易明细表-状态变更为失败
+    #     self.assertEqual(t3,[('10320003', '10330001', 'C', '750.00', '10220003')])
+    #     t4=cx_lo_loan_prod_rel(loan_no) #贷款与产品表
+    #     self.assertEqual(t4,('25002400', '25002400'))
+    #     t5=cx_dc_flow_dtl(loan_no)    #dc_flow表-置空
+    #     self.assertEqual(t5,[])
+    #     t6=cx_lo_loan_plan_dtl(loan_no)#还款计划表 置空
+    #     self.assertEqual(t6,())
+    #     t7=cx_fin_ac_dtl_for_huigun(loan_no)      #应付表-状态变更为未交易
+    #     self.assertIsNone(t7)
+    #     t8=cx_fin_ad_dtl(loan_no)      #应收表，10440001-内部账户  变更为未交易
+    #     self.assertEqual(t8,[])
+    #     t9=cx_fin_ad_detail_dtl(loan_no)#应收明细表 ，10440001-内部账户
+    #     self.assertEqual(t9,[])
+    #     t10=cx_fin_rc_dtl_for_huigun(loan_no)#实付表-置空
+    #     self.assertIsNone(t10)
+    #     t11=cx_pay_tran_log(loan_no)         #交易记录表
+    #     self.assertEqual(t11[0],'交易失败[cancelled]')
+    #     self.assertEqual(t11[1],'10220003')
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
