@@ -41,7 +41,7 @@ class DataBase():
             self.cur.execute(sql)
             self.connect.commit()
             print ("更新表字段成功",sql)
-            #self.closeDB()
+            self.closeDB()
         except Exception as e:
             print("更新异常：",e)
             return 0
@@ -64,6 +64,7 @@ class DataBase():
         for i in range(2):
             DataBase('mex_pdl_loan').call_many_proc()
             time.sleep(1)
+        time.sleep(5)
 #loanAmt='{0:f}'.format(t[0])#decimal转字符串
 
 if __name__ == '__main__':

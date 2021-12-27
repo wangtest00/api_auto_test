@@ -256,14 +256,16 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         '''【FeriaRapida】/api/cust/personal/email填写个人邮箱接口-反案例（用户已填写过邮箱-提交会报错）'''
         registNo=cx_registNo_12()
         print(registNo)
-        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
         head=login_code(registNo[0])
         r1=requests.get(host_api+"/api/cust/personal/email/"+registNo[0],headers=head) #获取填写状态
         t1=r1.json()
+        print(t1)
         self.assertEqual(t1['errorCode'],0)
-        self.assertFalse(t1['data']['checkFill'])
+        #self.assertFalse(t1['data']['checkFill'])
+        data={"custNo":registNo[1],"email":"wangtest@gmail.com","phoneNo":registNo[0]}
         r2=requests.post(host_api+"/api/cust/personal/email",data=json.dumps(data),headers=head)#填写邮箱
         t2=r2.json()
+        print(t2)
         self.assertEqual(t2['errorCode'],30001)
         self.assertEqual(t2['message'],'Solicitar excepción de parámetro')
     @classmethod

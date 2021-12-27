@@ -64,6 +64,14 @@ def cx_fin_ac_dtl(loan_no):
     t=zhuan_huan(result)
     #print(t)
     return t
+
+def cx_fin_ac_dtl_for_huigun(loan_no):
+    sql='''#fin_应付明细表
+    select PAY_AMT,TRANSTER_TYPE, AC_STAT from fin_ac_dtl where LOAN_NO="'''+loan_no+'''";
+    '''
+    result=DataBase(which_db).get_one(sql)
+    #print(t)
+    return result
 def cx_fin_ad_dtl(loan_no):
     sql='''#fin_应收表,结清后,该表数据移入备份表
     select REPAY_DATE,RECEIVE_AMT,AD_STAT,AD_TYPE,TRANSTER_TYPE from fin_ad_dtl where LOAN_NO="'''+loan_no+'''" order by repay_date asc;
@@ -94,7 +102,17 @@ def cx_fin_rc_dtl(loan_no):
     t=zhuan_huan(result)
     #print(t)
     return t
-
+def cx_fin_rc_dtl_for_huigun(loan_no):
+    sql='''#fin_实付明细表，付给客户及付给内部账户金额检查
+    select REAL_PAY_AMT,TRANSTER_TYPE,RC_STAT from fin_rc_dtl  where LOAN_NO="'''+loan_no+'''";
+    '''
+    result=DataBase(which_db).get_one(sql)
+    return result
+def cx_pay_tran_log(loan_no):
+    sql='''select TRAN_MSG,TRAN_STAT from pay_tran_log where LOAN_NO="'''+loan_no+'''" order by INST_TIME desc;
+'''
+    result=DataBase(which_db).get_one(sql)
+    return result
 def jisuan_repay_date(loan_no):
     sql='''select date(WITHDRAW_SUCCESS_TIME),INST_NUM from lo_loan_dtl where loan_no="'''+loan_no+'''";'''
     result=DataBase(which_db).get_one(sql)
@@ -113,7 +131,15 @@ def jisuan_repay_date_fr(loan_no):
         repay_date=d[:4]+d[5:7]+d[8:10]
         m.append(repay_date)
     return m
+def jisuan_repay_date_huigun():
+    sql='''select date(now());'''
+    result=DataBase(which_db).get_one(sql)
+    nowdate=result[0]
+    d=str(nowdate+datetime.timedelta(days=+2))  #25002400:三天周期
+    repay_date=d[:4]+d[5:7]+d[8:10]
+    print(repay_date)
+    return repay_date
 
 if __name__ == '__main__':
     #cx_lo_loan_plan_dtl("L2012112038155060734586454016")
-    cx_fin_rc_dtl("L2012112038155060734586454016")
+    jisuan_repay_date_huigun()

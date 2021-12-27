@@ -1,7 +1,8 @@
 import requests,json
 from api_auto_test.public.dataBase import *
-from api_auto_test.public.var_fr import *
 import random,string,datetime
+from api_auto_test.public.mex_mgt_fr import *
+from api_auto_test.public.var_fr import *
 
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
@@ -345,6 +346,98 @@ def update_batch_log():
     DataBase(which_db).closeDB()
 
 def head_token(token):
-    head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "0","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],"content-type": "application/json",
-        "x-app-type": "10090001","x-app-version": "104","x-app-no": appNo,"x-auth-token":'Bearer '+token }
+    head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "0","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],"content-type": "application/json","x-app-type": "10090001","x-app-version": "104","x-app-no": appNo,"x-auth-token":'Bearer '+token }
     return head
+
+randnum=str(random.randint(1000000,9999999)) #7位随机数
+#datet=str(time.time()*1000000)[:-2]   #16位时间戳
+#用户在app操作了添加绑卡信息，同意协议并点击确认提现按钮，贷前状态变更为“待提现”后的后续改数操作，模拟到提现成功
+def gaishu_fr(loan_no):
+    randnum=str(random.randint(10000000,99999999)) #8位随机数
+    sql1="update fin_tran_pay_dtl set tran_pay_stat='10420001' where loan_no='"+loan_no+"';"
+    sql2="select tran_flow_no from pay_tran_dtl where LOAN_NO='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql1)
+    time.sleep(1)
+    DataBase(which_db).executeUpdateSql(sql1)
+    time.sleep(1)
+    tran_flow_no=DataBase(which_db).get_one(sql2)
+    sql3="update pay_tran_dtl set utr_no='"+tran_flow_no[0]+"' ,TRAN_STAT='10220001',tran_order_no='"+randnum+"' where  LOAN_NO='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql3)
+    time.sleep(1)
+    sql4="update lo_loan_dtl set before_stat='10260008' where loan_no='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql4)
+    time.sleep(1)
+    stp_payout_fr(loan_no,tran_flow_no[0],randnum,'0000')  #模拟回调提现成功
+    tran_time=str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    sql5="update fin_tran_pay_dtl set tran_pay_stat='10420002',tran_time='"+tran_time+"' where loan_no='"+loan_no+"';"
+    DataBase(which_db).executeUpdateSql(sql5)
+    time.sleep(5)
+    stp_payout_fr(loan_no,tran_flow_no[0],randnum,'0001')  #模拟回调提现失败
+
+#墨西哥-提现失败mock    #code!=0000则失败
+def stp_payout_fr(loan_no,folioOrigen,id,code):
+    data={"causaDevolucion": { "code": 16,"msg": "Tipo de operación errónea"},"empresa": "ASSERTIVE","estado":
+                             { "code": code, "msg": "canll"},"folioOrigen": folioOrigen,"id":int(id)}
+    print(data)
+    r=requests.post(host_pay+"/api/trade/stp_payout/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
+    t=r.json()
+    print(t)
+    if t['errorCode']==0:
+        print("执行墨西哥模拟提现接口成功",loan_no)
+    else:
+        print("执行墨西哥模拟提现接口失败",loan_no)
+    sql="select before_stat from lo_loan_dtl where loan_no='"+loan_no+"';"
+    before_stat=DataBase(which_db).get_one(sql)
+    if before_stat[0]=='10260004':
+        print("贷前状态已回滚为:【待提现】",loan_no)
+    elif before_stat[0]=='10260005':
+        print("贷前状态已变更为:【提现成功】",loan_no)
+    else:
+        print("贷前状态未变更,查询到状态=",before_stat[0])
+#提现接口-app点击提现按钮
+def withdraw(registNo,custNo,loan_no,headt):
+    r=requests.get(host_api+'/api/loan/latest/'+registNo,headers=headt)#获取最近一笔贷款贷款金额，注意请求头content-length的值。The request body did not contain the specified number of bytes. Got 0, expected 63
+    check_api(r)
+    t=r.json()
+    #print('产品配置长度=',len(t['data']['trailPaymentDetail']))
+    if t['errorCode']==0:
+        loanAmt=t['data']['trailPaymentDetail'][0]['loanAmt']
+        instNum=t['data']['trailPaymentDetail'][0]['instNum']
+        data={"custNo":custNo,"instNum":instNum,"loanAmt":loanAmt,"loanNo":loan_no,"prodNo":prodNo}
+        r2=requests.post(host_api+'/api/trade/fin/confirm/withdraw',data=json.dumps(data),headers=headt)
+        check_api(r2)
+        return 1
+    else:
+        print("待提现页面，未获取到最近一笔贷款的数据,不去做改数操作")
+        return 0
+#绑定银行卡，需要把银行卡号改成明显错的，环境怕放出真实的钱
+def bank_auth(custNo,headt):
+    bank_acct_no=str(random.randint(1000000,9999999))
+    data={"bankCode":"10020037","clabe":"138455214411441118","custNo":custNo}
+    r=requests.post(host_api+'/api/cust/auth/bank',data=json.dumps(data),headers=headt)
+    check_api(r)
+    time.sleep(1)                                         #改为6位随机数
+    sql="update cu_cust_bank_card_dtl set BANK_ACCT_NO='"+bank_acct_no+"' where CUST_NO='"+custNo+"';"#修改成随机卡号，避免触发绑卡被拒:同一张银行卡不能被超过2个人绑定并放款成功
+    DataBase(which_db).executeUpdateSql(sql)
+
+def for_stp_payout_fail():
+    test_data=for_apply_loan()
+    custNo=test_data[0]
+    head=test_data[1]
+    data10={"custNo":custNo}
+    r=requests.post(host_api+'/api/loan/apply',data=json.dumps(data10),headers=head)
+    t=r.json()
+    loanNo=t['data']['loanNo']
+    bank_auth(custNo,head)
+    sql='''select REGIST_NO from cu_cust_reg_dtl where CUST_NO="'''+custNo+'''";'''
+    registNo=DataBase(which_db).get_one(sql)
+    registNo=registNo[0]
+    update_appr_user_stat()
+    DataBase(which_db).call_4_proc()
+    approve(loanNo)
+    insert_risk(loanNo)
+    withdraw(registNo,custNo,loanNo,head)
+    gaishu_fr(loanNo)
+    return loanNo
+
+#for_stp_payout_fail()
