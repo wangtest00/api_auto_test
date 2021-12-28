@@ -259,9 +259,8 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         headt_api=login_code(registNo)
         r=requests.get(host_api+'/api/cust/coin/amount/2222225555',headers=headt_api)
         t=r.json()
-        print(t)
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(t['data'],5311)
+        self.assertEqual(t['data'],2260)
     def test_get_promote_total_bonus(self):
         '''【lanaPlus】/api/cust/coin/amount/分销-获取用户可提现总金额接口-正案例'''
         registNo='2222225555'
