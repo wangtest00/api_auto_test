@@ -32,7 +32,7 @@ def cx_jieqing_time(regist_no):
     time=time[0]
     return time
 def cx_loan_no():
-    #查询贷后正常，无还款、减免记录的贷款编号，指定产品号
+    #查询贷后正常，无还款、减免记录的贷款编号，指定产品号-28070110
     sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
           left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.loan_no=e.loan_no
           where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is  NULL and e.TRAN_TIME is null order by a.INST_TIME desc limit 1;'''
@@ -453,6 +453,12 @@ def stp_payout(loan_no,folioOrigen,id,code):
         print("贷前状态已回滚为:【待提现】",loan_no)
     else:
         print("贷前状态未变更,查询到状态=",before_stat[0])
+def for_stp_payout_failed(loan_no):
+    sql='''select TRAN_FLOW_NO,tran_order_no from pay_tran_dtl where LOAN_NO="'''+loan_no+'''" and TRAN_STAT='10220002'  order by INST_TIME desc;
+'''
+    s=DataBase(which_db).get_one(sql)
+    stp_payout(loan_no,s[0],s[1],'0001') #模拟银行回调，提现失败
+
 #提现接口-app点击提现按钮
 def withdraw(registNo,custNo,loan_no,headt):
     r=requests.get(host_api+'/api/loan/latest/'+registNo,headers=headt)#获取最近一笔贷款贷款金额，注意请求头content-length的值。The request body did not contain the specified number of bytes. Got 0, expected 63

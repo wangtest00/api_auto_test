@@ -394,6 +394,11 @@ def stp_payout_fr(loan_no,folioOrigen,id,code):
         print("贷前状态已变更为:【提现成功】",loan_no)
     else:
         print("贷前状态未变更,查询到状态=",before_stat[0])
+def for_stp_payout_failed(loan_no):
+    sql='''select TRAN_FLOW_NO,tran_order_no from pay_tran_dtl where LOAN_NO="'''+loan_no+'''" and TRAN_STAT='10220002'  order by INST_TIME desc;
+'''
+    s=DataBase(which_db).get_one(sql)
+    stp_payout_fr(loan_no,s[0],s[1],'0001') #模拟银行回调，提现失败
 #提现接口-app点击提现按钮
 def withdraw(registNo,custNo,loan_no,headt):
     r=requests.get(host_api+'/api/loan/latest/'+registNo,headers=headt)#获取最近一笔贷款贷款金额，注意请求头content-length的值。The request body did not contain the specified number of bytes. Got 0, expected 63
