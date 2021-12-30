@@ -12,7 +12,6 @@ host_coll="https://test-coll.quantx.mx"      #催收
 host_msg="https://test-msg.quantx.mx"        #消息
 head_api={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","x-auth-token": "Bearer" ,"accept-encoding": "gzip","content-length": "63","host":"test-api.quantx.mx","x-app-name": "LanaPlus","content-type": "application/json",
         "x-app-type": "10090001","x-app-version": "116","x-app-no": appNo }
-
 head_mgt={"Host": host_mgt[8:],"Connection": "keep-alive","Content-Length": "55",
 "sec-ch-ua": '"Not A;Brand";v="99", "Chromium";v="90", "Google Chrome";v="90"',"Accept": "application/json, text/plain, */*","sec-ch-ua-mobile": "?0",
 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
@@ -28,6 +27,8 @@ CONFIGS = {
     'mex_pdl_loan': {'host':'192.168.0.60','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'mex_pdl_loan'},
     'manage_need_loan': {'host':'13.235.214.155','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'manage_need_loan'}
 }
+
+
 head_msg={"Content-Type": "application/json",
 "User-Agent": "PostmanRuntime/7.28.4",
 "Accept": "*/*",
