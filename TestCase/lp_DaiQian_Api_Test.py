@@ -471,11 +471,6 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         stat=DataBase(which_db).get_one(sql3)
         self.assertEqual(stat[0],'10260005')
         self.assertEqual(stat[1],'10270002')
-    def test_verification_code(self):
-        '''【lanaPlus】/api/h5/application/verification/code/phone_no  h5进件-获取登录验证码接口-正案例'''
-        r=requests.get(host_api+"/api/h5/application/verification/code/8485867777",headers=head_api,verify=False)
-        t=r.json()
-        self.assertEqual(t['errorCode'],0)
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
