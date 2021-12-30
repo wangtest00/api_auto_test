@@ -19,7 +19,7 @@ class FR_Db_Check_Test(unittest.TestCase):
         loan_no=cx_loan_no()
         print(loan_no)
         t1=cx_lo_loan_dtl(loan_no)
-        self.assertEqual(t1,[('1000.00', '1000.00', '1', '10000001', '10260005', '10270002', 'None')])
+        self.assertEqual(t1,[('1000.00', '1000.00', '1', '10260005', '10270002', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)
         self.assertEqual(t2,[('750.00', '10420002')])
         t3=cx_pay_tran_dtl(loan_no)

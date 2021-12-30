@@ -10,7 +10,7 @@ def zhuan_huan(result):
 
 def cx_lo_loan_dtl(loan_no):
     sql='''#lo_贷款基本明细表
-    select APPR_AMT,LOAN_AMT,INST_NUM,IS_NEW,BEFORE_STAT,AFTER_STAT,SETTLEMENT_TIME from lo_loan_dtl where loan_no="'''+loan_no+'''";
+    select APPR_AMT,LOAN_AMT,INST_NUM,BEFORE_STAT,AFTER_STAT,SETTLEMENT_TIME from lo_loan_dtl where loan_no="'''+loan_no+'''";
     '''
     result=DataBase(which_db).get_one(sql)
     t=zhuan_huan(result)
