@@ -16,9 +16,8 @@ class FR_Db_Check_Test(unittest.TestCase):
         print('teardown_test')
     def test_check_withdraw_success(self):
         '''【FeriaRapida】放款成功后，无还款和减免，相关10个表关键字段值核对-正案例'''
-        # loan_no=cx_loan_no()
-        # print(loan_no)
-        loan_no='L2022112308164818048709230592'
+        loan_no=cx_loan_no()
+        print(loan_no)
         t1=cx_lo_loan_dtl(loan_no)
         self.assertEqual(t1,[('1000.00', '1000.00', '1', '10260005', '10270002', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)
