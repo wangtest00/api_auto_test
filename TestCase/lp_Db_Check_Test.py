@@ -44,7 +44,7 @@ class LP_Db_Check_Test(unittest.TestCase):
         loan_no=cx_loan_no()
         for_stp_payout_failed(loan_no)
         t1=cx_lo_loan_dtl(loan_no)
-        self.assertEqual(t1,[('1500.00', 'None', '3', '10000001', '10260004', 'None', 'None')])
+        self.assertEqual(t1,[('1500.00', 'None', '3', '10260004', 'None', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)
         self.assertEqual(t2,[('1500.00', '10420003')])
         t3=cx_pay_tran_dtl(loan_no)

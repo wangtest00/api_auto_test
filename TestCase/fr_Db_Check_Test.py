@@ -44,7 +44,7 @@ class FR_Db_Check_Test(unittest.TestCase):
         loan_no=cx_loan_no()
         for_stp_payout_failed(loan_no)
         t1=cx_lo_loan_dtl(loan_no)       #借款基本信息表-状态变更为失败
-        self.assertEqual(t1,[('1000.00', 'None', '1', '10000001', '10260004', 'None', 'None')])
+        self.assertEqual(t1,[('1000.00', 'None', '1','10260004', 'None', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)  #渠道放款明细表-状态变更为失败
         self.assertEqual(t2,[('750.00', '10420003')])
         t3=cx_pay_tran_dtl(loan_no)      #交易明细表-状态变更为失败
