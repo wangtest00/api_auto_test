@@ -127,7 +127,7 @@ def jisuan_repay_date_fr(loan_no):
     result=DataBase(which_db).get_one(sql)
     m=[]
     for i in range(result[1]):
-        d=str(result[0]+datetime.timedelta(days=+3*(i+1)))  #25002400:三天周期
+        d=str(result[0]+datetime.timedelta(days=+7*(i+1)))  #25002400:7天周期
         repay_date=d[:4]+d[5:7]+d[8:10]
         m.append(repay_date)
     return m
@@ -135,7 +135,7 @@ def jisuan_repay_date_huigun():
     sql='''select date(now());'''
     result=DataBase(which_db).get_one(sql)
     nowdate=result[0]
-    d=str(nowdate+datetime.timedelta(days=+2))  #25002400:三天周期
+    d=str(nowdate+datetime.timedelta(days=+6))  #25002400:7天周期
     repay_date=d[:4]+d[5:7]+d[8:10]
     print(repay_date)
     return repay_date
