@@ -63,9 +63,6 @@ class LP_Db_Check_Test(unittest.TestCase):
         self.assertEqual(t9,[])
         t10=cx_fin_rc_dtl_for_huigun(loan_no)
         self.assertIsNone(t10)
-        t11=cx_pay_tran_log(loan_no)
-        self.assertEqual(t11[0],'交易失败[cancelled]')
-        self.assertEqual(t11[1],'10220003')
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
