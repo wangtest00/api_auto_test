@@ -107,13 +107,13 @@ def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
 select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
 left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO left join cu_cust_bank_card_dtl f on a.CUST_NO=f.CUST_NO
-where d.TRAN_CHAN_NAME='STP支付渠道' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
+where d.TRAN_CHAN_NAME='Stp_Payment_LanaPlusProd' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
 order by a.INST_TIME desc limit 1;  '''
     phone=DataBase(which_db).get_one(sql)
     return phone
 def cx_registNo_06(loanNo):
     sql='''#查询OXXO还款申请记录
-select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where LOAN_NO="'''+loanNo+'''" and  ACT_TRAN_AMT is null and TRAN_CHAN_NAME ='Conekta支付渠道' and TRAN_CHAN_NO='LanaPlusProd' order by INST_TIME desc limit 1;'''
+select SHD_TRAN_AMT,tran_order_no,in_acct_no,INST_TIME from pay_tran_dtl t where LOAN_NO="'''+loanNo+'''" and  ACT_TRAN_AMT is null and  TRAN_CHAN_NO='LanaPlusProd_Conekta_Payment' order by INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     #print(phone)
     return phone
