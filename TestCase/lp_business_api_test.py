@@ -20,10 +20,6 @@ class LP_Business_Api_Test(unittest.TestCase):
         r=requests.post(host_coll+"/api/insecure/task/case/handlingOverdue",verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
-    def test_deferred_loan_payout(self):
-        '''【lanaPlus】-支付唤醒延迟放款接口-正案例'''
-        r=requests.post(host_pay+"/api/fin/payout/do/deferred/loan/payout",headers=head_pay,verify=False)
-        self.assertEqual(r.status_code,200)
     def test_third_batch_send_test(self):
         '''【lanaPlus】-msg发送短信接口(指定手机号+模板+携带deeplink)-正案例'''
         data={"channelNo": "Mex-LanaPlus",

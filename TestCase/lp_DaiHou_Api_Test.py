@@ -61,6 +61,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         headt_api=login_code(registNo)
         r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
         t=r.json()
+        print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertEqual(t['data']['repaymentDetail']['realPaymentAmt'],'1500.00')
         repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']

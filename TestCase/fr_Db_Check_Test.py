@@ -40,7 +40,7 @@ class FR_Db_Check_Test(unittest.TestCase):
         t10=cx_fin_rc_dtl(loan_no)
         self.assertEqual(t10,[('750.00', '10440002', '10390004')])
     def test_check_withdraw_failed(self):
-        '''【FeriaRapida】无还款无对公和减免，放款失败后回滚数据（每次新造数据and相关11个表关键字段值核对）-正案例'''
+        '''【FeriaRapida】无还款无对公和减免，放款失败后回滚数据（每次新造数据and相关10个表关键字段值核对）-正案例'''
         loan_no=cx_loan_no()
         for_stp_payout_failed(loan_no)
         t1=cx_lo_loan_dtl(loan_no)       #借款基本信息表-状态变更为失败
