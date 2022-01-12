@@ -39,6 +39,19 @@ def cx_loan_no():
     loan_no=DataBase(which_db).get_one(sql)
     loan_no=loan_no[0]
     return loan_no
+def cx_yijieqing_loan_no():
+    sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_cust_rel b on a.loan_no=b.LOAN_NO where a.AFTER_STAT in ('10270005','10270004')
+           and b.APP_NO='201' and b.RISK_SCORE='28070110' order by a.INST_TIME desc limit 1;
+'''
+    loan_no=DataBase(which_db).get_one(sql)
+    loan_no=loan_no[0]
+    return loan_no
+def cx_fin_tran_repay_dtl(loan_no):
+    sql='''select ACT_TRAN_AMT from fin_tran_repay_dtl where LOAN_NO="'''+loan_no+'''" and TRAN_REPAY_STAT in('10430002','10430004') order by INST_NUM desc;
+'''
+    act_tran_amt=DataBase(which_db).get_one(sql)
+    act_tran_amt=act_tran_amt[0]
+    return act_tran_amt
 
 #查询客户号不为空的用户手机号，GAID='Exception:null'我的标记数据
 def cx_old_registNo():

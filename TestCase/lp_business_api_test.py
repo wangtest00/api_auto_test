@@ -60,8 +60,8 @@ class LP_Business_Api_Test(unittest.TestCase):
     def test_email_send_third(self):
         '''【lanaPlus】-msg发送邮件接口-正案例'''
         data={"appNo":"201",
-               "templateNo": "test01",
-               "subject": "test_sub",
+               "templateNo": "test_templateNo",
+               "subject": "test_subject",
                "type": 1,
                "param": {
                    "userName": "王先生"

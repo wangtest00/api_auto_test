@@ -22,7 +22,7 @@ class FR_Db_Check_Test(unittest.TestCase):
         self.assertEqual(t1,[('1000.00', '1000.00', '1', '10260005', '10270002', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)
         self.assertEqual(t2,[('750.00', '10420002')])
-        t3=cx_pay_tran_dtl(loan_no)
+        t3=cx_pay_tran_dtl(loan_no,'10330001')
         self.assertEqual(t3,[('10320003', '10330001', 'C', '750.00', '10220002')])
         t4=cx_lo_loan_prod_rel(loan_no)
         self.assertEqual(t4,('25002400', '25002400'))
@@ -47,7 +47,7 @@ class FR_Db_Check_Test(unittest.TestCase):
         self.assertEqual(t1,[('1000.00', 'None', '1','10260004', 'None', 'None')])
         t2=cx_fin_tran_pay_dtl(loan_no)  #渠道放款明细表-状态变更为失败
         self.assertEqual(t2,[('750.00', '10420003')])
-        t3=cx_pay_tran_dtl(loan_no)      #交易明细表-状态变更为失败
+        t3=cx_pay_tran_dtl_for_fail(loan_no,'10330001')      #交易明细表-状态变更为失败
         self.assertEqual(t3,[('10320003', '10330001', 'C', '750.00', '10220003')])
         t4=cx_lo_loan_prod_rel(loan_no) #贷款与产品表
         self.assertEqual(t4,('25002400', '25002400'))
@@ -72,8 +72,8 @@ class FR_Db_Check_Test(unittest.TestCase):
         self.assertIsNotNone(t1[0][5])
         t2=cx_fin_tran_pay_dtl(loan_no)
         self.assertEqual(t2,[('750.00', '10420002')])
-        t3=cx_pay_tran_dtl(loan_no)
-        self.assertEqual(t3,[('10320003', '10330001', 'C', '750.00', '10220002')])
+        t3=cx_pay_tran_dtl(loan_no,'10330002')
+        self.assertEqual(t3,[('10320002', '10330002', 'D', '1140.00', '10220002')])
         t4=cx_lo_loan_prod_rel(loan_no)
         self.assertEqual(t4,('25002400', '25002400'))
         t5=cx_dc_flow_dtl(loan_no)

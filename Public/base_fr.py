@@ -154,6 +154,19 @@ def cx_registNo_13():
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     return phone
+def cx_yijieqing_loan_no():
+    sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_cust_rel b on a.loan_no=b.LOAN_NO where a.AFTER_STAT in ('10270005','10270004')
+           and b.APP_NO='202' and b.RISK_SCORE='25002400' order by a.INST_TIME desc limit 1;
+'''
+    loan_no=DataBase(which_db).get_one(sql)
+    loan_no=loan_no[0]
+    return loan_no
+def cx_fin_tran_repay_dtl(loan_no):
+    sql='''select ACT_TRAN_AMT from fin_tran_repay_dtl where LOAN_NO="'''+loan_no+'''" and TRAN_REPAY_STAT in('10430002','10430004') order by INST_NUM desc;
+'''
+    act_tran_amt=DataBase(which_db).get_one(sql)
+    act_tran_amt=act_tran_amt[0]
+    return act_tran_amt
 #查询只借过一笔款且已结清的客户号
 def get_yijieqing_custNo():
     sql='''select  b.cust_no,count(1) as loan_cnt from
