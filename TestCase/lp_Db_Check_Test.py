@@ -73,7 +73,7 @@ class LP_Db_Check_Test(unittest.TestCase):
         t2=cx_fin_tran_pay_dtl(loan_no)
         self.assertEqual(t2,[('1500.00', '10420002')])
         t3=cx_pay_tran_dtl(loan_no,'10330002')
-        self.assertEqual(t3,[('10320002', '10330002', 'D', '1800.00', '10220002')])
+        self.assertEqual(t3[0][:3],('10320002', '10330002', 'D'))
         t4=cx_lo_loan_prod_rel(loan_no)
         self.assertEqual(t4,('28070110', '28070110'))
         t5=cx_dc_flow_dtl(loan_no)

@@ -23,13 +23,21 @@ def cx_fin_tran_pay_dtl(loan_no):
     result=DataBase(which_db).get_one(sql)
     t=zhuan_huan(result)
     return t
-def cx_pay_tran_dtl(loan_no):
+def cx_pay_tran_dtl(loan_no,tran_use):
     sql='''#交易明细表
-    SELECT TRAN_TYPE, TRAN_USE,TRAN_DC,ACT_TRAN_AMT,TRAN_STAT from pay_tran_dtl where loan_no="'''+loan_no+'''";
+    SELECT TRAN_TYPE, TRAN_USE,TRAN_DC,ACT_TRAN_AMT,TRAN_STAT from pay_tran_dtl where loan_no="'''+loan_no+'''"and tran_stat='10220002' and
+    TRAN_USE="'''+tran_use+'''";
     '''
     result=DataBase(which_db).get_one(sql)
     t=zhuan_huan(result)
-    #print(t)
+    return t
+def cx_pay_tran_dtl_for_fail(loan_no,tran_use):
+    sql='''#交易明细表
+    SELECT TRAN_TYPE, TRAN_USE,TRAN_DC,ACT_TRAN_AMT,TRAN_STAT from pay_tran_dtl where loan_no="'''+loan_no+'''"and tran_stat='10220003' and
+    TRAN_USE="'''+tran_use+'''";
+    '''
+    result=DataBase(which_db).get_one(sql)
+    t=zhuan_huan(result)
     return t
 def cx_lo_loan_prod_rel(loan_no):
     sql='''#lo_贷款与产品的关系表
