@@ -44,7 +44,7 @@ class LP_Business_Api_Test(unittest.TestCase):
         self.assertEqual(t['errorCode'],0)
     def test_api_third_service(self):
         '''【lanaPlus】-api调风控接口-正案例'''
-        r=requests.post("http://k8s-test1mex-elbtestm-bdf1a39b3f-46644822b82d7a2b.elb.us-west-1.amazonaws.com/api/third_service/excute?count=10",verify=False)
+        r=requests.post("http://13.52.26.57/api/third_service/excute?count=10",verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
     def test_coupon_event_dispatch(self):
