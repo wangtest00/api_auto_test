@@ -275,11 +275,12 @@ class FR_DaiQian_Api_Test(unittest.TestCase):
         r=requests.get(host_api+"/api/mexico/get/address/98209",headers=head,verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
-        self.assertEqual(t['data'],{'postalCode': '98209', 'area': 'Avalos', 'province': 'Concepción del Oro', 'state': 'Zacatecas'})
+        print(t['data'])
+        self.assertEqual(t['data'],{'postalCode': '98209', 'area': 'Avalos', 'province': 'Concepción del Oro', 'state': 'Zacatecas', 'stateCode': '11130032'})
         r2=requests.get(host_api+"/api/mexico/get/address/01000",headers=head,verify=False)
         t2=r2.json()
         self.assertEqual(t2['errorCode'],0)
-        self.assertEqual(t2['data'],{'postalCode': '01000', 'area': 'San Angel', 'province': 'Álvaro Obregón', 'state': 'Distrito Federal'})
+        self.assertEqual(t2['data'],{'postalCode': '01000', 'area': 'San Angel', 'province': 'Álvaro Obregón', 'state': 'Distrito Federal', 'stateCode': '11130036'})
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
