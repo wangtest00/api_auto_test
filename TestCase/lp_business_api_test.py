@@ -21,8 +21,13 @@ class LP_Business_Api_Test(unittest.TestCase):
         t=r.json()
         self.assertEqual(t['errorCode'],0)
     def test_payout_retry(self):
-        '''【lanaPlus】-支付申请放款重试接口（进入重试表的数据才会去发起重试申请）-正案例'''
+        '''【lanaPlus】-支付申请放款重试接口（进入重试表的数据才会去发起重试申请且不会重复）-正案例'''
         r=requests.post(host_pay+"/api/trade/retry/payout_retry",verify=False)
+        t=r.json()
+        self.assertEqual(t['errorCode'],0)
+    def test_payment_retry(self):
+        '''【lanaPlus】-支付还款重试接口（pay_stp_repayment_record和pay_conekta_record表的数据状态为0且未做过清结算的数据）-正案例'''
+        r=requests.post(host_pay+"/api/trade/retry/payment_retry",verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
     def test_third_batch_send_test(self):
