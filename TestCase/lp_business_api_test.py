@@ -42,11 +42,6 @@ class LP_Business_Api_Test(unittest.TestCase):
         r=requests.post(host_msg+"/api/interface/third/batch/send/test",data=json.dumps(data),headers=head_msg,verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
-    def test_api_third_service(self):
-        '''【lanaPlus】-api调风控接口-正案例'''
-        r=requests.post("http://13.52.26.57/api/third_service/excute?count=10",verify=False)
-        t=r.json()
-        self.assertEqual(t['errorCode'],0)
     def test_coupon_event_dispatch(self):
         '''【lanaPlus】-api扫描是否达到发放优惠券节点接口-正案例'''
         r=requests.post(host_api+"/api/cust/coupon/event/dispatch",verify=False)
