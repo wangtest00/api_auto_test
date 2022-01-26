@@ -603,7 +603,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         r=requests.get(host_api+"/api/cust/coupon/type/details/"+registNo+"?stat=USABLE",headers=headt_api,verify=False)
         t=r.json()
         print(t)
-        data={"coinDeductionDetail":None,"couponDeductionDetail":{"couponChannelNo":"test-满3减3","couponNo":"减3块"},"deductionType":"COUPON","loanNo":loanNo,"repayDate":repayDate}
+        data={"coinDeductionDetail":None,"couponDeductionDetail":{"couponChannelNo":"减3块-自动化使用","couponNo":"减3块"},"deductionType":"COUPON","loanNo":loanNo,"repayDate":repayDate}
         r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
         s=r.json()
         print(s)
