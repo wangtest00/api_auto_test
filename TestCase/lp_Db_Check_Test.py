@@ -1,9 +1,6 @@
+import unittest
 from api_auto_test.public.base_lp import *
-from api_auto_test.public.dataBase import *
-from api_auto_test.public.var_lp import *
-from api_auto_test.public.cx_table import *
-import unittest,requests,json,decimal
-from HTMLTestRunner_Chart import HTMLTestRunner
+from api_auto_test.dataBase.cx_table import *
 
 
 class LP_Db_Check_Test(unittest.TestCase):

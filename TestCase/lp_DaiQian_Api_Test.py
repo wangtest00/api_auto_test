@@ -1,10 +1,9 @@
-from api_auto_test.public.base_lp import *
-from api_auto_test.public.dataBase import *
-from api_auto_test.public.var_lp import *
-from api_auto_test.public.zhanqi import *
+import json
 import random
-import unittest,requests,json
-from HTMLTestRunner_Chart import HTMLTestRunner
+import requests
+import unittest
+from api_auto_test.public.zhanqi import *
+
 
 class LP_DaiQian_Api_Test(unittest.TestCase):
     @classmethod

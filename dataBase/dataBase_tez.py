@@ -3,9 +3,8 @@
 Created on 2018-11-26
 @author: 王爽
 '''
-import time
-import pymysql
-from api_auto_test.public.var_lp import *   #FR和lanaplus共用一个数据库
+import pymysql,time
+from api_auto_test.data.var_tez import *
 
 class DataBase():
     def __init__(self,witchdb):
@@ -62,10 +61,10 @@ class DataBase():
         self.closeDB()
     def call_4_proc(self):
         for i in range(2):
-            DataBase('mex_pdl_loan').call_many_proc()
+            DataBase('india_tez_loan').call_many_proc()
             time.sleep(1)
         time.sleep(5)
 #loanAmt='{0:f}'.format(t[0])#decimal转字符串
 
 if __name__ == '__main__':
-    DataBase('mex_pdl_loan').call_4_proc()
+    DataBase('india_tez_loan').call_4_proc()

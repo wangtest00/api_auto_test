@@ -1,7 +1,7 @@
 import datetime
 import random
 import string
-from api_auto_test.public.mex_mgt_lp import *
+from api_auto_test.public.mgt_tez import *
 
 
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
@@ -31,10 +31,9 @@ def cx_jieqing_time(regist_no):
     time=time[0]
     return time
 def cx_loan_no():
-    #查询贷后正常，无还款、减免记录的贷款编号，指定产品号-28070110
-    sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
-          left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.loan_no=e.loan_no
-          where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='28070110' and c.TRAN_TIME is  NULL and e.TRAN_TIME is null order by a.INST_TIME desc limit 1;'''
+    #查询贷后-未出账单，无还款、减免记录的贷款编号，指定产品号-10001
+    sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO
+          where a.AFTER_STAT='10270001' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='10001'  order by a.INST_TIME desc limit 1;'''
     loan_no=DataBase(which_db).get_one(sql)
     loan_no=loan_no[0]
     return loan_no

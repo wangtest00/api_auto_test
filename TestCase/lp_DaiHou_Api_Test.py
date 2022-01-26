@@ -1,8 +1,7 @@
+import unittest
+from api_auto_test.data.var_lp import *
 from api_auto_test.public.base_lp import *
-from api_auto_test.public.dataBase import *
-from api_auto_test.public.var_lp import *
-import unittest,requests,json
-from HTMLTestRunner_Chart import HTMLTestRunner
+from api_auto_test.dataBase.dataBase import *
 
 
 class LP_DaiHou_Api_Test(unittest.TestCase):

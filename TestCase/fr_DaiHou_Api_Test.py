@@ -1,8 +1,7 @@
+import unittest
 from api_auto_test.public.base_fr import *
-from api_auto_test.public.dataBase import *
-from api_auto_test.public.var_fr import *
-import unittest,requests,json
-from HTMLTestRunner_Chart import HTMLTestRunner
+from api_auto_test.dataBase.dataBase import *
+#from api_auto_test.data.var_fr import *
 
 
 class FR_DaiHou_Api_Test(unittest.TestCase):
@@ -498,7 +497,6 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(r.status_code,200)
         afterstat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
-
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()

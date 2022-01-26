@@ -1,8 +1,5 @@
-import string,requests,json,datetime,random
-from api_auto_test.public.dataBase import *
-from api_auto_test.public.heads import *
 from api_auto_test.public.daihou import *
-
+from api_auto_test.public.heads import *
 
 randnum=str(random.randint(10000000,99999999))
 #插入允许展期的记录
