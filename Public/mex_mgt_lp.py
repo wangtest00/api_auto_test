@@ -1,6 +1,6 @@
-from api_auto_test.public.var_lp import *
-from api_auto_test.public.dataBase import *
-import requests,json
+import json
+import requests
+from api_auto_test.dataBase.dataBase import *
 
 
 def check_api(r):
