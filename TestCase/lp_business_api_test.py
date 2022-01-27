@@ -1,6 +1,8 @@
-import requests,json,unittest
-from api_auto_test.public.var_lp import *
-from api_auto_test.public.dataBase import *
+import json
+import unittest
+import requests
+from api_auto_test.dataBase.dataBase import *
+from api_auto_test.data.var_lp import *
 
 class LP_Business_Api_Test(unittest.TestCase):
     @classmethod
