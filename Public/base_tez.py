@@ -37,6 +37,31 @@ def cx_loan_no():
     loan_no=DataBase(which_db).get_one(sql)
     loan_no=loan_no[0]
     return loan_no
+def cx_loan_no2():
+    #查询贷后-已出账单，无还款、减免记录的贷款编号，指定产品号-10001
+    sql='''SELECT c.loan_no
+FROM
+	lo_loan_dtl a
+INNER JOIN lo_loan_prod_rel b ON a.LOAN_NO = b.LOAN_NO
+INNER JOIN (
+select  z.loan_no from
+(
+ select t.loan_no,t.TRANSTER_TYPE,count(1) as cnt from fin_rd_dtl  t GROUP BY  t.loan_no,t.TRANSTER_TYPE HAVING cnt=1
+)z
+where z.TRANSTER_TYPE='10440001'
+) c ON a.LOAN_NO = c.LOAN_NO
+INNER JOIN cu_cust_reg_dtl d ON a.CUST_NO = d.CUST_NO
+LEFT JOIN fin_fee_reduce_dtl e ON a.loan_no = e.loan_no
+WHERE
+a.AFTER_STAT = '10270002'
+AND b.APP_NO = '301'
+AND b.PROD_NO = '10001'
+AND e.TRAN_TIME IS NULL
+ORDER BY
+	a.INST_TIME DESC limit 1;'''
+    loan_no=DataBase(which_db).get_one(sql)
+    loan_no=loan_no[0]
+    return loan_no
 def cx_yijieqing_loan_no():
     sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_cust_rel b on a.loan_no=b.LOAN_NO where a.AFTER_STAT in ('10270005','10270004')
            and b.APP_NO='201' and b.RISK_SCORE='28070110' order by a.INST_TIME desc limit 1;
