@@ -50,7 +50,6 @@ class Tez_Db_Check_Test(unittest.TestCase):
         t4=cx_lo_loan_prod_rel(loan_no)
         self.assertEqual(t4,('10003', '10003'))
         t5=cx_dc_flow_dtl(loan_no)
-        print(t5)
         self.assertEqual(t5,[('1001', '1', '2000.00', 'C'), ('1002', '1', '2000.00', 'D'), ('1201', '1', '14.00', 'C'), ('1202', '1', '14.00', 'D'), ('1401', '1', '36.00', 'C'), ('1402', '1', '36.00', 'D'), ('2001', '1', '650.00', 'C'), ('2002', '1', '650.00', 'D')])
         t6=cx_lo_loan_plan_dtl(loan_no)
         repay_date=jisuan_repay_date(loan_no)
