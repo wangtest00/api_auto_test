@@ -1,8 +1,9 @@
-import datetime
 import random
 import string
-from api_auto_test.public.mgt_tez import *
+
 from api_auto_test.data.var_tez import *
+from api_auto_test.mgt.mgt_tez import *
+
 
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
@@ -436,15 +437,15 @@ def update_batch_log():
         DataBase(which_db).executeUpdateSql(sql3)
     DataBase(which_db).closeDB()
 
-def head_token(token):
-    head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "24","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],"content-type": "application/json",
-        "x-app-type": "10090001","x-app-version": "116","x-app-no": appNo,"x-auth-token":'Bearer '+token }
-    return head
-def head_token_f(token):
-    head={"user-agent": "Dart/2.13 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "2894270","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],
-          "content-type": "multipart/form-data; boundary=--dioBoundary&Happycoding-2462877051",
-          "x-app-type": "10090001","x-app-version": "131","x-app-no": appNo,"x-auth-token":'Bearer '+str(token) }
-    return head
+# def head_token(token):
+#     head={"user-agent": "Dart/2.12 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "24","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],"content-type": "application/json",
+#         "x-app-type": "10090001","x-app-version": "116","x-app-no": appNo,"x-auth-token":'Bearer '+token }
+#     return head
+# def head_token_f(token):
+#     head={"user-agent": "Dart/2.13 (dart:io)","x-user-language": "es","accept-encoding": "gzip","content-length": "2894270","host_api": "test-api.quantx.mx","x-app-name": shenpiren[appNo][4],
+#           "content-type": "multipart/form-data; boundary=--dioBoundary&Happycoding-2462877051",
+#           "x-app-type": "10090001","x-app-version": "131","x-app-no": appNo,"x-auth-token":'Bearer '+str(token) }
+#     return head
 
 
 randnum=str(random.randint(10000000,99999999)) #8位随机数

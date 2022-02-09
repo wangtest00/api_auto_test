@@ -1,6 +1,8 @@
 import unittest
-from api_auto_test.public.base_fr import *
 from api_auto_test.dataBase.dataBase import *
+from api_auto_test.daiqian.base_fr import *
+
+
 #from api_auto_test.data.var_fr import *
 
 

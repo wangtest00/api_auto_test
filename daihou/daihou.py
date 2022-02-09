@@ -1,5 +1,6 @@
-from api_auto_test.public.base_lp import *
 from api_auto_test.dataBase.dataBase import *
+from api_auto_test.daiqian.base_lp import *
+
 
 #模拟银行回调接口-模拟还款stp（只需修改卡号cuentaBeneficiario和金额monto）
 #1.遇到脏数据，可能会报“参数为空”

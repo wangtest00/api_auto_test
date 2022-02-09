@@ -1,7 +1,7 @@
 import unittest
-from api_auto_test.data.var_lp import *
-from api_auto_test.public.base_lp import *
+
 from api_auto_test.dataBase.dataBase import *
+from api_auto_test.daiqian.base_lp import *
 
 
 class LP_DaiHou_Api_Test(unittest.TestCase):

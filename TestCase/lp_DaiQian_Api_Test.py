@@ -1,9 +1,7 @@
-import json
-import random
-import requests
 import unittest
-from api_auto_test.public.zhanqi import *
 from api_auto_test.data.var_lp import *
+from api_auto_test.daihou.zhanqi import *
+
 
 class LP_DaiQian_Api_Test(unittest.TestCase):
     @classmethod

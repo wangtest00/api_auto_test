@@ -1,7 +1,7 @@
 import json
 import requests
-from api_auto_test.dataBase.dataBase_tez import *
-
+from api_auto_test.dataBase.dataBase import *
+from api_auto_test.data.var_lp import *
 
 def check_api(r):
     try:
@@ -79,7 +79,9 @@ def pl_shenpi():
         loan_no=t[i]['loanNo']
         loan_No_List.append(loan_no)
     pl_approve(loan_No_List)
-
+#
 # if __name__ == '__main__':
-#     for i in range(1):
+#     for i in range(3):
 #         pl_shenpi()
+#     #approve('L2012108188116218565239939072')
+#     #login_mgt()

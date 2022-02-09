@@ -1,6 +1,7 @@
 import unittest
-from api_auto_test.public.base_lp import *
+
 from api_auto_test.dataBase.cx_table import *
+from api_auto_test.daiqian.base_lp import *
 
 
 class LP_Db_Check_Test(unittest.TestCase):

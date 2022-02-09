@@ -1,6 +1,5 @@
 import datetime
-
-from dataBase.dataBase import *
+from api_auto_test.dataBase.dataBase import *
 
 
 def zhuan_huan(result):
