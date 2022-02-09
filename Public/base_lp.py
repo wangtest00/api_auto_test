@@ -54,7 +54,7 @@ def cx_fin_tran_repay_dtl(loan_no):
 
 #查询客户号不为空的用户手机号，GAID='Exception:null'我的标记数据
 def cx_old_registNo():
-    sql="select REGIST_NO from cu_cust_reg_dtl where GAID='Exception:null' and CUST_NO is not null and app_no='"+appNo+"';"
+    sql="select REGIST_NO from cu_cust_reg_dtl where GAID='FC423D8F-BC7E-4430-BD97-66E903DANQI' and CUST_NO is not null and app_no='"+appNo+"' and APP_TYPE='10090001' order by INST_TIME desc;"
     registNo=DataBase(which_db).get_one(sql)
     registNo=registNo[0]
     return registNo

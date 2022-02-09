@@ -2,7 +2,7 @@ import datetime
 import random
 import string
 from api_auto_test.public.mgt_tez import *
-
+from api_auto_test.data.var_tez import *
 
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别
 def compute_code(m):
@@ -33,12 +33,12 @@ def cx_jieqing_time(regist_no):
 def cx_loan_no():
     #查询贷后-未出账单，无还款、减免记录的贷款编号，指定产品号-10001
     sql='''select a.LOAN_NO from lo_loan_dtl a left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO
-          where a.AFTER_STAT='10270001' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='10001'  order by a.INST_TIME desc limit 1;'''
+          where a.AFTER_STAT='10270001' and b.APP_NO="'''+appNo+'''" and b.PROD_NO='10003'  order by a.INST_TIME desc limit 1;'''
     loan_no=DataBase(which_db).get_one(sql)
     loan_no=loan_no[0]
     return loan_no
 def cx_loan_no2():
-    #查询贷后-已出账单，无还款、减免记录的贷款编号，指定产品号-10001
+    #查询贷后-已出账单，无还款、减免记录的贷款编号，指定产品号-10003
     sql='''SELECT c.loan_no
 FROM
 	lo_loan_dtl a
@@ -55,7 +55,7 @@ LEFT JOIN fin_fee_reduce_dtl e ON a.loan_no = e.loan_no
 WHERE
 a.AFTER_STAT = '10270002'
 AND b.APP_NO = '301'
-AND b.PROD_NO = '10001'
+AND b.PROD_NO = '10003'
 AND e.TRAN_TIME IS NULL
 ORDER BY
 	a.INST_TIME DESC limit 1;'''
