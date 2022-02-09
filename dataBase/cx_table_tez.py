@@ -1,6 +1,6 @@
 import datetime
-
-from dataBase.dataBase_tez import *
+from api_auto_test.data.var_tez import *
+from api_auto_test.dataBase.dataBase_tez import *
 
 
 def zhuan_huan(result):
@@ -69,7 +69,7 @@ def cx_fin_ac_dtl(loan_no):
     sql='''#fin_应付明细表
     select PAY_AMT,TRANSTER_TYPE, AC_STAT from fin_ac_dtl where LOAN_NO="'''+loan_no+'''";
     '''
-    result=DataBase(which_db).get_one(sql)
+    result=DataBase(which_db).get_all(sql)
     t=zhuan_huan(result)
     #print(t)
     return t
@@ -123,9 +123,7 @@ def cx_pay_tran_log(loan_no):
     result=DataBase(which_db).get_one(sql)
     return result
 def jisuan_repay_date(loan_no):
-    sql='''select REPAY_DATE,ACT_TRAN_AMT,IN_ACCT_NO,IN_ACCT_NAME,IN_ACCT_ORG from pay_tran_dtl
-where LOAN_NO="'''+loan_no+'''" and tran_stat='10220002' and tran_use='10330001'
-;'''
+    sql='''select REPAY_DATE from lo_loan_dtl where LOAN_NO="'''+loan_no+'''" ;'''
     result=DataBase(which_db).get_one(sql)
     return result
 def jisuan_repay_date_fr(loan_no):

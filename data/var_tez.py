@@ -1,4 +1,4 @@
-__all__=['host_api','host_pay','host_coll','host_mgt','host_msg','head_api','head_coll','head_mgt','head_pay','head_msg','CONFIGS','prodNo','which_db','appNo','shenpiren']
+__all__=['which_db','host_api','host_pay','host_coll','host_mgt','host_msg','head_api','head_coll','head_mgt','head_pay','head_msg','CONFIGS','prodNo','which_db','appNo','shenpiren']
 
 appNo='301'    #当前产品号，测试201用多期，马甲包只支持单期
 shenpiren={'301':['wangs@quantditech.com','https://test-mgt.loantez.in','10001','india_tez_loan','Zet_Loan']}

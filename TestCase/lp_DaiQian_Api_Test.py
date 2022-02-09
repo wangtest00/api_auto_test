@@ -3,7 +3,7 @@ import random
 import requests
 import unittest
 from api_auto_test.public.zhanqi import *
-
+from api_auto_test.data.var_lp import *
 
 class LP_DaiQian_Api_Test(unittest.TestCase):
     @classmethod
@@ -19,14 +19,12 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         data={"registNo": registNo}
         r=requests.post(host_api+'/api/cust/check/user/state',data=json.dumps(data),headers=head_api,verify=False)
         t=r.json()
-        print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertFalse(t['data']['hasPwd'])
         phone='8129467919'                    #已设置密码
         data={"registNo": phone}
         r=requests.post(host_api+'/api/cust/check/user/state',data=json.dumps(data),headers=head_api,verify=False)
         t=r.json()
-        print(t)
         self.assertEqual(t['errorCode'],0)
         self.assertTrue(t['data']['hasPwd'])
     def test_login_code(self):    #函数名要以test开头，否则不会被执行
@@ -43,7 +41,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
     def test_login_pwd(self):
         '''【lanaPlus】/api/cust/pwd/login使用密码登录接口-正案例'''
         registNo=cx_old_registNo()
-        data={"registNo":registNo,"password":"123456","gaid":"Exception:null"}
+        data={"registNo":registNo,"password":"123456","gaid":"FC423D8F-BC7E-4430-BD97-66E903DANQI","channelNo":""}
         r=requests.post(host_api+"/api/cust/pwd/login",data=json.dumps(data),headers=head_api,verify=False)
         t=r.json()
         self.assertEqual(t['errorCode'],0)
