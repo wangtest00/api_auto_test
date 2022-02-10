@@ -1,7 +1,6 @@
 import datetime
 import random
 import string
-
 from api_auto_test.mgt.mex_mgt_fr import *
 from api_auto_test.headers.heads_fr import *
 
