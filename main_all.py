@@ -9,7 +9,7 @@ report_path=os.path.join(current_path,"Report")
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 def load_all_case():
-    discover=unittest.defaultTestLoader.discover(case_path,pattern='*.py')
+    discover=unittest.defaultTestLoader.discover(case_path,pattern='lp_Db_Check_Test.py')
     return discover
 
 if __name__=='__main__':
