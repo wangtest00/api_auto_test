@@ -213,7 +213,7 @@ order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
     return phone
-#查询只借过一笔款且已结清的客户号
+#查询只借过一笔款且已结清的客户号,且申请时间小于当前日期
 def get_yijieqing_custNo():
     sql='''select  b.cust_no,count(1) as loan_cnt from
 (select  a.cust_no from

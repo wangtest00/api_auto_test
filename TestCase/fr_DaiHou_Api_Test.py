@@ -499,6 +499,31 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(r.status_code,200)
         afterstat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
+    def test_repayment_deduction_coupon(self):
+        '''【FeriaRapida】/api/cust/repayment/deduction-减免接口-coupon减免成功-正案例'''
+        registNo=cx_registNo_14()
+        headt_api=login_code(registNo)
+        r=requests.get(host_api+"/api/loan/latest/"+registNo,headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        loanNo=t['data']['loanNo']
+        self.assertEqual(t['errorCode'],0)
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        for i in range(len(repaymentDetailList)):
+            #print(repaymentDetailList[i]['deductionDetail'])
+            if repaymentDetailList[i]['deductionDetail']['couponDeductionAble'] is True:
+                #print(repaymentDetailList[i])
+                repayDate=repaymentDetailList[i]['repayDate']
+            else:
+                pass
+        r=requests.get(host_api+"/api/cust/coupon/type/details/"+registNo+"?stat=USABLE",headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        data={"coinDeductionDetail":None,"couponDeductionDetail":{"couponChannelNo":"满100减50-for-自动化测试-勿动","couponNo":"满100减50"},"deductionType":"COUPON","loanNo":loanNo,"repayDate":repayDate}
+        r=requests.post(host_api+'/api/cust/repayment/deduction',data=json.dumps(data),headers=headt_api,verify=False)
+        s=r.json()
+        print(s)
+        self.assertEqual(s['errorCode'],0)
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
