@@ -45,11 +45,11 @@ FROM
 	lo_loan_dtl a
 INNER JOIN lo_loan_prod_rel b ON a.LOAN_NO = b.LOAN_NO
 INNER JOIN (
-select  z.loan_no from
-(
- select t.loan_no,t.TRANSTER_TYPE,count(1) as cnt from fin_rd_dtl  t GROUP BY  t.loan_no,t.TRANSTER_TYPE HAVING cnt=1
-)z
-where z.TRANSTER_TYPE='10440001'
+select d.loan_no from
+(select a.loan_no from (
+ select t.loan_no,count(1) as cnt from fin_rd_dtl  t  GROUP BY  t.loan_no
+ ) a
+ where a.cnt=1) d  left join fin_rd_dtl b on d.loan_no=b.loan_no  where b.TRANSTER_TYPE='10440001'
 ) c ON a.LOAN_NO = c.LOAN_NO
 INNER JOIN cu_cust_reg_dtl d ON a.CUST_NO = d.CUST_NO
 LEFT JOIN fin_fee_reduce_dtl e ON a.loan_no = e.loan_no
