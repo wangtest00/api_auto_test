@@ -25,6 +25,6 @@ if __name__=='__main__':
         )
         runner.run(
             testlist=suit,
-            rerun=2,
+            rerun=1,
             save_last_run=False
         )
