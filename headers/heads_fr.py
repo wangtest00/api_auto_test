@@ -1,6 +1,5 @@
 import io
 import sys
-
 from api_auto_test.data.var_fr import *
 #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 

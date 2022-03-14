@@ -19,7 +19,7 @@ if __name__=='__main__':
     with(open('./LP_FR_Api_Auto_Test_Reports.html', 'wb')) as fp:
         runner = HTMLTestRunner(
             stream=fp,
-            title='LP_FR_Api_Auto_Test_Report',
+            title='LP_FR_Api_Auto_Test_Reports',
             description='LP_FR接口自动化测试',
             language='en',
         )
