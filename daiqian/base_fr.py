@@ -156,7 +156,7 @@ def cx_registNo_13():
     phone=phone[0]
     return phone
 def cx_registNo_14():
-    sql='''#查询手机号：在贷，有coupon，且无减免记录，无实收
+    sql='''#查询手机号：在贷，有coupon，且无减免记录，无实收，有指定优惠券
     select d.REGIST_NO from lo_loan_dtl a left join lo_loan_prod_rel b   on a.LOAN_NO=b.LOAN_NO left join fin_rd_dtl c on a.LOAN_NO=c.LOAN_NO
     left join cu_cust_reg_dtl d on a.CUST_NO=d.CUST_NO left join fin_fee_reduce_dtl e on a.LOAN_NO=e.loan_no left join cu_coupon_dtl f on d.REGIST_NO=f.PHONE_NO
     where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO="'''+prodNo+'''" and c.TRANSTER_TYPE!='10440002' and e.loan_no is null and f.COUPON_NO='满100减50' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''

@@ -1,5 +1,4 @@
 import unittest
-
 from api_auto_test.dataBase.dataBase import *
 from api_auto_test.daiqian.base_lp import *
 

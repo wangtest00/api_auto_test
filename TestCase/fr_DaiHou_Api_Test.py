@@ -98,7 +98,7 @@ class FR_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['certStatus']['certAuth'],True)
         self.assertEqual(t['data']['certStatus']['kycAuth'],True)
         self.assertEqual(t['data']['certStatus']['workAuth'],True)
-        self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用
+        self.assertEqual(t['data']['certStatus']['bankAuth'],False)    #目前bankauth字段无实际作用,不校验任何逻辑
         self.assertEqual(t['data']['certStatus']['otherContactAuth'],True)
     def test_loan_latest_03(self):
         '''【FeriaRapida】/api/loan/latest/registNo获取最近一笔贷款接口-无在贷(当前非人工或自动审批通过和拒绝状态)正案例'''

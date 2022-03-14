@@ -20,7 +20,7 @@ if __name__=='__main__':
         runner = HTMLTestRunner(
             stream=fp,
             title='LP_FR_Api_Auto_Test_Reports',
-            description='LP_FR接口自动化测试',
+            description='LP_FR_Api_Auto_Test',
             language='en',
         )
         runner.run(
