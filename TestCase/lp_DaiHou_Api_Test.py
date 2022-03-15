@@ -371,7 +371,7 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         self.assertEqual(t['data']['paymentMethod'],'CONEKTA')
         self.assertIsNone(t['data']['stpRepayment'])
         self.assertEqual(t['data']['conektaRepayment']['concepto'],phone)
-    def test_stp_repayment(self):
+    def test_stp_repayment_01(self):
         '''【lanaPlus】/api/trade/stp_repayment/annon/event/webhook-还款接口-STP模拟银行回调-有在贷（逾期）验证结清-正案例'''
         registNo=cx_registNo_05()
         payment_id=str(random.randint(100000000,999999999))
@@ -436,7 +436,72 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
             self.assertEqual(t['errorCode'],0)
         afterstat=cx_beforeStat_afterStat(loanNo)
         self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
-    def test_oxxo_repayment(self):
+    def test_stp_repayment_02(self):
+        '''【lanaPlus】/api/trade/stp_repayment/annon/event/webhook-还款接口-STP模拟银行回调-有在贷（正常）验证结清-正案例'''
+        registNo=cx_registNo_052()#查询有还款申请记录，正常状态的贷款，手机号和还款入账账号
+        payment_id=str(random.randint(100000000,999999999))
+        if registNo is None:
+            registNo=cx_registNo_04()
+            #print(registNo)
+            phone=registNo[0]
+            custNo=registNo[1]
+            loanNo=registNo[2]
+            headt_api=login_code(phone)
+            list=cx_inst_num(loanNo)
+            data={"advance":"10000000","custNo":custNo,"defer":False,"loanNo":loanNo,"paymentMethod":"STP","repayInstNumList":list,"tranAppType":"Android"}
+            r=requests.post(host_api+"/api/trade/fin/repay",data=json.dumps(data),headers=headt_api,verify=False) #api申请还款
+            t=r.json()
+            print(t)
+            cuentaBeneficiario=t['data']['stpRepayment']['clabeNo']
+            r=requests.get(host_api+"/api/loan/latest/"+phone,headers=headt_api,verify=False)#查询最近一笔贷款接口
+            t=r.json()
+            print('1-获取最近一笔贷款接口返回值=',t)
+            self.assertEqual(t['errorCode'],0)
+            repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+            sum=0
+            for i in range(len(repaymentDetailList)):
+                if repaymentDetailList[i]['stat']=='SETTLE_MENT':#该期已结清
+                    pass
+                else:
+                    sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
+            monto=str(sum)
+            print("总应还金额=",monto)
+            data={"abono":{"id":payment_id,"fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
+                       "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
+                       "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
+            r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
+            t=r.json()
+            print(t)
+            self.assertEqual(t['errorCode'],0)
+        else:
+            print(registNo)
+            phone=registNo[0]
+            cuentaBeneficiario=registNo[1]
+            headt_api=login_code(phone)
+            r=requests.get(host_api+"/api/loan/latest/"+phone,headers=headt_api,verify=False)
+            t=r.json()
+            print('2-获取最近一笔贷款接口返回值=',t)
+            self.assertEqual(t['errorCode'],0)
+            repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+            sum=0
+            for i in range(len(repaymentDetailList)):
+                if repaymentDetailList[i]['stat']=='SETTLE_MENT':#该期已结清
+                    pass
+                else:
+                    sum=sum+float(repaymentDetailList[i]['repaymentAmt'])
+            monto=str(sum)
+            print("总应还金额=",monto)
+            loanNo=t['data']['loanNo']
+            data={"abono":{"id":payment_id,"fechaOperacion":"20210108","institucionOrdenante":"40012","institucionBeneficiaria":"90646","claveRastreo":"MBAN01002101080089875109","monto":monto,
+                       "nombreOrdenante":"HAZEL VIRIDIANA RUIZ RICO               ","tipoCuentaOrdenante":"40","cuentaOrdenante":"012420028362208190","rfcCurpOrdenante":"RURH8407075F8","nombreBeneficiario":"STP                                     ",
+                       "tipoCuentaBeneficiario":"40","cuentaBeneficiario":cuentaBeneficiario,"rfcCurpBeneficiario":"null","conceptoPago":"ESTELA SOLICITO TRANSFERENCIA","referenciaNumerica":"701210","empresa":"QUANTX_TECH"}}
+            r=requests.post(host_pay+"/api/trade/stp_repayment/annon/event/webhook",data=json.dumps(data),headers=head_pay,verify=False)
+            t=r.json()
+            print(t)
+            self.assertEqual(t['errorCode'],0)
+        afterstat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10270005',afterstat[1])#验证贷后状态是否更新为【已结清】
+    def test_oxxo_repayment_01(self):
         '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷（正常）,结清(先申请还款后模拟还款回调)-正案例'''
         registNo=cx_registNo_04()
         print(registNo)
@@ -451,6 +516,113 @@ class LP_DaiHou_Api_Test(unittest.TestCase):
         print("OXXO申请还款接口响应=",t)
         self.assertEqual(t['errorCode'],0)
         r=requests.get(host_api+"/api/loan/latest/"+phone,headers=headt_api,verify=False)
+        t=r.json()
+        print('获取最近一笔贷款接口响应值=',t)
+        repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
+        amount=0
+        for i in range(len(repaymentDetailList)):
+            if repaymentDetailList[i]['stat']=='SETTLE_MENT':       #该期已结清
+                pass
+            else:
+                amount=amount+float(repaymentDetailList[i]['repaymentAmt'])
+        list=cx_registNo_06(loanNo)
+        tran_order_no=list[1]
+        in_acct_no=list[2]
+        data_for_oxxo={"data": {"object": {
+			"livemode": False,
+			"amount": int(amount*100),
+			"currency": "",
+			"payment_status": "paid",
+			"amount_refunded": 0,
+			"customer_info": {"email": "","phone": "","name": "","object": ""},"object": "",
+			"id": tran_order_no,
+			"metadata": {},
+			"created_at": 0,
+			"updated_at": 0,
+			"line_items": {
+				"object": "",
+				"has_more": False,
+				"total": 0,
+				"data": [
+					{"name": "",
+						"unit_price": 0,
+						"quantity": 0,
+						"object": "",
+						"id": "",
+						"parent_id": "",
+						"metadata": {},
+						"antifraud_info": {}
+					}]},
+			"charges": {"object": "",
+				"has_more": False,
+				"total": 0,
+				"data": [
+					{
+						"id": "",
+						"livemode": False,
+						"created_at": 0,
+						"currency": "",
+						"payment_method": {
+							"service_name": "OxxoPay",
+							"barcode_url": "https://s3.amazonaws.com/cash_payment_barcodes/84000964785462.png",
+							"object": "",
+							"type": "",
+							"expires_at": 0,
+							"store_name": "OXXO",
+							"reference": in_acct_no
+						},
+						"object": "",
+						"description": "",
+						"status": "",
+						"amount": 0,
+						"paid_at": 0,
+						"fee": 0,
+						"customer_id": "",
+						"order_id": ""
+					}
+				]
+			}
+		},
+                "previous_attributes": {}
+            },
+            "livemode": False,
+            "webhook_status": "",
+            "id": "",
+            "object": "",
+            "type": "order.paid",
+            "created_at": 0,
+            "webhook_logs": [
+                {
+                    "id": "",
+                    "url": "",
+                    "failed_attempts": 0,
+                    "last_http_response_status": 0,
+                    "object": "",
+                    "last_attempted_at": 0
+                }
+            ]
+        }
+        #print(data_for_oxxo)
+        r=requests.post(host_pay+"/api/trade/conekta/annon/event/webhook",data=json.dumps(data_for_oxxo),verify=False)
+        print(r.json())
+        self.assertEqual(r.status_code,200)
+        afterstat=cx_beforeStat_afterStat(loanNo)
+        self.assertEqual('10270005',afterstat[1])  #验证贷后状态是否更新为【已结清】
+    def test_oxxo_repayment_02(self):
+        '''【lanaPlus】/api/trade/conekta/annon/event/webhook-还款接口-OXXO模拟银行回调-有在贷（逾期）,结清(先申请还款后模拟还款回调)-正案例'''
+        registNo=cx_registNo_042()
+        print(registNo)
+        phone=registNo[0]
+        custNo=registNo[1]
+        loanNo=registNo[2]
+        headt_api=login_code(phone)
+        list=cx_inst_num(loanNo)
+        data={"advance":"10000000","custNo":custNo,"defer":False,"loanNo":loanNo,"paymentMethod":"CONEKTA","repayInstNumList":list,"tranAppType":"Android"}
+        r=requests.post(host_api+"/api/trade/fin/repay",data=json.dumps(data),headers=headt_api,verify=False)#api调支付申请还款
+        t=r.json()
+        print("OXXO申请还款接口响应=",t)
+        self.assertEqual(t['errorCode'],0)
+        r=requests.get(host_api+"/api/loan/latest/"+phone,headers=headt_api,verify=False)#最近一笔贷款
         t=r.json()
         print('获取最近一笔贷款接口响应值=',t)
         repaymentDetailList=t['data']['repaymentDetail']['repaymentDetailList']
