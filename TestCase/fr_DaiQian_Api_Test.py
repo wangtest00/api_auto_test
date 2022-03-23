@@ -1,5 +1,5 @@
 import unittest
-from api_auto_test.daiqian.base_fr import *
+from daiqian.base_fr import *
 
 
 class FR_DaiQian_Api_Test(unittest.TestCase):

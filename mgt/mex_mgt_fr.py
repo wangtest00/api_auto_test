@@ -1,7 +1,7 @@
 import json
 import requests
-from api_auto_test.data.var_fr import *
-from api_auto_test.dataBase.dataBase import *
+from data.var_fr import *
+from dataBase.dataBase import *
 
 
 def check_api(r):

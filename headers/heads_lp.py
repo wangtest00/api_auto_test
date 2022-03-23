@@ -1,6 +1,6 @@
 import io
 import sys
-from data.var_tez import *
+from data.var_lp import *
 #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="gb18030")
 
 def head_token(token):

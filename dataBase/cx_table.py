@@ -1,6 +1,6 @@
 import datetime
-from api_auto_test.dataBase.dataBase import *
-
+from dataBase.dataBase import *
+from data.var_lp import *
 
 def zhuan_huan(result):
     m=[]

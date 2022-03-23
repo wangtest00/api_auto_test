@@ -1,6 +1,6 @@
 import unittest
-from api_auto_test.dataBase.cx_table_tez import *
-from api_auto_test.daiqian.base_tez import *
+from dataBase.cx_table_tez import *
+from daiqian.base_tez import *
 
 
 class Tez_Db_Check_Test(unittest.TestCase):

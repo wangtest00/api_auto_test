@@ -1,7 +1,7 @@
 import json
 import requests
-from api_auto_test.dataBase.dataBase_tez import *
-from api_auto_test.data.var_tez import *
+from dataBase.dataBase_tez import *
+from data.var_tez import *
 
 def check_api(r):
     try:

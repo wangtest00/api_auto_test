@@ -1,8 +1,8 @@
 import datetime
 import random
 import string
-from api_auto_test.mgt.mex_mgt_fr import *
-from api_auto_test.headers.heads_fr import *
+from mgt.mex_mgt_fr import *
+from headers.heads_fr import *
 
 
 #短信验证码，默认手机号后4位单个+5后取个位数，在逆序排列。注意非中国手机号规则.现在实际规则改为手机号后6位。。。没区别

@@ -1,7 +1,7 @@
 import json
 import requests
-from api_auto_test.database.dataBase_tez import *
-from api_auto_test.data.var_tez import *
+from dataBase.dataBase_tez import *
+from data.var_tez import *
 
 #放款-模拟回调
 def globpay_webhook_payout(loan_no):

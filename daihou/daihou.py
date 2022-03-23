@@ -1,5 +1,5 @@
-from api_auto_test.dataBase.dataBase import *
-from api_auto_test.daiqian.base_lp import *
+from dataBase.dataBase import *
+from daiqian.base_lp import *
 
 
 #模拟银行回调接口-模拟还款stp（只需修改卡号cuentaBeneficiario和金额monto）

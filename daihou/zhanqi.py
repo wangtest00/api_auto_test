@@ -1,4 +1,4 @@
-from api_auto_test.daihou.daihou import *
+from daihou.daihou import *
 
 randnum=str(random.randint(10000000,99999999))
 #插入允许展期的记录

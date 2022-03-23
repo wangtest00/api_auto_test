@@ -1,8 +1,8 @@
 import json
 import unittest
 import requests
-from api_auto_test.dataBase.dataBase import *
-from api_auto_test.data.var_lp import *
+from dataBase.dataBase import *
+from data.var_lp import *
 
 class LP_Business_Api_Test(unittest.TestCase):
     @classmethod

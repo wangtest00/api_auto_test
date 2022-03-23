@@ -1,6 +1,6 @@
 import unittest
-from api_auto_test.data.var_lp import *
-from api_auto_test.daihou.zhanqi import *
+from data.var_lp import *
+from daihou.zhanqi import *
 
 
 class LP_DaiQian_Api_Test(unittest.TestCase):

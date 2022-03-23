@@ -5,7 +5,7 @@ Created on 2018-11-26
 '''
 import time
 import pymysql
-from api_auto_test.data.var_lp import *   #FR和lanaplus共用一个数据库
+from data.var_lp import *   #FR和lanaplus共用一个数据库
 
 
 class DataBase():
