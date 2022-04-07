@@ -301,7 +301,7 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         headt_api_f=login_code_f(registNo)
         custNo='C2012108318120925314188222464'
         files={'custNo':(None,custNo),'phoneNo':(None,registNo),'feedbackDesc':(None,'test123456789'),'feedbackType':(None,'11110007'),'feedbackPage':(None,'NEW'),
-               'feedbackOption':(None,'Carga prolongada de la página de pago'),'imgs':('navicat.png',open(r'/home/wangshuang/Downloads/navicat.png', 'rb'),'text/plain')}
+               'feedbackOption':(None,'Carga prolongada de la página de pago'),'imgs':('navicat.png',open(r'/home/wangshuang/Pictures/navicat.png', 'rb'),'text/plain')}
         r=requests.post(host_api+"/api/cust/feedback/record",files=files,headers=headt_api_f)
         t=r.json()
         print(t)
