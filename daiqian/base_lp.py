@@ -202,6 +202,7 @@ def cx_registNo_13():
     where a.AFTER_STAT='10270002' and b.APP_NO="'''+appNo+'''" and b.PROD_NO="'''+prodNo+'''" and c.TRAN_TIME is NULL and e.loan_no is null and f.COUPON_NO='减3块' and f.USE_TIME is null  and f.STATUS='11320001' order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
+    print(sql)
     return phone
 def cx_registNo_14():
     sql='''#查询手机号：永久积分大于200,已绑卡
@@ -220,6 +221,7 @@ where a.STAT='11360001' and c.CERT_AUTH='1' and c.KYC_AUTH='1' and c.WORK_AUTH='
 order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     phone=phone[0]
+
     return phone
 #查询只借过一笔款且已结清的客户号,且申请时间小于当前日期
 def get_yijieqing_custNo():
