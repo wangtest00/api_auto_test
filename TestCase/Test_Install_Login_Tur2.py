@@ -1,24 +1,25 @@
-# -*- coding: utf-8 -*-
 import time
 from appium import webdriver
-import unittest
-import os
+import unittest,os
 from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
 from app.grab_data import *
 from app.appium_start_stop import *
+from app.swipe_test import *
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 port=4725
+udid_ip='192.168.20.135:5555'
+app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 
-class TestFirstApply(unittest.TestCase):
+class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
-        appium_start('127.0.0.1', port) #启动appium服务
+        appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
         desired_caps = {}
         # 设备系统
@@ -26,61 +27,58 @@ class TestFirstApply(unittest.TestCase):
         # 设备系统版本号
         desired_caps['platformVersion'] = '11'
         # 设备名称
-        desired_caps['deviceName'] = 'OPPO'  #OPPO手机
-        desired_caps['udid'] = '192.168.20.106:5555'
+        desired_caps['deviceName'] = 'OPPO'
+        desired_caps['udid'] = udid_ip
         # 应用的包名
         desired_caps['appPackage'] = 'com.turrant'
         # 应用启动需要的Android Activity名称
         desired_caps['appActivity'] = 'com.turrant.ui.activity.LaunchActivity'
-        #是否不重置（重新安装app）
-        desired_caps["noReset"] = True
         # 跳过检查核对应用进行debug的签名的步骤
         # desired_caps['noSign'] = "True"
         # desired_caps["unicodeKeyboard"] = True
         # desired_caps["resetKeyboard"] = True
         #desired_caps["automationName"] = "Uiautomator2"
-        desired_caps['app'] ='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+        desired_caps['app'] = app_address
         # 配置远程server（通过本地代码调用远程server）
-        remote = "http://127.0.0.1:"+str(port)+"/wd/hub"
+        remote = "http://127.0.0.1:"+str(port) + "/wd/hub"
         print(remote)
         self.driver = webdriver.Remote(remote, desired_caps)
         # 设置隐式等待为 10s
         self.driver.implicitly_wait(10)
-    # 获取屏幕机器大小x,y
-    def getSize(self):
-        x = self.driver.get_window_size()['width']
-        y = self.driver.get_window_size()['height']
-        return (x, y)
-    # 屏幕向上滑动
-    def swipeup(self,t):
-        print("正在向上滑动..")
-        screensize = self.getSize()
-        x1 = int(screensize[0] * 0.5)  # x坐标
-        y1 = int(screensize[1] * 0.75)  # 起始y坐标
-        y2 = int(screensize[1] * 0.25)  # 终点y坐标
-        self.driver.swipe(x1, y1, x1, y2, t)
-    #退出登录
-    def logout(self):
-        self.driver.find_element_by_id('com.turrant:id/radio_mine').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.turrant:id/exit_layout').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.turrant:id/btn_sure').click()
-
-    def test_login(self):
-        '''【turrant-android】test_login-正案例'''
+    def shouquan(self):
         try:
-            self.driver.find_element_by_id('com.turrant:id/phone').send_keys('8686863333')
             time.sleep(3)
-            self.driver.find_element_by_id('com.turrant:id/code').send_keys('8888')
-            self.driver.find_element_by_id('com.turrant:id/login_btn').click()
+            self.driver.find_element_by_id('com.turrant:id/agree').click()
             time.sleep(3)
-            self.logout()
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+            time.sleep(3)
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
+            time.sleep(3)
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+            time.sleep(3)
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+            time.sleep(3)
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+            time.sleep(3)
+            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
         except Exception as e:
             print("failed to find the element")
-        print("test over")
-    def test_first_apply(self):
-        '''【turrant-android】test_first_apply-进件5页面，检查数据抓取正案例'''
+        print("test done")
+    def test_install_login(self):
+        try:
+            self.shouquan()
+            time.sleep(3)
+            input = self.driver.find_element_by_id('com.turrant:id/phone')
+            input.send_keys('8686863333')
+            input2 = self.driver.find_element_by_id('com.turrant:id/code')
+            input2.send_keys('8888')
+            self.driver.find_element_by_id('com.turrant:id/login_btn').click()
+        except Exception as e:
+            print("failed to find the element",e)
+    def test_install_first_apply(self):
+        '''【turrant-android-OPPO】test_install_first_apply-授权，进件5页面，检查数据抓取正案例'''
+        self.shouquan()
+        time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
         print(registNo)
         self.driver.find_element_by_id('com.turrant:id/phone').send_keys(registNo)
@@ -103,7 +101,7 @@ class TestFirstApply(unittest.TestCase):
         self.driver.find_element_by_xpath(xp6).click()     #marital status婚姻状况
         time.sleep(3)
         self.driver.find_element_by_id('com.turrant:id/textView2').click()#点击ok
-        self.swipeup(1000)
+        swipeup(self.driver,1000)
         self.driver.implicitly_wait(10)
         curtNo=certlist()
         self.driver.find_element_by_xpath(xp7).send_keys('wang123QQ@gmail.com')  #email
@@ -174,7 +172,7 @@ class TestFirstApply(unittest.TestCase):
         self.driver.find_element_by_id('com.turrant:id/textView2').click() #点击ok
         self.driver.find_element_by_xpath(xp42).send_keys('test android two')
         self.driver.find_element_by_xpath(xp43).send_keys('7474666333')
-        self.swipeup(1000)
+        swipeup(self.driver,1000)
         self.driver.find_element_by_id('com.turrant:id/next').click() #点击提交申请
         time.sleep(30)
         self.driver.find_element_by_id('com.turrant:id/bind_bank').click() #提交成功后，点击ok按钮
@@ -183,10 +181,10 @@ class TestFirstApply(unittest.TestCase):
         grab_data=cx_grab_data(registNo)
         for i in range(len(grab_data)):
             self.assertIsNotNone(grab_data[i])
-        self.logout()
+        logout(self.driver)
     def tearDown(self):
-        # self.driver.quit()
-        print('testcase done')
+        #self.driver.quit()
+        print("testcase done")
     @classmethod
     def tearDownClass(cls):  # 在所有用例都执行完之后运行的
         appium_stop(port)

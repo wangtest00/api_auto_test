@@ -1,4 +1,4 @@
-import random,string
+import random,string,time
 
 def certlist():
     st=''
@@ -12,6 +12,14 @@ def certlist():
     certlist.append(panNo)
     #print(certlist)
     return certlist
+
+ #退出登录
+def logout(driver):
+    driver.find_element_by_id('com.turrant:id/radio_mine').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.turrant:id/exit_layout').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.turrant:id/btn_sure').click()
 
 if __name__ == '__main__':
     certlist()
