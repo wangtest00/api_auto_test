@@ -5,11 +5,8 @@ prodNo='20150801'#duoqi50121401
 appNo='104'
 applist={'104':'Turrant','102':'CashTM'}
 appName=applist[appNo]
-host_api="https://test-appa.quantstack.in"
-host_pay="https://test-pay.quantstack.in"
-host_action="https://test-action.quantstack.in"
-host_mgt="https://test-mgt.quantstack.in"
-host_coll="https://test-collection.quantstack.in"
+
+app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 
 CONFIGS = {
     'mex_pdl_loan': {'host':'192.168.0.60','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'mex_pdl_loan'},

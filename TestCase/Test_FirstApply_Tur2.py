@@ -10,9 +10,9 @@ from app.swipe_test import *
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
+
 port=4725
-udid_ip='192.168.20.135:5555'
-app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+udid='192.168.20.135:5555'
 
 class Test_FirstApply_Tur2(unittest.TestCase):
     @classmethod
@@ -27,7 +27,7 @@ class Test_FirstApply_Tur2(unittest.TestCase):
         desired_caps['platformVersion'] = '11'
         # 设备名称
         desired_caps['deviceName'] = 'OPPO'  #OPPO手机
-        desired_caps['udid'] =udid_ip
+        desired_caps['udid'] =udid
         # 应用的包名
         desired_caps['appPackage'] = 'com.turrant'
         # 应用启动需要的Android Activity名称

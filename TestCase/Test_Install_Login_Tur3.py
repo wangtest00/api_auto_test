@@ -13,8 +13,7 @@ PATH = lambda p: os.path.abspath(
 )
 
 port=4723
-udid_ip='bqgqf6kjaem7pvwk'
-app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+udid='bqgqf6kjaem7pvwk'
 class Test_Install_Login_Tur3(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
@@ -28,7 +27,7 @@ class Test_Install_Login_Tur3(unittest.TestCase):
         desired_caps['platformVersion'] = '11'
         # 设备名称
         desired_caps['deviceName'] = 'HONGMI'  #红米手机
-        desired_caps['udid'] = udid_ip
+        desired_caps['udid'] = udid
         # 应用的包名
         desired_caps['appPackage'] = 'com.turrant'
         # 应用启动需要的Android Activity名称
