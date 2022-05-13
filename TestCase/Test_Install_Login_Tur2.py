@@ -19,8 +19,8 @@ class Test_Install_Login_Tur2(unittest.TestCase):
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
         huanxing_screen(applist[2])  # 唤醒屏幕
-        sildes(360, 1400, 360, 1300, 50)  # adb向上滑屏
-        uninstall_app(applist[3])  # 预先卸载app
+        sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
+        uninstall_app(applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
         desired_caps = {}

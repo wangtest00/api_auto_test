@@ -61,6 +61,3 @@ def sildes(udid,x,y,x1,y1,h):
     # 用adb模拟手指滑动屏幕
     os.system('adb -s '+udid+' shell input swipe {} {} {} {} {}'.format(x,y,x1,y1,h))
     print("运行",udid,"%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
-
-
-
