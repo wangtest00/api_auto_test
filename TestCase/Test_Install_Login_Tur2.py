@@ -11,9 +11,9 @@ from app.swipe_test import *
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
-port=4725   #appium和driver端口号
+port=4729   #appium和driver端口号
 applist=['OPPO','11','192.168.20.106:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
-
+app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
@@ -24,10 +24,10 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
-        # 设备系统版本号
-        desired_caps['platformVersion'] = applist[1]
         # 设备名称
         desired_caps['deviceName'] = applist[0]
+        # 设备系统版本号
+        desired_caps['platformVersion'] = applist[1]
         desired_caps['udid'] = applist[2]
         # 应用的包名
         desired_caps['appPackage'] = applist[3]
@@ -187,7 +187,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         self.assertEqual(cx_point_track_dtl_new(registNo),'26')
         logout(self.driver)
     def tearDown(self):
-        self.driver.close()
+        #self.driver.close()
         print("testcase done")
     @classmethod
     def tearDownClass(cls):  # 在所有用例都执行完之后运行的

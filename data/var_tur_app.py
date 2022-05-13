@@ -6,7 +6,7 @@ appNo='104'
 applist={'104':'Turrant','102':'CashTM'}
 appName=applist[appNo]
 
-app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+#app_address='D:\\app_list\\turrant\\Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 
 CONFIGS = {
     'mex_pdl_loan': {'host':'192.168.0.60','port':3306, 'user': 'cs_wangs','password': 'cs_wangs!qw####','database': 'mex_pdl_loan'},
