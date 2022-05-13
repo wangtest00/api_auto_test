@@ -185,7 +185,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
             self.assertIsNotNone(grab_data[i])
         logout(self.driver)
     def tearDown(self):
-        #self.driver.quit()
+        self.driver.close()
         print("testcase done")
     @classmethod
     def tearDownClass(cls):  # 在所有用例都执行完之后运行的
