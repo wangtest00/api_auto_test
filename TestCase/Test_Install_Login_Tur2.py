@@ -12,7 +12,7 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 port=4725   #appium和driver端口号
-applist=['OPPO','11','192.168.20.135:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
+applist=['OPPO','11','192.168.20.106:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 
 class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
