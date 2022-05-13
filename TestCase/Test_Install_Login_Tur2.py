@@ -18,6 +18,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
+        huanxing_screen()
         uninstall_app(applist[3])        #预先卸载app
         appium_start('127.0.0.1', port)  #启动appium服务
     def setUp(self):
@@ -45,6 +46,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         self.driver = webdriver.Remote(remote, desired_caps)
         # 设置隐式等待为 10s
         self.driver.implicitly_wait(10)
+        swipeup(self.driver,1000)
     def shouquan(self):
         try:
             time.sleep(3)
