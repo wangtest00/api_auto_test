@@ -15,6 +15,12 @@ def cx_grab_data(registNo):
     print(data_list)
     return data_list
 
+def cx_point_track_dtl_new(registNo):
+    sql="select count(1) from point_track_dtl_new  where PHONE='"+registNo+"';"
+    num=DataBase('new_point').get_one(sql)
+    print(num[0])
+    return num
 
 if __name__ == '__main__':
-    cx_grab_data('8931096039')
+    #cx_grab_data('8931096039')
+    cx_point_track_dtl_new('7770622564')

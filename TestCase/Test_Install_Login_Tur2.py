@@ -65,6 +65,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
             print("failed to find the element")
         print("test done")
     def test_install_login(self):
+        '''【turrant-android-OPPO】test_install_login-授权,登录-正案例'''
         try:
             self.shouquan()
             time.sleep(3)
@@ -76,7 +77,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         except Exception as e:
             print("failed to find the element",e)
     def test_install_first_apply(self):
-        '''【turrant-android-OPPO】test_install_first_apply-授权，进件5页面，检查数据抓取正案例'''
+        '''【turrant-android-OPPO】test_install_first_apply-授权，进件5页面，检查数据抓取-正案例'''
         self.shouquan()
         time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
@@ -183,6 +184,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         grab_data=cx_grab_data(registNo)
         for i in range(len(grab_data)):
             self.assertIsNotNone(grab_data[i])
+        self.assertEqual(cx_point_track_dtl_new(registNo),'26')
         logout(self.driver)
     def tearDown(self):
         self.driver.close()
