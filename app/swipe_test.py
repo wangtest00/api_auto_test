@@ -56,12 +56,11 @@ def swiperight(driver,n,t):
         driver.swipe(x1,y1,x2,y1,t)
         print("成功向右滑动：",n,"次")
 
-# 读取参数
-def sildes(x,y,x1,y1,h):
+# 读取参数,指定设备，adb滑动屏幕
+def sildes(udid,x,y,x1,y1,h):
     # 用adb模拟手指滑动屏幕
-    os.system('adb shell input swipe {} {} {} {} {}'.format(x,y,x1,y1,h))
-    print("运行","%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
+    os.system('adb -s '+udid+' shell input swipe {} {} {} {} {}'.format(x,y,x1,y1,h))
+    print("运行",udid,"%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
 
-if __name__=="__main__":
-    sildes(360,1400,360,1300,50)
+
 

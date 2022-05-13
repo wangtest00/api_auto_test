@@ -34,11 +34,12 @@ def appium_stop(port):
 #卸载app,用包名就行了
 def uninstall_app(apppackage):
     os.system('adb uninstall '+apppackage)
-def huanxing_screen():
-    os.system('adb shell input keyevent KEYCODE_POWER')
+def huanxing_screen(udid):
+    os.system('adb -s '+udid+' shell input keyevent KEYCODE_POWER')
 
 
 if __name__ == '__main__':
     #appium_start('127.0.0.1', 4725)
     #appium_stop(4725)
-    uninstall_app()
+    #uninstall_app()
+    huanxing_screen('192.168.20.106:5555')
