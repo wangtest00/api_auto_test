@@ -4,6 +4,9 @@ int start y －开始滑动的y坐标。
 int end x －结束点x坐标，
 int end y －结束点y坐标。
 duration 滑动时间（默认5毫秒）；'''
+# -*- coding: utf-8 -*-
+from time import sleep
+import os
 import time
 #获取屏幕机器大小x,y
 def getSize(driver):
@@ -52,3 +55,14 @@ def swiperight(driver,n,t):
         time.sleep(3)
         driver.swipe(x1,y1,x2,y1,t)
         print("成功向右滑动：",n,"次")
+
+# 读取参数
+def sildes(x,y,x1,y1,h):
+    print("%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
+    # 用adb模拟手指滑动屏幕
+    os.system('adb shell input swipe {} {} {} {} {}'.format(x,y,x1,y1,h))
+    print("运行")
+
+if __name__=="__main__":
+    sildes(360,1400,360,1300,50)
+
