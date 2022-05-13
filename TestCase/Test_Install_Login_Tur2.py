@@ -184,6 +184,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         grab_data=cx_grab_data(registNo)
         for i in range(len(grab_data)):
             self.assertIsNotNone(grab_data[i])
+        time.sleep(10)
         self.assertEqual(cx_point_track_dtl_new(registNo),'26')
         logout(self.driver)
     def tearDown(self):
