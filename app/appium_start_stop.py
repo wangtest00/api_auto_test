@@ -2,8 +2,7 @@ import subprocess
 import sys,os
 
 def appium_start(host, port):
-    #bootstrap_port = str(port + 1)
-    cmd = 'start /b appium -a '+host+' -p '+str(port)
+    cmd = 'appium -a '+host+' -p '+str(port)
     print(cmd)
     subprocess.Popen(cmd, shell=True, stdout=open('../'+str(port)+'.txt','a'),stderr=subprocess.STDOUT)
 
