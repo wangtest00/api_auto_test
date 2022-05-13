@@ -13,6 +13,8 @@ PATH = lambda p: os.path.abspath(
 )
 port=4723   #appium和driver端口号
 applist=['HONGMI','11','bqgqf6kjaem7pvwk','com.turrant','com.turrant.ui.activity.LaunchActivity']
+app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+
 class Test_Install_Login_Tur3(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的

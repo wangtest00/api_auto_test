@@ -13,12 +13,12 @@ PATH = lambda p: os.path.abspath(
 )
 port=4727  #appium和driver端口号
 applist=['MOTO','11','192.168.20.116:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
-
+app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 class Test_Install_Login_Tur(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
-        uninstall_app(appPackage)  # 卸载app
+        uninstall_app(applist[3])  # 卸载app
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
         desired_caps = {}
