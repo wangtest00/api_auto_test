@@ -58,10 +58,9 @@ def swiperight(driver,n,t):
 
 # 读取参数
 def sildes(x,y,x1,y1,h):
-    print("%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
     # 用adb模拟手指滑动屏幕
     os.system('adb shell input swipe {} {} {} {} {}'.format(x,y,x1,y1,h))
-    print("运行")
+    print("运行","%s y轴|%s x轴|%s y1轴|%s x1轴"%(x,y,x1,y1))
 
 if __name__=="__main__":
     sildes(360,1400,360,1300,50)
