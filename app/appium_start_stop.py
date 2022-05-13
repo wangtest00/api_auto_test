@@ -32,7 +32,11 @@ def appium_stop(port):
                 # print(stdoutline)
                 pid = stdoutline[4]
                 os.system(f"kill {pid}")
+#卸载app,用包名就行了
+def uninstall_app(apppackage):
+    os.system('adb uninstall '+apppackage)
 
 if __name__ == '__main__':
-    appium_start('127.0.0.1', 4725)
+    #appium_start('127.0.0.1', 4725)
     #appium_stop(4725)
+    uninstall_app()

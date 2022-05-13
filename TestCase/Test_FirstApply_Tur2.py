@@ -11,37 +11,37 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 
-port=4725
-udid='192.168.20.135:5555'
+port=4725   #appium和driver端口号
+applist=['OPPO','11','192.168.20.135:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 
 class Test_FirstApply_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
-        appium_start('127.0.0.1', port) #启动appium服务
+        uninstall_app(applist[3])  # 卸载app
+        appium_start('127.0.0.1', port)  # 启动appium服务
+
     def setUp(self):
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
         # 设备系统版本号
-        desired_caps['platformVersion'] = '11'
+        desired_caps['platformVersion'] = applist[1]
         # 设备名称
-        desired_caps['deviceName'] = 'OPPO'  #OPPO手机
-        desired_caps['udid'] =udid
+        desired_caps['deviceName'] = applist[0]
+        desired_caps['udid'] = applist[2]
         # 应用的包名
-        desired_caps['appPackage'] = 'com.turrant'
+        desired_caps['appPackage'] = applist[3]
         # 应用启动需要的Android Activity名称
-        desired_caps['appActivity'] = 'com.turrant.ui.activity.LaunchActivity'
-        #是否不重置（重新安装app）
-        desired_caps["noReset"] = True
+        desired_caps['appActivity'] = applist[4]
         # 跳过检查核对应用进行debug的签名的步骤
         # desired_caps['noSign'] = "True"
         # desired_caps["unicodeKeyboard"] = True
         # desired_caps["resetKeyboard"] = True
-        #desired_caps["automationName"] = "Uiautomator2"
-        desired_caps['app'] =app_address
+        # desired_caps["automationName"] = "Uiautomator2"
+        desired_caps['app'] = app_address
         # 配置远程server（通过本地代码调用远程server）
-        remote = "http://127.0.0.1:"+str(port)+"/wd/hub"
+        remote = "http://127.0.0.1:" + str(port) + "/wd/hub"
         print(remote)
         self.driver = webdriver.Remote(remote, desired_caps)
         # 设置隐式等待为 10s

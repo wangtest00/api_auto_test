@@ -11,27 +11,28 @@ from app.swipe_test import *
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
-port=4725
-udid='192.168.20.135:5555'
+port=4725   #appium和driver端口号
+applist=['OPPO','11','192.168.20.135:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 
 class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):  # 在所有用例执行之前运行的
+    def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
-        appium_start('127.0.0.1', port)  # 启动appium服务
+        uninstall_app(applist[3])        #预先卸载app
+        appium_start('127.0.0.1', port)  #启动appium服务
     def setUp(self):
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
         # 设备系统版本号
-        desired_caps['platformVersion'] = '11'
+        desired_caps['platformVersion'] = applist[1]
         # 设备名称
-        desired_caps['deviceName'] = 'OPPO'
-        desired_caps['udid'] = udid
+        desired_caps['deviceName'] = applist[0]
+        desired_caps['udid'] = applist[2]
         # 应用的包名
-        desired_caps['appPackage'] = 'com.turrant'
+        desired_caps['appPackage'] = applist[3]
         # 应用启动需要的Android Activity名称
-        desired_caps['appActivity'] = 'com.turrant.ui.activity.LaunchActivity'
+        desired_caps['appActivity'] = applist[4]
         # 跳过检查核对应用进行debug的签名的步骤
         # desired_caps['noSign'] = "True"
         # desired_caps["unicodeKeyboard"] = True
@@ -149,15 +150,17 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         self.driver.find_element_by_id(id24).click()
         self.driver.find_element_by_xpath(xp25).click()
         self.driver.find_element_by_id(id26).click()
-        self.driver.find_element_by_id(id27).click()
-        self.driver.find_element_by_id(id28).click()
-        self.driver.find_element_by_id(id29).click()
-        self.driver.find_element_by_xpath(xp30).click()
-        self.driver.find_element_by_xpath(xp31).click()
-        self.driver.find_element_by_id(id32).click()
-        self.driver.find_element_by_id(id33).click()
-        self.driver.find_element_by_xpath(xp34).click()
-        self.driver.find_element_by_xpath(xp35).click()
+        # time.sleep(5)
+        # self.driver.find_element_by_id(id27).click()
+        # time.sleep(5)
+        # self.driver.find_element_by_id(id28).click()
+        # self.driver.find_element_by_id(id29).click()
+        # self.driver.find_element_by_xpath(xp30).click()
+        # self.driver.find_element_by_xpath(xp31).click()
+        # self.driver.find_element_by_id(id32).click()
+        # self.driver.find_element_by_id(id33).click()
+        # self.driver.find_element_by_xpath(xp34).click()
+        # self.driver.find_element_by_xpath(xp35).click()
         self.driver.find_element_by_id('com.turrant:id/next').click()  #step5点击下一步，进入联系人信息页面
         time.sleep(5)
         self.driver.find_element_by_id(id36).click()
