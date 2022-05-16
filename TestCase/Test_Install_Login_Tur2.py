@@ -66,8 +66,8 @@ class Test_Install_Login_Tur2(unittest.TestCase):
             time.sleep(3)
             self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
         except Exception as e:
-            print("failed to find the element")
-        print("test done")
+            print("failed to find the element",e)
+        print("testcase done")
     def test_install_login(self):
         '''【turrant-android-OPPO】test_install_login-授权,登录-正案例'''
         try:
