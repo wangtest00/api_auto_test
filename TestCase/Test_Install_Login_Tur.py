@@ -1,6 +1,6 @@
 import time
 from appium import webdriver
-import unittest,os
+import unittest,os,requests
 from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
@@ -26,7 +26,7 @@ class Test_Install_Login_Tur(unittest.TestCase):
         print('我是setUpclass，我位于所有用例的开始')
         adb_connect(applist[2])
         huanxing_screen(applist[2])  # 唤醒屏幕
-        sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
+        #sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
         uninstall_app(applist[2],applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
@@ -57,6 +57,7 @@ class Test_Install_Login_Tur(unittest.TestCase):
         self.driver.implicitly_wait(10)
 
     def test_install_login(self):
+        '''【turrant-android-MOTO】test_install_login-授权,登录-正案例'''
         shouquan_moto(self.driver)
         time.sleep(3)
         input = self.driver.find_element_by_id('com.turrant:id/phone')

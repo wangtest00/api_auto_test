@@ -51,9 +51,11 @@ def shouquan_moto(driver):
 def shouquan_hongmi(driver):
     driver.find_element_by_id('com.turrant:id/agree').click()
     time.sleep(3)
+    driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_button_1').click()
     for i in range(4):
-        driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_foreground_only_button').click()
         time.sleep(3)
+        driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_foreground_only_button').click()
+
 if __name__ == '__main__':
     #cx_grab_data('8931096039')
     cx_point_track_dtl_new('7770622564')

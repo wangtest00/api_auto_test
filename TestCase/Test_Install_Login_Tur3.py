@@ -1,6 +1,6 @@
 import time
 from appium import webdriver
-import unittest,os
+import unittest,os,requests
 from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
@@ -15,17 +15,19 @@ port=4727   #appium和driver端口号
 applist=['HONGMI','11','192.168.20.210:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 #增加重试连接次数
-requests.DEFAULT_RETRIES = 5
+requests.DEFAULT_RETRIES = 10
 #关闭多余的链接：requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭
 s = requests.session()
 s.keep_alive = False
+time.sleep(20)
+
 class Test_Install_Login_Tur3(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
         adb_connect(applist[2])
-        huanxing_screen(applist[2])  #唤醒屏幕
-        sildes(applist[2],360, 1400, 360, 1300, 50)  #adb向上滑屏
+        #huanxing_screen(applist[2])  #唤醒屏幕
+        #sildes(applist[2],360, 1400, 360, 1300, 50)  #adb向上滑屏
         uninstall_app(applist[2],applist[3])       # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
@@ -55,6 +57,7 @@ class Test_Install_Login_Tur3(unittest.TestCase):
         self.driver.implicitly_wait(10)
 
     def test_install_login(self):
+        '''【turrant-android-HONGMI】test_install_login-授权,登录-正案例'''
         shouquan_hongmi(self.driver)
         time.sleep(3)
         input = self.driver.find_element_by_id('com.turrant:id/phone')
@@ -65,7 +68,7 @@ class Test_Install_Login_Tur3(unittest.TestCase):
         time.sleep(3)
         self.driver.find_element_by_id('android:id/button1').click()  #允许读取短信
     def test_install_first_apply(self):
-        '''【turrant-android】test_install_first_apply-授权，进件5页面，检查数据抓取正案例'''
+        '''【turrant-android-HONGMI】test_install_first_apply-授权，进件5页面，检查数据抓取正案例'''
         shouquan_hongmi(self.driver)
         time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
