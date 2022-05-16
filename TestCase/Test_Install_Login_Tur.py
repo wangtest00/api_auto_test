@@ -27,7 +27,7 @@ class Test_Install_Login_Tur(unittest.TestCase):
         adb_connect(applist[2])
         huanxing_screen(applist[2])  # 唤醒屏幕
         sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
-        uuninstall_app(applist[2],applist[3])  # 预先卸载app包
+        uninstall_app(applist[2],applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
         print('testcase begin')
