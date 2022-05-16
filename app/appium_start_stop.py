@@ -34,6 +34,8 @@ def appium_stop(port):
 #卸载app,用包名就行了
 def uninstall_app(apppackage):
     os.system('adb uninstall '+apppackage)
+
+#唤醒屏幕，区分udid
 def huanxing_screen(udid):
     os.system('adb -s '+udid+' shell input keyevent KEYCODE_POWER')
 #wifi调试连接adb
