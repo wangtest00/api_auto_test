@@ -20,7 +20,40 @@ def cx_point_track_dtl_new(registNo):
     num=DataBase('new_point').get_one(sql)
     print(num[0])
     return num
-
+def shouquan_oppo(driver):
+    driver.find_element_by_id('com.turrant:id/agree').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+def shouquan_moto(driver):
+    driver.find_element_by_id('com.turrant:id/agree').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+def shouquan_hongmi(driver):
+    driver.find_element_by_id('com.turrant:id/agree').click()
+    time.sleep(3)
+    for i in range(4):
+        driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_foreground_only_button').click()
+        time.sleep(3)
 if __name__ == '__main__':
     #cx_grab_data('8931096039')
     cx_point_track_dtl_new('7770622564')

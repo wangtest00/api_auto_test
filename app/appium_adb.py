@@ -32,8 +32,8 @@ def appium_stop(port):
                 pid = stdoutline[4]
                 os.system(f"kill {pid}")
 #卸载app,用包名就行了
-def uninstall_app(apppackage):
-    os.system('adb uninstall '+apppackage)
+def uninstall_app(udid,apppackage):
+    os.system('adb -s '+udid+' uninstall '+apppackage)
 
 #唤醒屏幕，区分udid
 def huanxing_screen(udid):
@@ -42,8 +42,13 @@ def huanxing_screen(udid):
 def adb_connect(udid):
     os.system('adb connect '+udid+'')
     return udid
+
+def adb_disconnect(udid):
+    os.system('adb disconnect '+udid+'')
+
 if __name__ == '__main__':
     #appium_start('127.0.0.1', 4725)
     #appium_stop(4725)
-    #uninstall_app()
-    huanxing_screen('192.168.20.106:5555')
+    applist = ['OPPO', '11', '192.168.20.107:5555', 'com.turrant', 'com.turrant.ui.activity.LaunchActivity']
+    uninstall_app(applist[2],applist[3])
+    #huanxing_screen('192.168.20.106:5555')

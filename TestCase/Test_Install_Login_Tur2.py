@@ -1,18 +1,24 @@
 from appium import webdriver
-import unittest,os,time
+import unittest,os,time,requests
 from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
 from app.grab_data import *
-from app.appium_start_stop import *
+from app.appium_adb import *
 from app.swipe_test import *
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
-port=4729   #appium和driver端口号
-applist=['OPPO','11','192.168.20.135:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
+port=4723   #appium和driver端口号
+applist=['OPPO','11','192.168.20.107:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+#增加重试连接次数
+requests.DEFAULT_RETRIES = 5
+#关闭多余的链接：requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭
+s = requests.session()
+s.keep_alive = False
+
 class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
@@ -20,10 +26,11 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         adb_connect(applist[2])
         huanxing_screen(applist[2])  # 唤醒屏幕
         sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
-        uninstall_app(applist[3])  # 预先卸载app包
+        uninstall_app(applist[2],applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
         '''每条testcase执行前初始化'''
+        print('testcase begin')
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
@@ -40,7 +47,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         # desired_caps['noSign'] = "True"
         # desired_caps["unicodeKeyboard"] = True
         # desired_caps["resetKeyboard"] = True
-        desired_caps["automationName"] = "Uiautomator2"
+        #desired_caps["automationName"] = "Uiautomator2"
         desired_caps['app'] = app_address
         # 配置远程server（通过本地代码调用远程server）
         remote = "http://127.0.0.1:"+str(port) + "/wd/hub"
@@ -49,40 +56,18 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         # 设置隐式等待为 10s
         self.driver.implicitly_wait(10)
         swipeup(self.driver,1000)
-    def shouquan(self):
-        try:
-            time.sleep(3)
-            self.driver.find_element_by_id('com.turrant:id/agree').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-            time.sleep(3)
-            self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-        except Exception as e:
-            print("failed to find the element",e)
-        print("testcase done")
     def test_install_login(self):
         '''【turrant-android-OPPO】test_install_login-授权,登录-正案例'''
-        try:
-            self.shouquan()
-            time.sleep(3)
-            input = self.driver.find_element_by_id('com.turrant:id/phone')
-            input.send_keys('8686863333')
-            input2 = self.driver.find_element_by_id('com.turrant:id/code')
-            input2.send_keys('8888')
-            self.driver.find_element_by_id('com.turrant:id/login_btn').click()
-        except Exception as e:
-            print("failed to find the element",e)
+        shouquan_oppo(self.driver)
+        time.sleep(3)
+        input = self.driver.find_element_by_id('com.turrant:id/phone')
+        input.send_keys('8686863333')
+        input2 = self.driver.find_element_by_id('com.turrant:id/code')
+        input2.send_keys('8888')
+        self.driver.find_element_by_id('com.turrant:id/login_btn').click()
     def test_install_first_apply(self):
         '''【turrant-android-OPPO】test_install_first_apply-授权，进件5页面，检查数据抓取/埋点数据量-正案例'''
-        self.shouquan()
+        shouquan_oppo(self.driver)
         time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
         print(registNo)
@@ -192,12 +177,14 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         self.assertEqual(cx_point_track_dtl_new(registNo),'26')
         logout(self.driver)
     def tearDown(self):
-        #self.driver.close()
+        self.driver.quit()
         print("testcase done")
     @classmethod
     def tearDownClass(cls):  # 在所有用例都执行完之后运行的
+        adb_disconnect(applist[2])
         appium_stop(port)
-        print('我是tearDownClass，我位于多有用例运行的结束')
+        print('我是tearDownClass，我位于所有用例运行的结束')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,15 +5,21 @@ from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
 from app.grab_data import *
-from app.appium_start_stop import *
+from app.appium_adb import *
 from app.swipe_test import *
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
-port=4727  #appium和driver端口号
+port=4725  #appium和driver端口号
 applist=['MOTO','11','192.168.20.116:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+#增加重试连接次数
+requests.DEFAULT_RETRIES = 5
+#关闭多余的链接：requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭
+s = requests.session()
+s.keep_alive = False
+
 class Test_Install_Login_Tur(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  # 在所有用例执行之前运行的
@@ -24,6 +30,7 @@ class Test_Install_Login_Tur(unittest.TestCase):
         uninstall_app(applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
+        print('testcase begin')
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
@@ -48,22 +55,9 @@ class Test_Install_Login_Tur(unittest.TestCase):
         self.driver = webdriver.Remote(remote, desired_caps)
         # 设置隐式等待为 10s
         self.driver.implicitly_wait(10)
-    def shouquan(self):
-        self.driver.find_element_by_id('com.turrant:id/agree').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_foreground_only_button').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
-        time.sleep(3)
-        self.driver.find_element_by_id('com.android.permissioncontroller:id/permission_allow_button').click()
+
     def test_install_login(self):
-        self.shouquan()
+        shouquan_moto(self.driver)
         time.sleep(3)
         input = self.driver.find_element_by_id('com.turrant:id/phone')
         input.send_keys('8686860000')
@@ -72,7 +66,7 @@ class Test_Install_Login_Tur(unittest.TestCase):
         self.driver.find_element_by_id('com.turrant:id/login_btn').click()
     def test_install_first_apply(self):
         '''【turrant-android-MOTO】test_install_first_apply-授权，进件5页面，检查数据抓取正案例'''
-        self.shouquan()
+        shouquan_moto(self.driver)
         time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
         print(registNo)
@@ -178,10 +172,11 @@ class Test_Install_Login_Tur(unittest.TestCase):
             self.assertIsNotNone(grab_data[i])
         logout(self.driver)
     def tearDown(self):
-        #self.driver.quit()
+        self.driver.quit()
         print("testcase done")
     @classmethod
     def tearDownClass(cls):  # 在所有用例都执行完之后运行的
+        adb_disconnect(applist[2])
         appium_stop(port)
         print('我是tearDownClass，我位于多有用例运行的结束')
 
