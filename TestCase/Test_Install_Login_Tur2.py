@@ -1,6 +1,5 @@
-import time
 from appium import webdriver
-import unittest,os
+import unittest,os,time
 from daiqian.base_lp import *
 from app.auth_tur import *
 from data.var_tur_app import *
@@ -12,17 +11,19 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 port=4729   #appium和driver端口号
-applist=['OPPO','11','192.168.20.106:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
+applist=['OPPO','11','192.168.20.135:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
 app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
+        adb_connect(udid)
         huanxing_screen(applist[2])  # 唤醒屏幕
         sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
         uninstall_app(applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
+        '''每条testcase执行前初始化'''
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'

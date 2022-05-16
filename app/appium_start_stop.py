@@ -36,8 +36,10 @@ def uninstall_app(apppackage):
     os.system('adb uninstall '+apppackage)
 def huanxing_screen(udid):
     os.system('adb -s '+udid+' shell input keyevent KEYCODE_POWER')
-
-
+#wifi调试连接adb
+def adb_connect(udid):
+    os.system('adb connect '+udid+'')
+    return udid
 if __name__ == '__main__':
     #appium_start('127.0.0.1', 4725)
     #appium_stop(4725)
