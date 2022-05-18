@@ -18,7 +18,6 @@ def cx_grab_data(registNo):
 def cx_point_track_dtl_new(registNo):
     sql="select count(1) from point_track_dtl_new  where PHONE='"+registNo+"';"
     num=DataBase('new_point').get_one(sql)
-    print(num[0])
     return num
 def shouquan_oppo(driver):
     driver.find_element_by_id('com.turrant:id/agree').click()
@@ -55,6 +54,8 @@ def shouquan_hongmi(driver):
     for i in range(4):
         time.sleep(3)
         driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_foreground_only_button').click()
+    time.sleep(3)
+    driver.find_element_by_id('com.lbe.security.miui:id/permission_allow_button_1').click()
 
 if __name__ == '__main__':
     #cx_grab_data('8931096039')

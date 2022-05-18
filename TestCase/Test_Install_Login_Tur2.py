@@ -11,8 +11,8 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 port=4723   #appium和driver端口号
-applist=['OPPO','11','192.168.20.107:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
-app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+applist=['OPPO','11','192.168.20.108:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
+app_address='D:/app_list/turrant/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 #增加重试连接次数
 requests.DEFAULT_RETRIES = 5
 #关闭多余的链接：requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭
@@ -23,11 +23,12 @@ class Test_Install_Login_Tur2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):  #在所有用例执行之前运行的
         print('我是setUpclass，我位于所有用例的开始')
-        adb_connect(applist[2])
-        huanxing_screen(applist[2])  # 唤醒屏幕
-        sildes(applist[2],360, 1400, 360, 1300, 50)  # adb向上滑屏
-        uninstall_app(applist[2],applist[3])  # 预先卸载app包
-        appium_start('127.0.0.1', port)  # 启动appium服务
+        adb_connect(applist[2])                      #连接wifi调试
+        huanxing_screen(applist[2])                  #唤醒屏幕
+        sildes(applist[2],360, 1400, 360, 1300, 50)  #adb向上滑屏
+        uninstall_app(applist[2],applist[3])         #预先卸载app包
+        appium_start('127.0.0.1', port)              #启动appium服务
+
     def setUp(self):
         '''每条testcase执行前初始化'''
         print('testcase begin')
@@ -38,15 +39,18 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         desired_caps['deviceName'] = applist[0]
         # 设备系统版本号
         desired_caps['platformVersion'] = applist[1]
+        #连接的物理设备的唯一设备标识,如果连接真机测试，必须指定设备的id（在adb devides里或设置里查看)
         desired_caps['udid'] = applist[2]
         # 应用的包名
         desired_caps['appPackage'] = applist[3]
         # 应用启动需要的Android Activity名称
         desired_caps['appActivity'] = applist[4]
-        # 跳过检查核对应用进行debug的签名的步骤
+        # 跳过检查和对应用进行 debug 签名的步骤。只能在使用 UiAutomator 时使用，使用 selendroid 是不行。默认值 `false` | `true` 或 `false`|
         # desired_caps['noSign'] = "True"
+        #使用Unicode输入法,中文字符需要设置为True
         # desired_caps["unicodeKeyboard"] = True
         # desired_caps["resetKeyboard"] = True
+        #你想使用的自动化测试引擎|`Appium` (默认) 或 `Selendroid`,uiautomator2:支持安卓6.0之后的版本
         #desired_caps["automationName"] = "Uiautomator2"
         desired_caps['app'] = app_address
         # 配置远程server（通过本地代码调用远程server）
@@ -71,6 +75,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         time.sleep(3)
         registNo=str(random.randint(7000000000,9999999999)) #10位随机数作为手机号
         print(registNo)
+        #insert_white_list(registNo)
         self.driver.find_element_by_id('com.turrant:id/phone').send_keys(registNo)
         time.sleep(1)
         code = compute_code(registNo)
@@ -140,7 +145,7 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         self.driver.find_element_by_id(id24).click()
         self.driver.find_element_by_xpath(xp25).click()
         self.driver.find_element_by_id(id26).click()
-        # time.sleep(5)
+        # time.sleep(5)                                #工作信息附件证明
         # self.driver.find_element_by_id(id27).click()
         # time.sleep(5)
         # self.driver.find_element_by_id(id28).click()
@@ -184,7 +189,6 @@ class Test_Install_Login_Tur2(unittest.TestCase):
         adb_disconnect(applist[2])
         appium_stop(port)
         print('我是tearDownClass，我位于所有用例运行的结束')
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,7 +13,7 @@ PATH = lambda p: os.path.abspath(
 )
 port=4725  #appium和driver端口号
 applist=['MOTO','11','192.168.20.116:5555','com.turrant','com.turrant.ui.activity.LaunchActivity']
-app_address='/home/wangshuang/Downloads/turrant_list/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
+app_address='D:/app_list/turrant/Test-Turrant_V1.0.2_2022-05-07-14-45-03_google.apk'
 #增加重试连接次数
 requests.DEFAULT_RETRIES = 5
 #关闭多余的链接：requests使用了urllib3库，默认的http connection是keep-alive的，requests设置False关闭
@@ -30,23 +30,27 @@ class Test_Install_Login_Tur(unittest.TestCase):
         uninstall_app(applist[2],applist[3])  # 预先卸载app包
         appium_start('127.0.0.1', port)  # 启动appium服务
     def setUp(self):
+        '''每条testcase执行前初始化'''
         print('testcase begin')
         desired_caps = {}
         # 设备系统
         desired_caps['platformName'] = 'Android'
-        # 设备系统版本号
-        desired_caps['platformVersion'] = applist[1]
         # 设备名称
         desired_caps['deviceName'] = applist[0]
+        # 设备系统版本号
+        desired_caps['platformVersion'] = applist[1]
+        # 连接的物理设备的唯一设备标识,如果连接真机测试，必须指定设备的id（在adb devides里或设置里查看)
         desired_caps['udid'] = applist[2]
         # 应用的包名
         desired_caps['appPackage'] = applist[3]
         # 应用启动需要的Android Activity名称
         desired_caps['appActivity'] = applist[4]
-        # 跳过检查核对应用进行debug的签名的步骤
+        # 跳过检查和对应用进行 debug 签名的步骤。只能在使用 UiAutomator 时使用，使用 selendroid 是不行。默认值 `false` | `true` 或 `false`|
         # desired_caps['noSign'] = "True"
+        # 使用Unicode输入法,中文字符需要设置为True
         # desired_caps["unicodeKeyboard"] = True
         # desired_caps["resetKeyboard"] = True
+        # 你想使用的自动化测试引擎|`Appium` (默认) 或 `Selendroid`,uiautomator2:支持安卓6.0之后的版本
         # desired_caps["automationName"] = "Uiautomator2"
         desired_caps['app'] = app_address
         # 配置远程server（通过本地代码调用远程server）

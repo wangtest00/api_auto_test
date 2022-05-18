@@ -4,8 +4,6 @@ int start y －开始滑动的y坐标。
 int end x －结束点x坐标，
 int end y －结束点y坐标。
 duration 滑动时间（默认5毫秒）；'''
-# -*- coding: utf-8 -*-
-from time import sleep
 import os
 import time
 #获取屏幕机器大小x,y
