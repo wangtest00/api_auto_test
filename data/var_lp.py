@@ -8,7 +8,7 @@ host_mgt=shenpiren[appNo][1]   #MGT域名
 host_api="https://test-api.quantx.mx"        #APP
 host_action="https://test-action.quantx.mx"  #埋点
 host_pay="https://test-pay.quantx.mx"        #支付
-host_coll="https://test-coll.quantx.mx"      #催收
+host_coll="https://test-collection.quantx.mx"      #催收
 host_msg="https://test-msg.quantx.mx"        #消息
 head_api={"User-Agent": "PostmanRuntime/7.29.0","X-User-Language": "es","X-Auth-Token": "Bearer" ,"Accept-Encoding": "gzip","Accept": "*/*",
           "Content-Length": "106","Host": host_mgt[8:],"X-App-Name": "LanaPlus","Content-Type": "application/json","Connection":"keep-alive",
