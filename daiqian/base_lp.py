@@ -118,10 +118,10 @@ def cx_registNo_042():
     return phone
 def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
-select DISTINCT c.REGIST_NO,d.CUENTA_BENEFICIARIO from pay_stp_repayment_record d left join lo_loan_dtl a  on d.loan_no=a.loan_no
+select DISTINCT c.REGIST_NO,d.CLABE_NO from fin_clabe_usable_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
 left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO left join cu_cust_bank_card_dtl f on a.CUST_NO=f.CUST_NO
 where    b.APP_NO="201" and a.AFTER_STAT='10270003' and a.SETTLEMENT_TIME is null and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
-order by a.INST_TIME desc limit 1;  '''
+order by a.INST_TIME desc limit 1;'''
     phone=DataBase(which_db).get_one(sql)
     return phone
 def cx_registNo_052():
