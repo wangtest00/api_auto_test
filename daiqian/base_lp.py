@@ -118,9 +118,9 @@ def cx_registNo_042():
     return phone
 def cx_registNo_05():
     sql='''#查询有还款申请记录，逾期状态的贷款，手机号和还款入账账号
-select DISTINCT c.REGIST_NO,d.IN_ACCT_NO from pay_tran_dtl d left join lo_loan_dtl a  on d.loan_no=a.loan_no
+select DISTINCT c.REGIST_NO,d.CUENTA_BENEFICIARIO from pay_stp_repayment_record d left join lo_loan_dtl a  on d.loan_no=a.loan_no
 left join lo_loan_prod_rel b on a.LOAN_NO=b.LOAN_NO left join cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO left join cu_cust_bank_card_dtl f on a.CUST_NO=f.CUST_NO
-where d.TRAN_CHAN_NAME='Stp_Payment_LanaPlusProd' and d.tran_use='10330002'  and b.APP_NO="'''+appNo+'''" and a.AFTER_STAT='10270003' and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
+where    b.APP_NO="201" and a.AFTER_STAT='10270003' and a.SETTLEMENT_TIME is null and a.BEFORE_STAT='10260005' and f.USEABLE='10000001'
 order by a.INST_TIME desc limit 1;  '''
     phone=DataBase(which_db).get_one(sql)
     return phone
@@ -280,6 +280,11 @@ def cx_inst_num(loanNo):
     for i in range(len(inst_num)):
         list.append(str(inst_num[i][0]))
     return list
+def cx_for_stp_repay():
+    sql='''select c.REGIST_NO,a.CUST_NO,a.LOAN_NO,b.REPAY_DATE from lo_loan_dtl a LEFT JOIN lo_loan_plan_dtl b on a.loan_no=b.LOAN_NO LEFT JOIN cu_cust_reg_dtl c on a.CUST_NO=c.CUST_NO where  a.AFTER_STAT='10270003' and a.SETTLEMENT_TIME is null and a.APP_NO="201" and a.INST_NUM='1' and b.SETTLEMENT_TIME is null  order by a.INST_TIME desc;'''
+    data=DataBase(which_db).get_one(sql)
+    print(data)
+    return data
 #更新登录密码，包含了用验证码方式注册登录的步骤
 def update_pwd(registNo):
     token=login_code(registNo)

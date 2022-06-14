@@ -466,6 +466,16 @@ class LP_DaiQian_Api_Test(unittest.TestCase):
         stat=DataBase(which_db).get_one(sql3)
         self.assertEqual(stat[0],'10260005')
         self.assertEqual(stat[1],'10270002')
+    def test_stp_repay(self):
+        '''【lanaPlus】/api/trade/fin/repay  申请还款接口-正案例'''
+        cx=cx_for_stp_repay()
+        headt_api = login_code(cx[0])
+        data={"advance":"10000000","custNo":cx[1],"defer":False,"loanNo":cx[2],"paymentMethod":"STP","repayDateList":[cx[3]],"tranAppType":"Android"}
+        r=requests.post(host_api+"/api/trade/fin/repay",data=json.dumps(data),headers=headt_api,verify=False)
+        t=r.json()
+        print(t)
+        self.assertEqual(t['errorCode'],0)
+        self.assertEqual(t['data']['msg'],'apply success')
     @classmethod
     def tearDownClass(cls): #在所有用例都执行完之后运行的
         DataBase(which_db).closeDB()
